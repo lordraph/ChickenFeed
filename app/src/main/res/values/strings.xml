@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">ChickenFeed</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string-array name="FEED_LBRARY">
+        <item>Energy Feed Resources</item>
+        <item>Plant Protein Feed Resources</item>
+        <item>Animal Protein Feed Resources</item>
+        <item>High Fibre/By-Product Feed Resources </item>
+        <item>Minerals Feed Resources</item>
+    </string-array>
+
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">START</string>
+    <string name="intro">Copyright : Africa Chicken Genetic Gains, Nigeria (ACGG-NG)
+        2018</string>
+
+    <string name="slide_1_title">Welcome To App</string>
+    <string name="slide_1_desc">The easiest way to formulate feeds for your chicken</string>
+
+    <string name="slide_2_title">Formulate Feed</string>
+    <string name="slide_2_desc">Combine the best ingredients for your poultry such that the cost is at minimum</string>
+
+    <string name="slide_3_title">Nutrient Classes</string>
+    <string name="slide_3_desc">Use this app to check nutrient classes of an ingredient</string>
+
+    <string name="slide_4_title">Feed Library</string>
+    <string name="slide_4_desc">Check and create a feed library</string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
+    <string name="play_again">Play Again</string>
+</resources>
+

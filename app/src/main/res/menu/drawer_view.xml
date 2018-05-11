@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/home_ic"
+            android:onClick="openMainActivity"
+            android:title="Home"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/briefcase_ic"
+            android:onClick="openAccountActivity"
+            android:title="Account"/>
+   </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_notification"
+            android:icon="@drawable/inbox_ic"
+            android:onClick="openNotificationActivity"
+            android:title="Notification"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_savedActivity"
+            android:icon="@drawable/save_ic"
+            android:onClick="openSavedActivityActivity"
+            android:title="Saved Activity"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/menu"
+            android:onClick="openAboutActivity"
+            android:title="About"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/help_ic"
+            android:onClick="openHelpActivity"
+            android:title="Help"/>
+    </group>
+
+</menu>

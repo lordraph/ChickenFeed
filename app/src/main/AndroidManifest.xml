@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.acgg.chickenfeed">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/chickenfeed_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/chickenfeed_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:label="Home" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Settings" />
+        <activity
+            android:name=".LibraryActivity"
+            android:label="Feed Library" />
+        <activity
+            android:name=".CreateDietActivity"
+            android:label="Create Diet" />
+        <activity
+            android:name=".AccountActivity"
+            android:label="Account" />
+        <activity
+            android:name=".NotificationActivity"
+            android:label="Notification" />
+        <activity
+            android:name=".SavedActivityActivity"
+            android:label="Saved Activities" />
+        <activity
+            android:name=".AboutActivity"
+            android:label="About" />
+        <activity
+            android:name=".HelpActivity"
+            android:label="Help Topics" />
+        <activity android:name=".SummaryActivity" />
+        <activity android:name=".WelcomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="4dp"
+        card_view:cardCornerRadius="1dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="270dp"
+            android:background="#358200">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="265dp"
+            android:layout_marginTop="2dp"
+            android:orientation="vertical"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:background="#ffffff">
+
+            <TextView
+                android:id="@+id/ingre_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#358200"
+                android:textSize="15sp"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:typeface="sans" />
+
+            <LinearLayout
+                android:id="@+id/lay_drymatter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/dry_matter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000"
+                    android:text="Dry Matter(%) : "
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/value_drymatter"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans"
+                    android:textColor="#000000"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/lay_calcium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/calcium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Calcium(%) : "
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_calcium"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/lay_crudeprotein"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/crude_protein"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000"
+                    android:text="Crude protein(%) : "
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/value_crudeprotein"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans"
+                    android:textColor="#000000"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/lay_phosphorus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/phosphorus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Phosphorus(%) : "
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_phosphorus"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lay_etherextract"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/ether_extract"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000"
+                    android:text="Ether Extract(%) : "
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/value_etherextract"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans"
+                    android:textColor="#000000"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/lay_lysine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/lysine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:textColor="#000000"
+                        android:text="Lysine(%) : "
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_lysine"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lay_crudefibre"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/crude_fibre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000"
+                    android:text="Crude Fibre(%) : "
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/value_crudefibre"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans"
+                    android:textColor="#000000"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/lay_methionine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/methionine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="Methionine(%) : "
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_methionine"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lay_nitrogenfreeextract"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/nitrogenfree_extract"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000"
+                    android:text="Nitrogen Free Extract(%) : "
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/value_nitrogenfreeextract"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans"
+                    android:textColor="#000000"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/lay_kcal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/kcal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:text="ME(Kcal/kg)(%) : "
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_kcal"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lay_totalash"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/total_ash"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000"
+                    android:text="Total Ash (%) : "
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/value_totalash"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:textStyle="normal"
+                    android:typeface="sans"
+                    android:textColor="#000000"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#358200"
+                android:layout_gravity="center"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:typeface="sans" />
+
+        </LinearLayout>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

@@ -1,0 +1,14 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#358200</item>
+        <item name="colorPrimaryDark">#358200</item>
+        <item name="colorAccent">#358200</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
+    <style name="Spinner" parent= "@style/Base.Widget.AppCompat.Spinner.Underlined"/>
+
+</resources>
