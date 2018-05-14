@@ -34,26 +34,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_library:
-                        Intent intent1 = new Intent(MainActivity.this, LibraryActivity.class);
-                        startActivity(intent1);
-                        break;
-                    case R.id.nav_create_diet:
-                        Intent intent2 = new Intent(MainActivity.this, CreateDietActivity.class);
-                        startActivity(intent2);
-                        break;
-                    case R.id.nav_settings:
-                        Intent intent3 = new Intent(MainActivity.this, SettingsActivity.class);
-                        startActivity(intent3);
-                        break;
-                }
-                return false;
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.nav_library:
+                    Intent intent1 = new Intent(MainActivity.this, LibraryActivity.class);
+                    startActivity(intent1);
+                    break;
+                case R.id.nav_create_diet:
+                    Intent intent2 = new Intent(MainActivity.this, CreateDietActivity.class);
+                    startActivity(intent2);
+                    break;
+                case R.id.nav_settings:
+                    Intent intent3 = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent3);
+                    break;
             }
-
+            return false;
         });
 
 
@@ -88,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openAccountActivity(MenuItem item) {
-        Intent intent = new Intent(MainActivity.this, AccountActivity.class);
+        Intent intent = new Intent(MainActivity.this, SummaryActivity.class);
         startActivity(intent);
     }
 

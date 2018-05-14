@@ -10,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <include
             layout="@layout/navigation_actionbar"
@@ -46,11 +47,35 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp">
+                    android:layout_height="200dp"
+                    android:padding = "5dp"
+                    android:orientation="vertical"
+                    android:id="@+id/summary_View_Layout"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ingredient Selected for Mixing"
+                        android:textColor="#1f7101"
+                        android:textStyle="bold"
+
+                        />
+
+
+                    <TableLayout
+                        android:id="@+id/select_ingredient_mixing_table"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:stretchColumns="*">
+
+
+                    </TableLayout>
 
                 </LinearLayout>
             </ScrollView>
