@@ -35,7 +35,7 @@
                android:layout_height="match_parent"
                android:text="FEED FORMULATION APP"
                android:textColor="#ffffff"
-               android:textSize="50sp"
+               android:textSize="45sp"
                android:gravity="center"
                android:textStyle="bold"
                />
