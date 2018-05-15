@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="4dp"
+        card_view:cardCornerRadius="1dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="165dp"
+            android:background="#358200">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginTop="2dp"
+                android:orientation="vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:background="#ffffff">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Calculated Analysis"
+                    android:textSize="20sp"
+                    android:textColor="#358200"
+                    android:textAllCaps="true"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:typeface="serif"
+                    android:layout_gravity="center" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/analyzed_crudeProtein"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="#000000"
+                        android:text="Crude Protein : "
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_analyzed_crudeProtein"
+                        android:layout_width="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:text="8"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/analyzed_calcium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="#000000"
+                        android:text="Calcium : "
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_analyzed_calcium"
+                        android:layout_width="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:text="8"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/analyzed_phosphorus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="#000000"
+                        android:text="Phosphorus: "
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_analyzed_phosphorus"
+                        android:layout_width="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:text="8"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/analyzed_energy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="#000000"
+                        android:text="Energy : "
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans" />
+
+                    <TextView
+                        android:id="@+id/value_analyzed_energy"
+                        android:layout_width="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:typeface="sans"
+                        android:text="8"
+                        android:textColor="#000000"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
