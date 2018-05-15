@@ -83,7 +83,7 @@ public class SummaryActivity extends AppCompatActivity {
         classHeaderArr.add("Ingredient");
         classHeaderArr.add("Proportion(%)");
         classHeaderArr.add("Proportion");
-        classHeaderArr.add("Quantity Specified");
+        classHeaderArr.add("Quantity");
         classHeaderArr.add("Comment");
 
         //get data from database
@@ -102,9 +102,10 @@ public class SummaryActivity extends AppCompatActivity {
 
         // create textview for ingredient name
         TextView ingredienttxt= new TextView(this);
-        ingredienttxt.setText("Outcome from Formulation");
-        ingredienttxt.setTypeface(null, Typeface.BOLD);
+        ingredienttxt.setTextAppearance(this, android.R.style.TextAppearance_Small);
         ingredienttxt.setTextColor(Color.parseColor("#1f7101"));
+        ingredienttxt.setTypeface(null, Typeface.BOLD);
+        ingredienttxt.setText("Outcome from Formulation");
         linearLayout.addView(ingredienttxt);
 
 
@@ -113,6 +114,7 @@ public class SummaryActivity extends AppCompatActivity {
         TableLayout.LayoutParams tp = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
         resultTable.setLayoutParams(tp);
         resultTable.setStretchAllColumns(true);
+        resultTable.setShrinkAllColumns(true);
 
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
@@ -162,7 +164,7 @@ public class SummaryActivity extends AppCompatActivity {
                     new_row.addView(eachName);
                 }
 
-                if(classHeaderArr.get(i).equals("Quantity Specified")) {
+                if(classHeaderArr.get(i).equals("Quantity")) {
                     TextView eachName = new TextView(this);
                     eachName.setText(String.valueOf(resultqtySpecified.get(eachRow)));
                     eachName.setBackgroundColor(Color.parseColor("#4caf50"));
