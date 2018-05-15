@@ -1,10 +1,7 @@
 package com.acgg.chickenfeed;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Handler;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -13,31 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.acgg.chickenfeed.data.ChickenFeedDbContract;
 import com.acgg.chickenfeed.data.ChickenFeedHelper;
 
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static android.R.layout.simple_dropdown_item_1line;
@@ -137,9 +122,9 @@ public class CreateDietActivity extends AppCompatActivity {
 //                    formulate
                 formulateForTwoFeed();
 
-               Intent intent = new Intent(this, SummaryActivity.class);
-               intent.putExtra("formuNo", noOfFomulation);
-               startActivity(intent);
+                Intent intent = new Intent(this, SummaryActivity.class);
+                intent.putExtra("formuNo", noOfFomulation);
+                startActivity(intent);
 
             }else{
                 Toast.makeText(CreateDietActivity.this, "Please Select At least " +
@@ -188,39 +173,38 @@ public class CreateDietActivity extends AppCompatActivity {
                     birdSelected = "Layer";
                     break;
 
-                    default:
-                        Toast.makeText(CreateDietActivity.this, "Please select " +
-                                "a bird", Toast.LENGTH_SHORT).show();
+                default:
+                    Toast.makeText(CreateDietActivity.this, "Please select " +
+                            "a bird", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
     public void formulateForTwoFeed(){
-    // Check if the formulation can be carried out
+        // Check if the formulation can be carried out
 
-    //        check protein formulation
+        //        check protein formulation
         if(birdSelected.length() != 0){
             //  check the bird selected
             if(birdSelected.equals("Grower")){
                 double Crude_protein = 8.0, Calcium =0.8 ,Phosphorus = 0.4;
 
-            // Check if the nutrient meet the requirement
-            if((Collections.max(crudeProteinNutrient) >= Crude_protein) && (Collections.min(crudeProteinNutrient) < Crude_protein) ){
+                // Check if the nutrient meet the requirement
+                if((Collections.max(crudeProteinNutrient) >= Crude_protein) && (Collections.min(crudeProteinNutrient) < Crude_protein) ){
 
 
 
-                formulateProtein(Crude_protein, birdSelected);
+                    formulateProtein(Crude_protein, birdSelected);
 
 //                Toast.makeText(CreateDietActivity.this, "formulation is possible", Toast.LENGTH_SHORT).show();
 
 
-            }else{
+                }else{
 
-                Toast.makeText(CreateDietActivity.this, "Fomulation cannot be made", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
-
-            }
+                }
 
             }else{
 
@@ -233,7 +217,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
 //                    Toast.makeText(CreateDietActivity.this, "crop ", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(CreateDietActivity.this, "Fomulation cannot be made", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -271,7 +255,7 @@ public class CreateDietActivity extends AppCompatActivity {
         addFormulatedIngredientToDb(birdCat);
 
 
-    // The crop with max crude protein value
+        // The crop with max crude protein value
         String ingredientWithMaxCP = "";
         String ingredientWithMinCP = "";
 
@@ -283,7 +267,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
         Double ingredientWithMaxCPValue = 0.0;
-        Double ingredientWithMinCPValue = 0.00;
+        Double ingredientWithMinCPValue = 0.0;
 
         ingredientWithMaxCP = ingredientSelected.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
         ingredientWithMinCP = ingredientSelected.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
@@ -363,11 +347,11 @@ public class CreateDietActivity extends AppCompatActivity {
         numOfSelectedFeed = 0;
         classIngredientSelected = new ArrayList <>();
         qtyselected = new ArrayList <>();
-         ingredientSelected = new ArrayList <>();
-         calciumNutrient  = new ArrayList <>();
-         crudeProteinNutrient  = new ArrayList <>();
-         phosphorusNutrient  = new ArrayList <>();
-         energyNutrient  = new ArrayList <>();
+        ingredientSelected = new ArrayList <>();
+        calciumNutrient  = new ArrayList <>();
+        crudeProteinNutrient  = new ArrayList <>();
+        phosphorusNutrient  = new ArrayList <>();
+        energyNutrient  = new ArrayList <>();
 
         if ((chooseFirstIngrid.getText().length()) != 0 && (edit_1.getText().length() != 0)){
             numOfSelectedFeed++;
@@ -403,7 +387,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
     public void getFeedNut(String selectedFeed){
 
-//       insert id, feed_ingridient,class,crude_protein,energy,calcium,phosphorus
+//       insert id, feed_ingredient,class,crude_protein,energy,calcium,phosphorus
         Cursor getFeedDetails = dbHelper.getFeedNutrients();
 
         while(getFeedDetails.moveToNext()){
@@ -423,7 +407,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
     // Populate the spinner
     public void populateSpinner(){
-        String[] quantityType = new String[]{"Kg", "g"};
+        String[] quantityType = new String[]{"KG", "G"};
         ArrayAdapter qtyArrayAdapter = new ArrayAdapter(this,R.layout.support_simple_spinner_dropdown_item, quantityType);
 
         qtyArrayAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -431,21 +415,21 @@ public class CreateDietActivity extends AppCompatActivity {
         quantityTypeSpinner.setAdapter(qtyArrayAdapter);
     }
 
-    //   get all ingridient from the database and populate them into a textview
+    //   get all ingredient from the database and populate them into a textview
     public void populateTextView(){
 
         Cursor getAllFeed = dbHelper.getTable();
-        String[] Ingrident = new String[getAllFeed.getCount()];
+        String[] Ingredient = new String[getAllFeed.getCount()];
 
 
         //  Populate AutocompleteTextView with All crop
         int i=0;
         while(getAllFeed.moveToNext()){
-            Ingrident[i] = getAllFeed.getString(0);
+            Ingredient[i] = getAllFeed.getString(0);
             i++;
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter <>(this, simple_dropdown_item_1line, Ingrident);
+        ArrayAdapter<String> adapter = new ArrayAdapter <>(this, simple_dropdown_item_1line, Ingredient);
         //   Populate Autocomplete
         chooseFirstIngrid.setAdapter(adapter);
         chooseSecondIngrid.setAdapter(adapter);

@@ -327,6 +327,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
+                            <RadioGroup
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
 
                             <RadioButton
                                 android:id="@+id/grower_radioButton"
@@ -343,6 +347,7 @@
                                 android:text="Layer"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
+                            </RadioGroup>
 
                         </LinearLayout>
 

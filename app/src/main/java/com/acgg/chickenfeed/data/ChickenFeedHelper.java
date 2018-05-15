@@ -63,6 +63,69 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
         db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_TOASTED_GROUNDNUT);
         db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_SOYBEAN);
         db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_COWPEA);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_ORANGE_PULP);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_MELON_FRUIT_PULP);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_ORANGE_PEELINGS);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_PLANTAIN_PEELS);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BITTER_LEAVES);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_YAM_FLOUR);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_PALM_OIL_SLUDGE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_EVAPORATED_PALM_OIL_);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_MAIZE_STARCH_RESIDUE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_AFRICAN_LOCUST);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_AFRICAN_LOCUST_BEAN_SEED);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_AFRICAN_LOCUST_BEAN_WHOLE_FRUIT);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_ALMOND_KERNEL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BAMBARA_GROUNDNUT_DE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BAMBARA_GROUNDNUT_UN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BREWER_YEAST);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_CASHEW_UN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_CASHEW_EX);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_FULL_FAT);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_COTTON_SEED);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_GROUNDNUT_CAKE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_GROUNDNUT_MEAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_PIGEON_PEA);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_ROSELLE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_SESAME_SEED);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_SUNFLOWER);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_WATER_MELON_UN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_WATER_MELON_SHELLED);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BLOOD_MEAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_EARTHWORM);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_FEATHER);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_GARDEN_SNAIL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_HOUSEFLY_MAGGOT);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_LOCAL_FISH_MEAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_TERMITE_MEAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_UNSKINNED_DRIED_TADPOLE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_UNSKINNED_BOILED_TADPOLE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BREWER_WET_GRAIN );
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BREWER_DRY_GRAIN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_CORN_COBS);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_COTTON_SEED_HULLS);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_PALM_KERNEL_MEAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_POULTRY_MANURE_DRIED_CAGE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_POULTRY_MANURE_DRIED_FLOOR);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_OKRA_DRIED_FRUIT);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_RICE_HULLS);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_RICE_BRAN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_RICE_GRAIN_WITH_HULLS);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_RICE_GRAIN_HULL_REMOVED);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_RICE_OFFAL_UN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_RICE_OFFAL_PA);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_SORGHUM_OFFAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_TOMATO_PULP);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_WHEAT_BRAN);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_WHEAT_OFFAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_OKRA);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_BONE_MEAL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_DICALCIUM_PHOSPHATE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_LIMESTONE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_OYSTER_SHELL);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_PERIWINKLE);
+        db.execSQL(ChickenFeedDbContract.FeedLibraryEntry.SQL_INSERT_EGG_SHELL_MEAL);
+
 
 // Inser initiate records
         db.execSQL(ChickenFeedDbContract.IngredientRecord.SQL_INSERT_RECORD);
@@ -77,12 +140,12 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
         onCreate(db);
 
     }
-//       insert id, feed_ingridient,class,crude_protein,energy,calcium,phosphorus
+//       insert id, feed_ingredient,class,crude_protein,energy,calcium,phosphorus
 
     public Cursor getTable(){
         SQLiteDatabase db = this.getReadableDatabase();
         //        Query statement to query the database
-        String selectQuery = "SELECT feed_ingridient FROM " + ChickenFeedDbContract.FeedLibraryEntry.TABLE_NAME;
+        String selectQuery = "SELECT feed_ingredient FROM " + ChickenFeedDbContract.FeedLibraryEntry.TABLE_NAME;
         Cursor cursor = db.rawQuery(selectQuery,null);
         return cursor;
     }
@@ -107,29 +170,29 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
     }
 
 
-   public boolean updateFomulatedRecord(Integer formu_no){
+    public boolean updateFomulatedRecord(Integer formu_no){
 
-       SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
 
-       ContentValues contentValues = new ContentValues();
-       contentValues.put(ChickenFeedDbContract.IngredientRecord.COLUMN_FORMULATION,formu_no);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ChickenFeedDbContract.IngredientRecord.COLUMN_FORMULATION,formu_no);
 
-       long checkifdata = db.update(ChickenFeedDbContract.IngredientRecord.TABLE_NAME,contentValues,null,null);
+        long checkifdata = db.update(ChickenFeedDbContract.IngredientRecord.TABLE_NAME,contentValues,null,null);
 
-       db.close();
+        db.close();
 
-       if(checkifdata==-1){
-           return false;
-       }else{
-           return true;
-       }
+        if(checkifdata==-1){
+            return false;
+        }else{
+            return true;
+        }
 
-   }
+    }
 
 //   add formulated ingredient to database
 
     public boolean addIngredient(String ingredient, Integer formu_no, String birdcat, Integer qtyformulateed, String classOfIngredient, Double calcium,
-                                    Double crude_protein, Double Phosphorus, Integer energy){
+                                 Double crude_protein, Double Phosphorus, Integer energy){
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -174,7 +237,7 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
 //    add result formulated to database
 
     public boolean addFormulationResult(String feed_ingredient, Integer formu_no, Double proportionPercent,
-                                 Double proportionUnit, Integer qtySpecified, String comment) {
+                                        Double proportionUnit, Integer qtySpecified, String comment) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 

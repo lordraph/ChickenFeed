@@ -10,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <include
             layout="@layout/navigation_actionbar"
@@ -22,61 +23,33 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ScrollView
+            <ListView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="200dp"
+                android:padding="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:id="@+id/listview_Ingredient"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp">
-
-                </LinearLayout>
-            </ScrollView>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/background_button"
-                android:padding="10dp"
-                android:text="Show Charts"
-                android:textColor="#ffffff"
-                android:textStyle="bold" />
-
-            <ScrollView
+            <ListView
+                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp">
-
-                </LinearLayout>
-            </ScrollView>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/background_button"
-                android:padding="10dp"
-                android:text="Export Summary to Excel "
-                android:textColor="#ffffff"
-                android:textStyle="bold" />
+                android:layout_height="200dp"
+                android:padding="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:id="@+id/listview_CalculatedAnalysis"/>
 
 
         </LinearLayout>
+    </LinearLayout>
+
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
-
-    </LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="4dp"
+        card_view:cardCornerRadius="1dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="270dp"
+            android:background="#358200">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="265dp"
+                android:layout_marginTop="2dp"
+                android:orientation="vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:background="#ffffff">
+
+                <TextView
+                    android:id="@+id/formulate_ingredientName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Ingredient"
+                    android:typeface="serif"
+                    android:textSize="20sp"
+                    android:textColor="#358200"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp">
+
+                <TextView
+                    android:id="@+id/crudeProtein_formulated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Crude Protein : "
+                    android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/valueCrudeProtein_formulated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5.33"
+                        android:textSize="18sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginStart="35dp"
+                    android:layout_marginTop="5dp">
+                    <TextView
+                        android:id="@+id/calcium_formulated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Calcium : "
+                        android:textSize="18sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/valueCalcium_formulated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5.33"
+                        android:textSize="18sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp">
+                        <TextView
+                            android:id="@+id/phosphorus_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Phosphorus: "
+                            android:textSize="18sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/valuePhosphorus_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5.33"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="35dp"
+                        android:layout_marginStart="35dp"
+                        android:layout_marginTop="5dp">
+                        <TextView
+                            android:id="@+id/quantity_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Quantity : "
+                            android:textSize="18sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/valueQuantity_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="20"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp">
+                        <TextView
+                            android:id="@+id/class_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Class : "
+                            android:textSize="18sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/valueClass_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Energy"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Outcome from formulation"
+                    android:textSize="20sp"
+                    android:textAllCaps="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:typeface="serif"
+                    android:textColor="#358200"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp">
+
+                        <TextView
+                            android:id="@+id/proportion_100Kg_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proportion(%):"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/valueproportion_100Kg_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="65"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="35dp"
+                        android:layout_marginStart="35dp"
+                        android:layout_marginTop="5dp">
+                        <TextView
+                            android:id="@+id/proportionKg_toMix"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proportion "
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/value_proportion_toMix"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="(10kg) : "
+                            android:textSize="18sp"/>
+
+                        <TextView
+                            android:id="@+id/valueProportionKg_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5.33"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp">
+
+                        <TextView
+                            android:id="@+id/quantity_specified"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Quantity : "
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/valueQuantity_specified"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="20"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="35dp"
+                        android:layout_marginStart="35dp"
+                        android:layout_marginTop="5dp">
+                        <TextView
+                            android:id="@+id/comment_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Comment : "
+                            android:textSize="18sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/valueComment_formulated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Appropriate"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
