@@ -12,9 +12,13 @@ public class FormulatedDetails {
     private Integer qtySpecified;
     private Integer qtyAvailable;
 
-    public FormulatedDetails(String ingredient, String ingredientlass, Double crudeProteinFormulated, Double calciumFormulated, Double phosphorusFormulated, Integer qtySpecified, String commentFormulated, Double proportion, Double proportionUnit, Integer qtyAvailable) {
+    public FormulatedDetails(String ingredient, String ingredientClass, Double crudeProteinFormulated, Double calciumFormulated,
+                             Double phosphorusFormulated, Integer qtySpecified,
+                             String commentFormulated, Double proportion,
+                             Double proportionUnit, Integer qtyAvailable)
+    {
         this.ingredient = ingredient;
-        this.IngredientClass = ingredientlass;
+        this.IngredientClass = ingredientClass;
         this.crudeProteinFormulated = crudeProteinFormulated;
         this.calciumFormulated = calciumFormulated;
         this.phosphorusFormulated = phosphorusFormulated;
@@ -23,10 +27,8 @@ public class FormulatedDetails {
         this.proportion = proportion;
         this.proportionUnit = proportionUnit;
         this.qtyAvailable = qtyAvailable;
+
     }
-
-
-
 
 
     public String getIngredient() {
@@ -37,12 +39,12 @@ public class FormulatedDetails {
         this.ingredient = ingredient;
     }
 
-    public String getIngredientlass() {
+    public String getIngredientClass() {
         return IngredientClass;
     }
 
-    public void setIngredientlass(String ingredientlass) {
-        IngredientClass = ingredientlass;
+    public void setIngredientClass(String ingredientClass) {
+        IngredientClass = ingredientClass;
     }
 
     public String getCommentFormulated() {

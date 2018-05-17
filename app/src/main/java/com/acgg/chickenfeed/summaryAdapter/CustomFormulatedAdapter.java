@@ -14,6 +14,7 @@ import com.acgg.chickenfeed.CustomListAdapter;
 import com.acgg.chickenfeed.Feed;
 import com.acgg.chickenfeed.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -48,7 +49,7 @@ public class CustomFormulatedAdapter extends ArrayAdapter<FormulatedDetails>{
 
         //get the persons information
         String ingredient = Objects.requireNonNull(getItem(position).getIngredient());
-        String IngredientClass = Objects.requireNonNull(getItem(position)).getIngredientlass();
+        String IngredientClass = Objects.requireNonNull(getItem(position)).getIngredientClass();
         String commentFormulated = Objects.requireNonNull(getItem(position)).getCommentFormulated();
         Double crudeProteinFormulated = Objects.requireNonNull(getItem(position)).getCrudeProteinFormulated();
         Double calciumFormulated = Objects.requireNonNull(getItem(position)).getCalciumFormulated();
@@ -95,10 +96,9 @@ public class CustomFormulatedAdapter extends ArrayAdapter<FormulatedDetails>{
             }
 
 
-            //   Animation animation = AnimationUtils.loadAnimation(mContext,
-            //           (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
-            //  result.startAnimation(animation);
             lastPosition = position;
+
+            DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
 
             holder.ingredient.setText(ingredient);
@@ -107,8 +107,8 @@ public class CustomFormulatedAdapter extends ArrayAdapter<FormulatedDetails>{
             holder.crudeProteinFormulated.setText(String.valueOf(crudeProteinFormulated));
             holder.calciumFormulated.setText(String.valueOf(calciumFormulated));
             holder.phosphorusFormulated.setText(String.valueOf(phosphorusFormulated));
-            holder.proportion.setText(String.valueOf(proportion));
-            holder.proportionUnit.setText(String.valueOf(proportionUnit));
+            holder.proportion.setText(decimalFormat.format(proportion));
+            holder.proportionUnit.setText(decimalFormat.format(proportionUnit));
             holder.qtySpecified.setText(String.valueOf(qtySpecified));
             holder.qtyAvailable.setText(String.valueOf(qtyAvailable));
 

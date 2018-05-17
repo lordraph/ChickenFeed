@@ -312,19 +312,16 @@ public class CreateDietActivity extends AppCompatActivity {
         getNewProportionUnit.add(qtyOfMixMinValueCP);
 
 
-//        Toast.makeText(this, "Crop: " + ingredientWithMinCP + " Qty Mix: " +  decimalFormat.format(qtyOfMixMaxValueCP), Toast.LENGTH_SHORT ).show();
-//        Toast.makeText(this, "Crop: " + ingredientWithMinCP + " Qty Mix: " +  decimalFormat.format(qtyOfMixMinValueCP), Toast.LENGTH_SHORT ).show();
-
         if(qtyOfMixMaxValueCP <= QtySelectedForMaxCP){
             commentArr.add("Appropriate");
         }else{
-            commentArr.add("Get " + String.valueOf(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + " more");
+            commentArr.add("Get " +  decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + "kg more");
         }
 
         if(qtyOfMixMinValueCP <= QtySelectedForMinCP){
             commentArr.add("Appropriate");
         }else{
-            commentArr.add("Get " + String.valueOf(decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP)) + quantityTypeSpinner.getSelectedItem().toString() +" more");
+            commentArr.add("Get " + decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString() +"kg more");
         }
 
         addResultToDb();
@@ -379,7 +376,6 @@ public class CreateDietActivity extends AppCompatActivity {
             getFeedNut(chooseFourIngrid.getText().toString());
         }
 
-//        edit_1.setText(String.valueOf(ingredientSelected.size()));
 
         return numOfSelectedFeed;
     }

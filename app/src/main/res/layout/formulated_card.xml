@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Maize"
+                    android:text="ingredient"
                     android:typeface="serif"
                     android:textSize="20sp"
                     android:textColor="#358200"
@@ -67,7 +67,8 @@
                         android:id="@+id/valueCrudeProtein_formulated"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="5.33"
+                        android:text="0"
+                        android:layout_marginLeft="10dp"
                         android:textSize="18sp"/>
                 </LinearLayout>
 
@@ -89,7 +90,8 @@
                         android:id="@+id/valueCalcium_formulated"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="5.33"
+                        android:text="0"
+                        android:layout_marginLeft="10dp"
                         android:textSize="18sp"/>
                 </LinearLayout>
             </LinearLayout>
@@ -117,7 +119,8 @@
                             android:id="@+id/valuePhosphorus_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5.33"
+                            android:text="0"
+                            android:layout_marginLeft="10dp"
                             android:textSize="18sp"/>
                     </LinearLayout>
 
@@ -139,7 +142,8 @@
                             android:id="@+id/valueQuantity_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="20"
+                            android:text="0"
+                            android:layout_marginLeft="10dp"
                             android:textSize="18sp"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -166,7 +170,7 @@
                             android:id="@+id/valueClass_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Energy"
+                            android:text="class"
                             android:textSize="18sp"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -199,15 +203,16 @@
                             android:id="@+id/proportion_100Kg_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Proportion(%):"
+                            android:text="Proportion(%): "
                             android:textSize="18sp" />
 
                         <TextView
                             android:id="@+id/valueproportion_100Kg_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="65"
-                            android:textSize="18sp"/>
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:layout_marginLeft="10dp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -234,7 +239,8 @@
                             android:id="@+id/valueProportionKg_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5.33"
+                            android:text="0"
+                            android:layout_marginLeft="10dp"
                             android:textSize="18sp"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -263,7 +269,8 @@
                             android:id="@+id/valueQuantity_specified"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="20"
+                            android:text="0"
+                            android:layout_marginLeft="10dp"
                             android:textSize="18sp"/>
                     </LinearLayout>
 
@@ -285,7 +292,7 @@
                             android:id="@+id/valueComment_formulated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Appropriate"
+                            android:text=""
                             android:textSize="18sp"/>
                     </LinearLayout>
                 </LinearLayout>

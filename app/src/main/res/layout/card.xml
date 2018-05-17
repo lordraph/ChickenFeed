@@ -14,6 +14,7 @@
         card_view:cardUseCompatPadding="true"
         card_view:cardElevation="4dp"
         card_view:cardCornerRadius="1dp"
+
         >
 
         <RelativeLayout
