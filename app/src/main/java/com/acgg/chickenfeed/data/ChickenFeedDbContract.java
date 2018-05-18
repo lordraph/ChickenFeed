@@ -467,6 +467,10 @@ public class ChickenFeedDbContract {
         public static final String COLUMN_PROPORTION_UNIT = "proportion_unit";
         public static final String COLUMN_QUANTITY_SPECIFIED= "quantity_specified";
         public static final String COLUMN_COMMENT= "comment";
+        public static final String COLUMN_CRUDE_PROTEIN = "crude_protein";
+        public static final String COLUMN_CALCIUM= "calcium";
+        public static final String COLUMN_PHOSPHORUS= "phosphorus";
+        public static final String COLUMN_CLASS= "class";
 
         public static final String SQL_CREATE_FORMULATED_RECORD_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
                 _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -475,8 +479,33 @@ public class ChickenFeedDbContract {
                 COLUMN_PROPORTION_PERCENT + " REAL, " +
                 COLUMN_PROPORTION_UNIT + " REAL, " +
                 COLUMN_QUANTITY_SPECIFIED + " INTEGER, " +
-                COLUMN_COMMENT + " TEXT" +");";
+                COLUMN_COMMENT + " TEXT, "  +
+                COLUMN_CRUDE_PROTEIN + " REAL, " +
+                COLUMN_CALCIUM + " REAL, " +
+                COLUMN_PHOSPHORUS + " REAL, " +
+                COLUMN_CLASS + " TEXT"
+                +");";
     }
+
+
+    public static final class CalculatedAnalysis implements BaseColumns{
+        public static final String TABLE_NAME = "calculatedAnalysisRecord_lib";
+        public static final String COLUMN_CRUDE_PROTEIN = "crude_protein";
+        public static final String COLUMN_FORMULATION_NO = "form_no";
+        public static final String COLUMN_CALCIUM = "calcium";
+        public static final String COLUMN_PHOSPHORUS= "phosphorus";
+        public static final String COLUMN_ENERGY = "energy";
+
+        public static final String SQL_CREATE_CALCULATED_ANALYSIS_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+                _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_CRUDE_PROTEIN + " REAL, " +
+                COLUMN_FORMULATION_NO + " INTEGER, " +
+                COLUMN_CALCIUM + " REAL, " +
+                COLUMN_PHOSPHORUS + " REAL, " +
+                COLUMN_ENERGY + " REAL"
+                +");";
+    }
+
 
 
 }

@@ -20,6 +20,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.acgg.chickenfeed.data.ChickenFeedHelper;
+import com.acgg.chickenfeed.summaryAdapter.CalculatedAnalysis;
+import com.acgg.chickenfeed.summaryAdapter.CustomCalculatedAnalysisAdapter;
 import com.acgg.chickenfeed.summaryAdapter.CustomFormulatedAdapter;
 import com.acgg.chickenfeed.summaryAdapter.FormulatedDetails;
 
@@ -32,11 +34,12 @@ public class SummaryActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private Toolbar mToolBar;
     private ChickenFeedHelper dbHelper;
-    private ArrayList<String> classArr, birdCatArr, ingredientArr, resultComment;
-    private ArrayList<Integer> energyArr, QtyArr;
-    private ArrayList<Double> phosphorusArr, calciumArr, crudeProteinArr, resultProportionPercent, resultProportionUnit;
-    private Integer formNo=0;
-    private ListView formuListView;
+    private ArrayList <String> classArr, birdCatArr, ingredientArr, resultComment;
+    private ArrayList <Integer> energyArr, QtyArr;
+    private ArrayList <Double> phosphorusArr, calciumArr, crudeProteinArr, resultProportionPercent, resultProportionUnit;
+    private Integer formNo = 0;
+    private ListView formuListView, calcListView;
+    private TextView proporText;
 
 
     @Override
@@ -65,17 +68,36 @@ public class SummaryActivity extends AppCompatActivity {
 
         //get formulation No
         Intent intent = getIntent();
-        formNo = intent.getIntExtra("formuNo",0);
+        formNo = intent.getIntExtra("formuNo", 0);
+
+        calcListView = findViewById(R.id.listview_CalculatedAnalysis);
+        proporText = findViewById(R.id.value_proportion_toMix);
 
         loadIngredientForMix();
+        loadcalculateAnalysis();
 
     }
 
 
+    public void loadcalculateAnalysis() {
+
+        ArrayList <CalculatedAnalysis> list = new ArrayList <>();
+
+        Cursor cursor = dbHelper.getCalculatedAnalysis(formNo);
+
+        while (cursor.moveToNext()) {
+            list.add(new CalculatedAnalysis(cursor.getDouble(1), cursor.getDouble(3), cursor.getDouble(4),
+                    cursor.getDouble(5)
+            ));
+        }
+
+        CustomCalculatedAnalysisAdapter customCalculatedAnalysisAdapter = new CustomCalculatedAnalysisAdapter(this, R.layout.calculated_card, list);
+        calcListView.setAdapter(customCalculatedAnalysisAdapter);
+
+    }
 
 
-
-    private void loadIngredientForMix() {
+    public void loadIngredientForMix() {
         classArr = new ArrayList <>();
         ingredientArr = new ArrayList <>();
         phosphorusArr = new ArrayList <>();
@@ -87,37 +109,33 @@ public class SummaryActivity extends AppCompatActivity {
         resultComment = new ArrayList <>();
 
 
-
-
-
-        Cursor getIngridient = dbHelper.getIngredient(formNo);
-
-
-
-        while(getIngridient.moveToNext()){
-            ingredientArr.add(getIngridient.getString(1));
-            QtyArr.add(getIngridient.getInt(4));
-            classArr.add(getIngridient.getString(5));
-            crudeProteinArr.add(getIngridient.getDouble(6));
-            calciumArr.add(getIngridient.getDouble(8));
-            phosphorusArr.add(getIngridient.getDouble(9));
-        }
-
-
         Cursor cursor = dbHelper.getFormulationResult(formNo);
 
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
+            ingredientArr.add(cursor.getString(1));
             resultProportionPercent.add(cursor.getDouble(3));
             resultProportionUnit.add(cursor.getDouble(4));
             resultComment.add(cursor.getString(6));
+
+            QtyArr.add(cursor.getInt(5));
+            classArr.add(cursor.getString(10));
+            crudeProteinArr.add(cursor.getDouble(7));
+            calciumArr.add(cursor.getDouble(8));
+            phosphorusArr.add(cursor.getDouble(9));
         }
 
-        ArrayList<FormulatedDetails> list = new ArrayList<>();
+        Double total = 0.00;
+
+        for (int i = 0; i < QtyArr.size(); i++) {
+            total += QtyArr.get(i);
+        }
+
+//        proporText.setText(String.format("(%s)", total));
+
+        ArrayList <FormulatedDetails> list = new ArrayList <>();
 
 
-
-
-        for(int i=0; i<ingredientArr.size();i++){
+        for (int i = 0; i < ingredientArr.size(); i++) {
 
             list.add(new FormulatedDetails(ingredientArr.get(i),
                     classArr.get(i),
@@ -129,14 +147,12 @@ public class SummaryActivity extends AppCompatActivity {
                     resultProportionPercent.get(i),
                     resultProportionUnit.get(i),
                     QtyArr.get(i)
-                    ));
+            ));
         }
 
 
         CustomFormulatedAdapter customFormulatedAdapter = new CustomFormulatedAdapter(this, R.layout.formulated_card, list);
         formuListView.setAdapter(customFormulatedAdapter);
-
-
 
 
     }

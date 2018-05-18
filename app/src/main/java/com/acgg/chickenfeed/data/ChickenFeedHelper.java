@@ -26,6 +26,7 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
         db.execSQL(ChickenFeedDbContract.IngredientRecord.SQL_CREATE_INGREDIENT_TABLE);
         db.execSQL(ChickenFeedDbContract.FormulatedRecord.SQL_CREATE_FORMULATED_RECORD_TABLE);
         db.execSQL(ChickenFeedDbContract.ResultFormulatedRecord.SQL_CREATE_FORMULATED_RECORD_TABLE);
+        db.execSQL(ChickenFeedDbContract.CalculatedAnalysis.SQL_CREATE_CALCULATED_ANALYSIS_TABLE);
 
 
 //        insert feed ingredient into table created
@@ -233,11 +234,12 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
     }
 
 
-
 //    add result formulated to database
 
     public boolean addFormulationResult(String feed_ingredient, Integer formu_no, Double proportionPercent,
-                                        Double proportionUnit, Integer qtySpecified, String comment) {
+                                        Double proportionUnit, Integer qtySpecified, String comment, Double crudeProtein,
+                                        Double calcium, Double phosphorus, String ingredientClass
+                                        ) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -249,6 +251,10 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
         contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_PROPORTION_UNIT, proportionUnit);
         contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_QUANTITY_SPECIFIED, qtySpecified);
         contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_COMMENT, comment);
+        contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_CRUDE_PROTEIN, crudeProtein);
+        contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_CALCIUM, calcium);
+        contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_PHOSPHORUS, phosphorus);
+        contentValues.put(ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_CLASS, ingredientClass);
 
         long checkifdata = db.insert(ChickenFeedDbContract.ResultFormulatedRecord.TABLE_NAME, null, contentValues);
 
@@ -269,6 +275,53 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
 
         String query = "SELECT * FROM " + ChickenFeedDbContract.ResultFormulatedRecord.TABLE_NAME +
                 " WHERE " + ChickenFeedDbContract.ResultFormulatedRecord.COLUMN_FORMULATION_NO + "=?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(formu)});
+
+        return cursor;
+    }
+
+    // public static final String SQL_CREATE_CALCULATED_ANALYSIS_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+    //                _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+    //                COLUMN_CRUDE_PROTEIN + " REAL, " +
+    //                COLUMN_FORMULATION_NO + " INTEGER, " +
+    //                COLUMN_CALCIUM + " REAL, " +
+    //                COLUMN_PHOSPHORUS + " REAL, " +
+    //                COLUMN_ENERGY + " INTEGER"
+    //                +");";
+    //    }
+
+    public boolean addCalculatedAnalysis(Double crudeProtein, Integer formu_no, Double calcium, Double phosphorus,
+                                         Double energy){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(ChickenFeedDbContract.CalculatedAnalysis.COLUMN_CRUDE_PROTEIN,crudeProtein);
+        contentValues.put(ChickenFeedDbContract.CalculatedAnalysis.COLUMN_FORMULATION_NO,formu_no);
+        contentValues.put(ChickenFeedDbContract.CalculatedAnalysis.COLUMN_CALCIUM,calcium);
+        contentValues.put(ChickenFeedDbContract.CalculatedAnalysis.COLUMN_PHOSPHORUS,phosphorus);
+        contentValues.put(ChickenFeedDbContract.CalculatedAnalysis.COLUMN_ENERGY,energy);
+
+
+        long checkifdata = db.insert(ChickenFeedDbContract.CalculatedAnalysis.TABLE_NAME,null,contentValues);
+        db.close();
+
+        if(checkifdata==-1){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
+    public Cursor getCalculatedAnalysis(Integer formu){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + ChickenFeedDbContract.CalculatedAnalysis.TABLE_NAME +
+                " WHERE " + ChickenFeedDbContract.CalculatedAnalysis.COLUMN_FORMULATION_NO + "=?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(formu)});
 

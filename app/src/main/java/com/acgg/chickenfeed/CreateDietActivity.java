@@ -35,10 +35,10 @@ public class CreateDietActivity extends AppCompatActivity {
     private Toolbar mToolBar;
     AutoCompleteTextView chooseFirstIngrid, chooseSecondIngrid, chooseThirdIngrid, chooseFourIngrid;
     EditText edit_1, secondqty_edit_text, thirdqty_edit_text, fourqty_edit_text;
-    ArrayList<String> ingredientSelected, classIngredientSelected, newIngredient, commentArr;
-    ArrayList<Double> calciumNutrient, crudeProteinNutrient, phosphorusNutrient, newProportion;
-    ArrayList<Double> getNewProportionUnit;
-    ArrayList<Integer> energyNutrient, qtyselected, qtySpecified;
+    ArrayList<String> ingredientSelected, classIngredientSelected, newIngredient, commentArr, forClass;
+    ArrayList<Double> calciumNutrient, crudeProteinNutrient, phosphorusNutrient, newProportion, forCalcium, forCrudeProtein, forPhosphorus;
+    ArrayList<Double> getNewProportionUnit, calCrudeProtein, calCalcium, calPhosphorus, calEnergy;
+    ArrayList<Integer> energyNutrient, qtyselected, qtySpecified, forEnergy;
     Spinner quantityTypeSpinner;
     int numOfSelectedFeed=0, noOfFomulation=0;
     Button createmixBtn;
@@ -109,10 +109,8 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
 
-
-//        edit_1.setText(String.valueOf(numOfSelectedFeed));
-
     }
+
 
     public void mix(){
         createmixBtn.setOnClickListener(v -> {
@@ -151,7 +149,7 @@ public class CreateDietActivity extends AppCompatActivity {
 //        store back
 
         if(dbHelper.updateFomulatedRecord(noOfFomulation)){
-//            Toast.makeText(this, "updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Form No: " + noOfFomulation, Toast.LENGTH_SHORT).show();
         }else{
 
             Toast.makeText(this, "failed updated", Toast.LENGTH_SHORT).show();
@@ -197,8 +195,6 @@ public class CreateDietActivity extends AppCompatActivity {
 
                     formulateProtein(Crude_protein, birdSelected);
 
-//                Toast.makeText(CreateDietActivity.this, "formulation is possible", Toast.LENGTH_SHORT).show();
-
 
                 }else{
 
@@ -215,7 +211,6 @@ public class CreateDietActivity extends AppCompatActivity {
 
                     formulateProtein(Crude_protein,birdSelected );
 
-//                    Toast.makeText(CreateDietActivity.this, "crop ", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
@@ -247,12 +242,56 @@ public class CreateDietActivity extends AppCompatActivity {
         newIngredient = new ArrayList <>();
         newProportion = new ArrayList <>();
         getNewProportionUnit = new ArrayList <>();
+        forCalcium = new ArrayList <>();
+        forPhosphorus = new ArrayList <>();
+        forCrudeProtein = new ArrayList <>();
+        forClass = new ArrayList <>();
+        forEnergy = new ArrayList <>();
+        calCalcium = new ArrayList <>();
+        calCrudeProtein = new ArrayList <>();
+        calPhosphorus = new ArrayList <>();
+        calEnergy = new ArrayList <>();
 
         // get the number of formulation made
         getNumberofFormulation();
 
         // add formulated ingredient into database
         addFormulatedIngredientToDb(birdCat);
+
+        forCalcium.add(calciumNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient))));
+        forCalcium.add(calciumNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        forPhosphorus.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient))));
+        forPhosphorus.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        forCrudeProtein.add(crudeProteinNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient))));
+        forCrudeProtein.add(crudeProteinNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        forClass.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient))));
+        forClass.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+
+
+        //get formulated nutrients
+        Double maxCal = calciumNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
+        Double minCal = calciumNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
+        //forCalcium.add(calciumNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        Double maxPhos = phosphorusNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
+        Double minPhos = phosphorusNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
+        //forPhosphorus.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        Double maxCrude = crudeProteinNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
+        Double minCrude = crudeProteinNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
+        //forCrudeProtein.add(crudeProteinNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        String maxClass = classIngredientSelected.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
+        String minClass = classIngredientSelected.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
+        //forClass.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
+
+        Integer maxEnergy = energyNutrient.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
+        Integer minEnergy = energyNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
+        //forEnergy.add(energyNutrient.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient))));
 
 
         // The crop with max crude protein value
@@ -285,16 +324,16 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
         // Step 1 of the calculation
-        Double newIngredientWithMaxCPValue = Math.abs(targetProtein - ingredientWithMaxCPValue);
-        Double newIngredientWithMinCPValue = Math.abs(targetProtein - ingredientWithMinCPValue);
+        Double newIngredientWithMaxCPValue = Math.abs(targetProtein - ingredientWithMinCPValue);
+        Double newIngredientWithMinCPValue = Math.abs(targetProtein - ingredientWithMaxCPValue);
 
         Double TotalValue = newIngredientWithMaxCPValue + newIngredientWithMinCPValue;
 
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
         // Step 2 of the calculation
-        Double getPercentForIngreWithMinValue = (newIngredientWithMaxCPValue/TotalValue) * 100;
-        Double getPercentForIngreWithMaxValue = (newIngredientWithMinCPValue/TotalValue) * 100;
+        Double getPercentForIngreWithMaxValue = (newIngredientWithMaxCPValue/TotalValue) * 100;
+        Double getPercentForIngreWithMinValue = (newIngredientWithMinCPValue/TotalValue) * 100;
 
         // store proportion percent
         newProportion.add(getPercentForIngreWithMaxValue);
@@ -311,6 +350,15 @@ public class CreateDietActivity extends AppCompatActivity {
         getNewProportionUnit.add(qtyOfMixMaxValueCP);
         getNewProportionUnit.add(qtyOfMixMinValueCP);
 
+        //calculating calcium leveo
+        Double newCalciumLevel = ((qtyOfMixMaxValueCP * maxCal) + (qtyOfMixMinValueCP * minCal)) * 0.01;
+        Double newPhosphprusLevel = ((qtyOfMixMaxValueCP * maxPhos) + (qtyOfMixMinValueCP * minPhos)) * 0.01;
+        Double newEnergyLevel = ((qtyOfMixMaxValueCP * maxEnergy) + (qtyOfMixMinValueCP * minEnergy)) * 0.01;
+        Double newCrudeProteinLevel = ((qtyOfMixMaxValueCP * maxCrude) + (qtyOfMixMinValueCP * minCrude)) * 0.01;
+
+        //Store calculated analysis
+
+
 
         if(qtyOfMixMaxValueCP <= QtySelectedForMaxCP){
             commentArr.add("Appropriate");
@@ -325,13 +373,29 @@ public class CreateDietActivity extends AppCompatActivity {
         }
 
         addResultToDb();
+        storecalculatedAnalysis(newCrudeProteinLevel,noOfFomulation,newCalciumLevel,newPhosphprusLevel,newEnergyLevel);
 
 
     }
 
-    private void addResultToDb() {
+
+
+    public void storecalculatedAnalysis(Double crude_protein, Integer form_no, Double calcium, Double phos, Double energy){
+
+        dbHelper.addCalculatedAnalysis(crude_protein,form_no,calcium,phos,energy);
+
+    }
+
+
+//    String comment, Double crudeProtein,
+//                                        Double calcium, Double phosphorus, String ingredientClass
+
+    public void addResultToDb() {
         for(int i=0; i<numOfSelectedFeed; i++) {
-            dbHelper.addFormulationResult(newIngredient.get(i),noOfFomulation,newProportion.get(i),getNewProportionUnit.get(i), qtySpecified.get(i),commentArr.get(i));
+            dbHelper.addFormulationResult(newIngredient.get(i),noOfFomulation,newProportion.get(i),
+                    getNewProportionUnit.get(i), qtySpecified.get(i),commentArr.get(i),
+                    forCrudeProtein.get(i), forCalcium.get(i),forPhosphorus.get(i), forClass.get(i)
+            );
         }
     }
 
