@@ -149,7 +149,7 @@ public class CreateDietActivity extends AppCompatActivity {
 //        store back
 
         if(dbHelper.updateFomulatedRecord(noOfFomulation)){
-            Toast.makeText(this, "Form No: " + noOfFomulation, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Form No: " + noOfFomulation, Toast.LENGTH_SHORT).show();
         }else{
 
             Toast.makeText(this, "failed updated", Toast.LENGTH_SHORT).show();
