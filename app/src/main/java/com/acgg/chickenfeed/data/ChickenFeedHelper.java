@@ -27,6 +27,7 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
         db.execSQL(ChickenFeedDbContract.FormulatedRecord.SQL_CREATE_FORMULATED_RECORD_TABLE);
         db.execSQL(ChickenFeedDbContract.ResultFormulatedRecord.SQL_CREATE_FORMULATED_RECORD_TABLE);
         db.execSQL(ChickenFeedDbContract.CalculatedAnalysis.SQL_CREATE_CALCULATED_ANALYSIS_TABLE);
+        db.execSQL(ChickenFeedDbContract.QuantityToMix.SQL_CREATE_QUANTITY_TO_MIX_TABLE);
 
 
 //        insert feed ingredient into table created
@@ -281,15 +282,6 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
         return cursor;
     }
 
-    // public static final String SQL_CREATE_CALCULATED_ANALYSIS_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
-    //                _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-    //                COLUMN_CRUDE_PROTEIN + " REAL, " +
-    //                COLUMN_FORMULATION_NO + " INTEGER, " +
-    //                COLUMN_CALCIUM + " REAL, " +
-    //                COLUMN_PHOSPHORUS + " REAL, " +
-    //                COLUMN_ENERGY + " INTEGER"
-    //                +");";
-    //    }
 
     public boolean addCalculatedAnalysis(Double crudeProtein, Integer formu_no, Double calcium, Double phosphorus,
                                          Double energy){
@@ -322,6 +314,41 @@ public class ChickenFeedHelper extends SQLiteOpenHelper{
 
         String query = "SELECT * FROM " + ChickenFeedDbContract.CalculatedAnalysis.TABLE_NAME +
                 " WHERE " + ChickenFeedDbContract.CalculatedAnalysis.COLUMN_FORMULATION_NO + "=?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(formu)});
+
+        return cursor;
+    }
+
+    //Create a method to add quantity to mix to the database
+    public boolean addQuantityToMix(Integer formNo, Double qtyToMic){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(ChickenFeedDbContract.QuantityToMix.COLUMN_FORMU_NO, formNo);
+        contentValues.put(ChickenFeedDbContract.QuantityToMix.COLUMN_QUANTITY_TO_MIX, qtyToMic);
+
+
+        long checkifdata = db.insert(ChickenFeedDbContract.QuantityToMix.TABLE_NAME, null,contentValues);
+
+        db.close();
+
+        if(checkifdata==-1){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
+    public Cursor getQuantityToMix(Integer formu){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + ChickenFeedDbContract.QuantityToMix.TABLE_NAME +
+                " WHERE " + ChickenFeedDbContract.QuantityToMix.COLUMN_FORMU_NO+ "=?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(formu)});
 

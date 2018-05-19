@@ -45,6 +45,7 @@ public class CreateDietActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     String birdSelected;
     EditText getQtyToMix;
+    boolean formulate = false;
 
 
 
@@ -101,7 +102,6 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
 
-
         populateTextView();
         populateSpinner();
         selectBirdToFormulate();
@@ -118,11 +118,17 @@ public class CreateDietActivity extends AppCompatActivity {
             // Formulate
             if(numOfFeedSelected() == 2){
 //                    formulate
-                formulateForTwoFeed();
 
-                Intent intent = new Intent(this, SummaryActivity.class);
-                intent.putExtra("formuNo", noOfFomulation);
-                startActivity(intent);
+                if(formulate) {
+                    formulateForTwoFeed();
+
+                    Intent intent = new Intent(this, SummaryActivity.class);
+                    intent.putExtra("formuNo", noOfFomulation);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                }
+
 
             }else{
                 Toast.makeText(CreateDietActivity.this, "Please Select At least " +
@@ -135,18 +141,17 @@ public class CreateDietActivity extends AppCompatActivity {
 
     public void getNumberofFormulation(){
 
-//        get the number of formulation made so far from the database
+      //get the number of formulation made so far from the database
         Cursor numOfFormu = dbHelper.getFormuRecord();
 
         while(numOfFormu.moveToNext()) {
 
-//            Toast.makeText(this, "updated" + String.valueOf(numOfFormu.getInt(1)), Toast.LENGTH_SHORT).show();
             noOfFomulation = numOfFormu.getInt(1);
         }
-//        increment by 1
+        //increment by 1
         noOfFomulation++;
 
-//        store back
+        //store back
 
         if(dbHelper.updateFomulatedRecord(noOfFomulation)){
 //            Toast.makeText(this, "Form No: " + noOfFomulation, Toast.LENGTH_SHORT).show();
@@ -191,14 +196,17 @@ public class CreateDietActivity extends AppCompatActivity {
                 // Check if the nutrient meet the requirement
                 if((Collections.max(crudeProteinNutrient) >= Crude_protein) && (Collections.min(crudeProteinNutrient) < Crude_protein) ){
 
+                    formulate = true;
 
-
-                    formulateProtein(Crude_protein, birdSelected);
+                    if(formulate){
+                        formulateProtein(Crude_protein, birdSelected);
+                    }
 
 
                 }else{
 
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    formulate = false;
+//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -208,11 +216,14 @@ public class CreateDietActivity extends AppCompatActivity {
                 // Check if the nutrient meet the requirement
                 if((Collections.max(crudeProteinNutrient) >= Crude_protein) && (Collections.min(crudeProteinNutrient) < Crude_protein) ){
 
-
-                    formulateProtein(Crude_protein,birdSelected );
+                    formulate = true;
+                    if(formulate) {
+                        formulateProtein(Crude_protein, birdSelected);
+                    }
 
                 }else{
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    formulate = false;
+//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -356,20 +367,25 @@ public class CreateDietActivity extends AppCompatActivity {
         Double newEnergyLevel = ((qtyOfMixMaxValueCP * maxEnergy) + (qtyOfMixMinValueCP * minEnergy)) * 0.01;
         Double newCrudeProteinLevel = ((qtyOfMixMaxValueCP * maxCrude) + (qtyOfMixMinValueCP * minCrude)) * 0.01;
 
-        //Store calculated analysis
+
+        Double qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
+
+        //add quantity to mix into the database
+        dbHelper.addQuantityToMix(noOfFomulation, qtyToMix);
+
 
 
 
         if(qtyOfMixMaxValueCP <= QtySelectedForMaxCP){
             commentArr.add("Appropriate");
         }else{
-            commentArr.add("Get " +  decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + "kg more");
+            commentArr.add("Get " +  decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
         }
 
         if(qtyOfMixMinValueCP <= QtySelectedForMinCP){
             commentArr.add("Appropriate");
         }else{
-            commentArr.add("Get " + decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString() +"kg more");
+            commentArr.add("Get " + decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() +" more");
         }
 
         addResultToDb();

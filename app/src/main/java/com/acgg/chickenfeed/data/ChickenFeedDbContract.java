@@ -507,5 +507,17 @@ public class ChickenFeedDbContract {
     }
 
 
+    public static final class QuantityToMix implements BaseColumns{
+        public static final String TABLE_NAME = "quantityToMix_lib";
+        public static final String COLUMN_QUANTITY_TO_MIX = "quantity_to_mix";
+        public static final String COLUMN_FORMU_NO = "form_no";
+
+        public static final String SQL_CREATE_QUANTITY_TO_MIX_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+                _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_FORMU_NO + " INTEGER, " +
+                COLUMN_QUANTITY_TO_MIX + " REAL);";
+    }
+
+
 
 }

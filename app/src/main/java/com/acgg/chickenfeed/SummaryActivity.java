@@ -2,31 +2,23 @@ package com.acgg.chickenfeed;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.acgg.chickenfeed.data.ChickenFeedHelper;
-import com.acgg.chickenfeed.summaryAdapter.CalculatedAnalysis;
-import com.acgg.chickenfeed.summaryAdapter.CustomCalculatedAnalysisAdapter;
-import com.acgg.chickenfeed.summaryAdapter.CustomFormulatedAdapter;
-import com.acgg.chickenfeed.summaryAdapter.FormulatedDetails;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 public class SummaryActivity extends AppCompatActivity {
 
@@ -34,12 +26,10 @@ public class SummaryActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private Toolbar mToolBar;
     private ChickenFeedHelper dbHelper;
-    private ArrayList <String> classArr, birdCatArr, ingredientArr, resultComment;
-    private ArrayList <Integer> energyArr, QtyArr;
-    private ArrayList <Double> phosphorusArr, calciumArr, crudeProteinArr, resultProportionPercent, resultProportionUnit;
     private Integer formNo = 0;
-    private ListView formuListView, calcListView;
-    private TextView proporText;
+    private TableLayout formulatedTable, outcomeTable;
+    DecimalFormat decimalFormat;
+    TextView crudeProteinValue, valuePhosphorus, valueCalcium, valueEnergy, proporUnitText;
 
 
     @Override
@@ -47,9 +37,10 @@ public class SummaryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
 
-        formuListView = findViewById(R.id.listview_Ingredient);
-
         dbHelper = new ChickenFeedHelper(this);
+
+
+        decimalFormat = new DecimalFormat("0.00");
 
 
         mToolBar = findViewById(R.id.nav_actionBar);
@@ -70,89 +61,129 @@ public class SummaryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         formNo = intent.getIntExtra("formuNo", 0);
 
-        calcListView = findViewById(R.id.listview_CalculatedAnalysis);
-        proporText = findViewById(R.id.value_proportion_toMix);
+        //get the display table layout
+        formulatedTable = findViewById(R.id.table_ingreSelect);
+        outcomeTable = findViewById(R.id.table_outcome);
+
+        //get the textview of crudeProtein, phosphorus, calcium and energy for calculated analysis
+        crudeProteinValue = findViewById(R.id.value_crudeprotein);
+        valuePhosphorus = findViewById(R.id.value_phosphorus);
+        valueCalcium = findViewById(R.id.value_calcium);
+        valueEnergy = findViewById(R.id.value_energy);
+
+        //get proportion unit text
+        proporUnitText = findViewById(R.id.proportionKg_text);
+
 
         loadIngredientForMix();
         loadcalculateAnalysis();
+        getQtyToMix();
 
     }
 
+    //Proportion(Kg)
+    public void getQtyToMix(){
+        Cursor getQtytoMix = dbHelper.getQuantityToMix(formNo);
+
+        while(getQtytoMix.moveToNext()){
+            proporUnitText.setText(String.format("Proportion(%skg)", decimalFormat.format(getQtytoMix.getDouble(2))));
+        }
+    }
+
+    //Double crudeProtein, Double calcium, Double phosphorus, Double energy
 
     public void loadcalculateAnalysis() {
 
-        ArrayList <CalculatedAnalysis> list = new ArrayList <>();
 
         Cursor cursor = dbHelper.getCalculatedAnalysis(formNo);
 
         while (cursor.moveToNext()) {
-            list.add(new CalculatedAnalysis(cursor.getDouble(1), cursor.getDouble(3), cursor.getDouble(4),
-                    cursor.getDouble(5)
-            ));
-        }
 
-        CustomCalculatedAnalysisAdapter customCalculatedAnalysisAdapter = new CustomCalculatedAnalysisAdapter(this, R.layout.calculated_card, list);
-        calcListView.setAdapter(customCalculatedAnalysisAdapter);
+            crudeProteinValue.setText(decimalFormat.format(cursor.getDouble(1)));
+            valueCalcium.setText(decimalFormat.format(cursor.getDouble(3)));
+            valuePhosphorus.setText(decimalFormat.format(cursor.getDouble(4)));
+            valueEnergy.setText(decimalFormat.format(cursor.getDouble(5)));
+        }
 
     }
 
 
     public void loadIngredientForMix() {
-        classArr = new ArrayList <>();
-        ingredientArr = new ArrayList <>();
-        phosphorusArr = new ArrayList <>();
-        calciumArr = new ArrayList <>();
-        crudeProteinArr = new ArrayList <>();
-        resultProportionPercent = new ArrayList <>();
-        resultProportionUnit = new ArrayList <>();
-        QtyArr = new ArrayList <>();
-        resultComment = new ArrayList <>();
 
 
         Cursor cursor = dbHelper.getFormulationResult(formNo);
 
         while (cursor.moveToNext()) {
-            ingredientArr.add(cursor.getString(1));
-            resultProportionPercent.add(cursor.getDouble(3));
-            resultProportionUnit.add(cursor.getDouble(4));
-            resultComment.add(cursor.getString(6));
+            //Create a row for formulated ingredient
+            TableRow new_row = new TableRow(this);
+            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
+            new_row.setLayoutParams(lp);
 
-            QtyArr.add(cursor.getInt(5));
-            classArr.add(cursor.getString(10));
-            crudeProteinArr.add(cursor.getDouble(7));
-            calciumArr.add(cursor.getDouble(8));
-            phosphorusArr.add(cursor.getDouble(9));
+            TextView ingredient = new TextView(this);
+            ingredient.setText(cursor.getString(1));
+            ingredient.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row.addView(ingredient);
+
+            TextView classArr = new TextView(this);
+            classArr.setText(cursor.getString(10));
+            classArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row.addView(classArr);
+
+            TextView crudeProteinArr = new TextView(this);
+            crudeProteinArr.setText(decimalFormat.format(cursor.getDouble(7)));
+            crudeProteinArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row.addView(crudeProteinArr);
+
+            TextView phosphorusArr = new TextView(this);
+            phosphorusArr.setText(decimalFormat.format(cursor.getDouble(9)));
+            phosphorusArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row.addView(phosphorusArr);
+
+            TextView calciumArr = new TextView(this);
+            calciumArr.setText(decimalFormat.format(cursor.getDouble(8)));
+            calciumArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row.addView(calciumArr);
+
+            TextView QtyArr = new TextView(this);
+            QtyArr.setText(decimalFormat.format(cursor.getInt(5)));
+            QtyArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row.addView(QtyArr);
+
+            formulatedTable.addView(new_row);
+
+            //Create a new row for outcome formulated table
+            TableRow new_row_outcome = new TableRow(this);
+            TableRow.LayoutParams lpoutcome = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
+            new_row_outcome.setLayoutParams(lpoutcome);
+
+            TextView ingredientOutcome = new TextView(this);
+            ingredientOutcome.setText(cursor.getString(1));
+            ingredientOutcome.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row_outcome.addView(ingredientOutcome);
+
+            TextView resultProportionPercent = new TextView(this);
+            resultProportionPercent.setText(decimalFormat.format(cursor.getDouble(3)));
+            resultProportionPercent.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row_outcome.addView(resultProportionPercent);
+
+            TextView resultProportionUnit = new TextView(this);
+            resultProportionUnit.setText(decimalFormat.format(cursor.getDouble(4)));
+            resultProportionUnit.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row_outcome.addView(resultProportionUnit);
+
+            TextView QtyArrcalc = new TextView(this);
+            QtyArrcalc.setText(decimalFormat.format(cursor.getInt(5)));
+            QtyArrcalc.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row_outcome.addView(QtyArrcalc);
+
+            TextView resultComment = new TextView(this);
+            resultComment.setText(cursor.getString(6));
+            resultComment.setGravity(Gravity.CENTER_HORIZONTAL);
+            new_row_outcome.addView(resultComment);
+
+            outcomeTable.addView(new_row_outcome);
+
         }
-
-        Double total = 0.00;
-
-        for (int i = 0; i < QtyArr.size(); i++) {
-            total += QtyArr.get(i);
-        }
-
-//        proporText.setText(String.format("(%s)", total));
-
-        ArrayList <FormulatedDetails> list = new ArrayList <>();
-
-
-        for (int i = 0; i < ingredientArr.size(); i++) {
-
-            list.add(new FormulatedDetails(ingredientArr.get(i),
-                    classArr.get(i),
-                    crudeProteinArr.get(i),
-                    calciumArr.get(i),
-                    phosphorusArr.get(i),
-                    QtyArr.get(i),
-                    resultComment.get(i),
-                    resultProportionPercent.get(i),
-                    resultProportionUnit.get(i),
-                    QtyArr.get(i)
-            ));
-        }
-
-
-        CustomFormulatedAdapter customFormulatedAdapter = new CustomFormulatedAdapter(this, R.layout.formulated_card, list);
-        formuListView.setAdapter(customFormulatedAdapter);
 
 
     }
