@@ -1,11 +1,13 @@
 package com.acgg.chickenfeed;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -46,6 +48,7 @@ public class CreateDietActivity extends AppCompatActivity {
     String birdSelected;
     EditText getQtyToMix;
     boolean formulate = false;
+    Double qtyToMix;
 
 
 
@@ -76,7 +79,7 @@ public class CreateDietActivity extends AppCompatActivity {
         // Find the quantity type spinner
         quantityTypeSpinner= findViewById(R.id.quantitySpinner);
 
-//        Find Create mnix button
+//        Find Create mix button
         createmixBtn = findViewById(R.id.createDietMix_button);
 
         // Find the bird category selected
@@ -118,9 +121,9 @@ public class CreateDietActivity extends AppCompatActivity {
             // Formulate
             if(numOfFeedSelected() == 2){
 //                    formulate
+                formulateForTwoFeed();
 
                 if(formulate) {
-                    formulateForTwoFeed();
 
                     Intent intent = new Intent(this, SummaryActivity.class);
                     intent.putExtra("formuNo", noOfFomulation);
@@ -262,6 +265,7 @@ public class CreateDietActivity extends AppCompatActivity {
         calCrudeProtein = new ArrayList <>();
         calPhosphorus = new ArrayList <>();
         calEnergy = new ArrayList <>();
+        qtyToMix = 0.00;
 
         // get the number of formulation made
         getNumberofFormulation();
@@ -368,12 +372,34 @@ public class CreateDietActivity extends AppCompatActivity {
         Double newCrudeProteinLevel = ((qtyOfMixMaxValueCP * maxCrude) + (qtyOfMixMinValueCP * minCrude)) * 0.01;
 
 
-        Double qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
+         qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
+
+        //Check the quantity available is enough to mix feed
+//        if(qtyOfMixMaxValueCP > QtySelectedForMaxCP){
+//            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+//
+//            alertBuilder.setCancelable(false)
+//                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            Double newQty = 0.00;
+//                            newQty = (QtySelectedForMaxCP * qtyToMix)/qtyOfMixMaxValueCP;
+//                            qtyToMix = newQty;
+//                            qtyOfMixMaxValueCP = newQty;
+//                        }
+//                    });
+//
+//            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.cancel();
+//
+//                }
+//            });
+//        }
 
         //add quantity to mix into the database
         dbHelper.addQuantityToMix(noOfFomulation, qtyToMix);
-
-
 
 
         if(qtyOfMixMaxValueCP <= QtySelectedForMaxCP){
@@ -402,9 +428,6 @@ public class CreateDietActivity extends AppCompatActivity {
 
     }
 
-
-//    String comment, Double crudeProtein,
-//                                        Double calcium, Double phosphorus, String ingredientClass
 
     public void addResultToDb() {
         for(int i=0; i<numOfSelectedFeed; i++) {
