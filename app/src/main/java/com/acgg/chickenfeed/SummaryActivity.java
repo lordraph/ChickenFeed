@@ -12,6 +12,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -148,6 +149,7 @@ public class SummaryActivity extends AppCompatActivity {
             QtyArr.setText(decimalFormat.format(cursor.getInt(5)));
             QtyArr.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row.addView(QtyArr);
+            formulatedTable.canScrollHorizontally(100);
 
             formulatedTable.addView(new_row);
 
@@ -181,10 +183,18 @@ public class SummaryActivity extends AppCompatActivity {
             resultComment.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row_outcome.addView(resultComment);
 
+            outcomeTable.canScrollHorizontally(100);
+
             outcomeTable.addView(new_row_outcome);
 
         }
 
+
+    }
+
+    public void closeSummary(View view){
+        Intent intent = new Intent(SummaryActivity.this, MainActivity.class);
+        startActivity(intent);
 
     }
 

@@ -47,7 +47,8 @@ public class CreateDietActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     String birdSelected;
     EditText getQtyToMix;
-    boolean formulate = false;
+    boolean formulate = false, recalculate = false, clickYes = false, clickNo = false;
+    boolean minConditionCheck = false, maxConditionCheck = false;
     Double qtyToMix;
 
 
@@ -123,13 +124,11 @@ public class CreateDietActivity extends AppCompatActivity {
 //                    formulate
                 formulateForTwoFeed();
 
-                if(formulate) {
+                if(formulate && recalculate) {
 
                     Intent intent = new Intent(this, SummaryActivity.class);
                     intent.putExtra("formuNo", noOfFomulation);
                     startActivity(intent);
-                }else{
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -209,7 +208,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 }else{
 
                     formulate = false;
-//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -226,7 +225,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 }else{
                     formulate = false;
-//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -265,7 +264,7 @@ public class CreateDietActivity extends AppCompatActivity {
         calCrudeProtein = new ArrayList <>();
         calPhosphorus = new ArrayList <>();
         calEnergy = new ArrayList <>();
-        qtyToMix = 0.00;
+
 
         // get the number of formulation made
         getNumberofFormulation();
@@ -358,9 +357,16 @@ public class CreateDietActivity extends AppCompatActivity {
         Double NewCPForIngreWithMinValue = getPercentForIngreWithMinValue * (ingredientWithMinCPValue/100);
         Double NewCPForIngreWithMaxValue = getPercentForIngreWithMaxValue * (ingredientWithMaxCPValue/100);
 
+        //get the quantity to mix
+        if(!recalculate){
+            qtyToMix = 0.00;
+            qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
+            recalculate = false;
+        };
+
         // Step 4 of of the calculation
-        Double qtyOfMixMinValueCP = (Double.parseDouble(getQtyToMix.getText().toString())/100) * getPercentForIngreWithMinValue;
-        Double qtyOfMixMaxValueCP = (Double.parseDouble(getQtyToMix.getText().toString())/100) * getPercentForIngreWithMaxValue;
+        Double qtyOfMixMinValueCP = (qtyToMix/100) * getPercentForIngreWithMinValue;
+        Double qtyOfMixMaxValueCP = (qtyToMix/100) * getPercentForIngreWithMaxValue;
 
         getNewProportionUnit.add(qtyOfMixMaxValueCP);
         getNewProportionUnit.add(qtyOfMixMinValueCP);
@@ -372,31 +378,81 @@ public class CreateDietActivity extends AppCompatActivity {
         Double newCrudeProteinLevel = ((qtyOfMixMaxValueCP * maxCrude) + (qtyOfMixMinValueCP * minCrude)) * 0.01;
 
 
-         qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
+//         qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
 
         //Check the quantity available is enough to mix feed
-//        if(qtyOfMixMaxValueCP > QtySelectedForMaxCP){
-//            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-//
-//            alertBuilder.setCancelable(false)
-//                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            Double newQty = 0.00;
-//                            newQty = (QtySelectedForMaxCP * qtyToMix)/qtyOfMixMaxValueCP;
-//                            qtyToMix = newQty;
-//                            qtyOfMixMaxValueCP = newQty;
-//                        }
-//                    });
-//
-//            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    dialog.cancel();
-//
-//                }
-//            });
-//        }
+        if((qtyOfMixMaxValueCP > QtySelectedForMaxCP) && !recalculate){
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+            alertBuilder.setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Double newQty = 0.00;
+                            newQty = (QtySelectedForMaxCP * qtyToMix)/qtyOfMixMaxValueCP;
+                            qtyToMix = newQty;
+                            recalculate = true;
+                            maxConditionCheck = true;
+//                            mix();
+                            formulateForTwoFeed();
+                        }
+
+                    });
+
+
+            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    recalculate = true;
+                    maxConditionCheck = true;
+//                    clickNo = true;
+                    dialog.cancel();
+
+                }
+            });
+
+            AlertDialog alertDialog = alertBuilder.create();
+            alertDialog.setTitle(String.format("The quantity specified for %s is not enough. Do you want to scale down", ingredientWithMaxCP));
+            alertDialog.show();
+        }
+
+        //Check the quantity available is enough to mix feed
+        if((qtyOfMixMinValueCP > QtySelectedForMinCP) && !recalculate){
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+            alertBuilder.setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Double newQty = 0.00;
+                            newQty = (QtySelectedForMinCP * qtyToMix)/qtyOfMixMinValueCP;
+                            qtyToMix = newQty;
+                            recalculate = true;
+                            minConditionCheck = true;
+                            formulateForTwoFeed();
+
+                        }
+                    });
+
+            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    recalculate = true;
+                    minConditionCheck = true;
+//                    clickNo = true;
+                    dialog.cancel();
+
+                }
+            });
+            AlertDialog alertDialog = alertBuilder.create();
+            alertDialog.setTitle(String.format("The quantity specified for %s is low Do you want to scale down", ingredientWithMinCP));
+            alertDialog.show();
+        }else{
+            recalculate = recalculate || false;
+            minConditionCheck = true;
+        }
+
+//        while(! (minConditionCheck || maxConditionCheck));
 
         //add quantity to mix into the database
         dbHelper.addQuantityToMix(noOfFomulation, qtyToMix);
