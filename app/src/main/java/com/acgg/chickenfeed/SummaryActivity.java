@@ -149,7 +149,7 @@ public class SummaryActivity extends AppCompatActivity {
             QtyArr.setText(decimalFormat.format(cursor.getInt(5)));
             QtyArr.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row.addView(QtyArr);
-            formulatedTable.canScrollHorizontally(100);
+//            formulatedTable.canScrollHorizontally(100);
 
             formulatedTable.addView(new_row);
 
@@ -183,7 +183,7 @@ public class SummaryActivity extends AppCompatActivity {
             resultComment.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row_outcome.addView(resultComment);
 
-            outcomeTable.canScrollHorizontally(100);
+//            outcomeTable.canScrollHorizontally(100);
 
             outcomeTable.addView(new_row_outcome);
 

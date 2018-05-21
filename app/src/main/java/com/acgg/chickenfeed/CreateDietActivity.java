@@ -124,7 +124,7 @@ public class CreateDietActivity extends AppCompatActivity {
 //                    formulate
                 formulateForTwoFeed();
 
-                if(formulate && recalculate) {
+                if(formulate && maxConditionCheck && minConditionCheck) {
 
                     Intent intent = new Intent(this, SummaryActivity.class);
                     intent.putExtra("formuNo", noOfFomulation);
@@ -383,6 +383,7 @@ public class CreateDietActivity extends AppCompatActivity {
         //Check the quantity available is enough to mix feed
         if((qtyOfMixMaxValueCP > QtySelectedForMaxCP) && !recalculate){
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+//            alertBuilder.setMessage("OBSERVATION!!!");
 
             alertBuilder.setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -392,8 +393,8 @@ public class CreateDietActivity extends AppCompatActivity {
                             newQty = (QtySelectedForMaxCP * qtyToMix)/qtyOfMixMaxValueCP;
                             qtyToMix = newQty;
                             recalculate = true;
-                            maxConditionCheck = true;
-//                            mix();
+                            maxConditionCheck = false;
+//                            mix();1
                             formulateForTwoFeed();
                         }
 
@@ -403,7 +404,7 @@ public class CreateDietActivity extends AppCompatActivity {
             alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    recalculate = true;
+                    recalculate = false;
                     maxConditionCheck = true;
 //                    clickNo = true;
                     dialog.cancel();
@@ -412,13 +413,18 @@ public class CreateDietActivity extends AppCompatActivity {
             });
 
             AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.setTitle(String.format("The quantity specified for %s is not enough. Do you want to scale down", ingredientWithMaxCP));
+            alertDialog.setTitle("OBSERVATION!!!");
+            alertDialog.setMessage(String.format("The quantity specified for %s is not enough. Do you want to scale down", ingredientWithMaxCP));
             alertDialog.show();
+        }else{
+            recalculate = recalculate || false;
+            maxConditionCheck = true;
         }
 
         //Check the quantity available is enough to mix feed
         if((qtyOfMixMinValueCP > QtySelectedForMinCP) && !recalculate){
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+            alertBuilder.setMessage("OBSERVATION!!!");
 
             alertBuilder.setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -428,7 +434,7 @@ public class CreateDietActivity extends AppCompatActivity {
                             newQty = (QtySelectedForMinCP * qtyToMix)/qtyOfMixMinValueCP;
                             qtyToMix = newQty;
                             recalculate = true;
-                            minConditionCheck = true;
+                            minConditionCheck = false;
                             formulateForTwoFeed();
 
                         }
@@ -437,7 +443,7 @@ public class CreateDietActivity extends AppCompatActivity {
             alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    recalculate = true;
+                    recalculate = false;
                     minConditionCheck = true;
 //                    clickNo = true;
                     dialog.cancel();
@@ -445,7 +451,8 @@ public class CreateDietActivity extends AppCompatActivity {
                 }
             });
             AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.setTitle(String.format("The quantity specified for %s is low Do you want to scale down", ingredientWithMinCP));
+            alertDialog.setTitle("OBSERVATION!!!");
+            alertDialog.setMessage(String.format("The quantity specified for %s is not enough. Do you want to scale down", ingredientWithMinCP));
             alertDialog.show();
         }else{
             recalculate = recalculate || false;

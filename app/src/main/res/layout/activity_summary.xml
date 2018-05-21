@@ -13,399 +13,420 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <include
-        layout="@layout/navigation_actionbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="#fff">
+        <include
+            layout="@layout/navigation_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
-            android:id="@+id/linlay_summary"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fff"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:text="Ingredient Selected for mixing"
-                android:textAllCaps="true"
-                android:textColor="#348502"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:typeface="serif" />
-
-            <LinearLayout
-                android:id="@+id/linlay_IngreSelect"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
-                <ScrollView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fillViewport="true"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:scrollbars="horizontal|vertical">
+                    android:orientation="vertical">
 
-                    <HorizontalScrollView
-                        android:layout_width="wrap_content"
+
+
+                    <!--<include-->
+                        <!--layout="@layout/navigation_actionbar"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content" />-->
+
+
+                    <LinearLayout
+                        android:id="@+id/linlay_summary"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scrollbars="horizontal|vertical">
+                        android:background="#fff"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-                        <TableLayout
-                            android:id="@+id/table_ingreSelect"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="5dp"
+                            android:text="Ingredient Selected for mixing"
+                            android:textAllCaps="true"
+                            android:textColor="#348502"
+                            android:textAppearance="?android:textAppearanceSmall"
+                            android:textStyle="bold"
+                            android:typeface="serif" />
+
+                        <LinearLayout
+                            android:id="@+id/linlay_IngreSelect"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:stretchColumns="*"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
+                            android:layout_gravity="center_horizontal"
+                            android:orientation="vertical">
 
-                            >
+                            <ScrollView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fillViewport="true"
+                                android:scrollbarStyle="outsideOverlay"
+                                android:scrollbars="horizontal|vertical">
 
-                            <TableRow
-                                android:id="@+id/row_ingreSelect"
-                                android:layout_marginTop="5dp"
-                                android:background="#348502"
-                                android:padding="8dp">
-
-                                <TextView
-                                    android:id="@+id/ingre_text"
+                                <HorizontalScrollView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Ingredient"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    android:scrollbars="horizontal|vertical">
 
-                                <TextView
-                                    android:id="@+id/class_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Class"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/crudeProtein_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Crude \nProtein"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    <TableLayout
+                                        android:id="@+id/table_ingreSelect"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:stretchColumns="*"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_marginRight="10dp"
 
-                                <TextView
-                                    android:id="@+id/phosphorus_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="phosphorus"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                        >
 
-                                <TextView
-                                    android:id="@+id/calcium_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Calcium"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                        <TableRow
+                                            android:id="@+id/row_ingreSelect"
+                                            android:layout_marginTop="5dp"
+                                            android:background="#348502"
+                                            android:padding="8dp">
 
-                                <TextView
-                                    android:id="@+id/quantity_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Quantity"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-                            </TableRow>
-                        </TableLayout>
+                                            <TextView
+                                                android:id="@+id/ingre_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Ingredient"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
 
-                    </HorizontalScrollView>
-                </ScrollView>
-            </LinearLayout>
+                                            <TextView
+                                                android:id="@+id/class_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Class"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:text="Outcome from Formulation"
-                android:textAllCaps="true"
-                android:textColor="#348502"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:typeface="serif" />
+                                            <TextView
+                                                android:id="@+id/crudeProtein_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Crude \nProtein"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
 
-            <LinearLayout
-                android:id="@+id/linlay_outcome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                                            <TextView
+                                                android:id="@+id/phosphorus_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="phosphorus"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
 
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fillViewport="true"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:scrollbars="horizontal|vertical">
+                                            <TextView
+                                                android:id="@+id/calcium_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Calcium"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
 
-                    <HorizontalScrollView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scrollbars="horizontal|vertical">
+                                            <TextView
+                                                android:id="@+id/quantity_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Quantity"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
+                                        </TableRow>
+                                    </TableLayout>
 
-                        <TableLayout
-                            android:id="@+id/table_outcome"
+                                </HorizontalScrollView>
+                            </ScrollView>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:text="Outcome from Formulation"
+                            android:textAllCaps="true"
+                            android:textColor="#348502"
+                            android:textAppearance="?android:textAppearanceSmall"
+                            android:textStyle="bold"
+                            android:typeface="serif" />
+
+                        <LinearLayout
+                            android:id="@+id/linlay_outcome"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:stretchColumns="*"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            >
+                            android:orientation="vertical">
 
-                            <TableRow
-                                android:id="@+id/row_outcome"
+                            <ScrollView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fillViewport="true"
+                                android:scrollbarStyle="outsideOverlay"
+                                android:scrollbars="horizontal|vertical">
+
+                                <HorizontalScrollView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:scrollbars="horizontal|vertical">
+
+                                    <TableLayout
+                                        android:id="@+id/table_outcome"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:stretchColumns="*"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_marginRight="10dp"
+                                        >
+
+                                        <TableRow
+                                            android:id="@+id/row_outcome"
+                                            android:layout_marginTop="5dp"
+                                            android:background="#348502"
+                                            android:padding="8dp">
+
+                                            <TextView
+                                                android:id="@+id/ingreOutcome_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Ingredient"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/proportion_100kg_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="4dp"
+                                                android:text="Proportion(%)"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/proportionKg_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Proportion(Kg)"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/qtySpecified_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Quantity\n Specified"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/comment_text"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="8dp"
+                                                android:text="Comment"
+                                                android:textColor="#fff"
+                                                android:textSize="15sp"
+                                                android:textStyle="bold" />
+                                        </TableRow>
+                                    </TableLayout>
+                                </HorizontalScrollView>
+                            </ScrollView>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:text="Calculated analysis"
+                            android:textAllCaps="true"
+                            android:textColor="#348502"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:typeface="serif" />
+
+                        <LinearLayout
+                            android:id="@+id/linlay_calc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TableLayout
+                                android:id="@+id/table_calc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginStart="10dp"
                                 android:layout_marginTop="5dp"
-                                android:background="#348502"
-                                android:padding="8dp">
+                                android:shrinkColumns="1"
+                                android:stretchColumns="*">
 
-                                <TextView
-                                    android:id="@+id/ingreOutcome_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Ingredient"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                <TableRow>
 
-                                <TextView
-                                    android:id="@+id/proportion_100kg_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="4dp"
-                                    android:text="Proportion(%)"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="Crude Protein :"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/proportionKg_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Proportion(Kg)"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    <TextView
+                                        android:id="@+id/value_crudeprotein"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="1000"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </TableRow>
 
-                                <TextView
-                                    android:id="@+id/qtySpecified_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Quantity\n Specified"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                <TableRow android:gravity="center">
 
-                                <TextView
-                                    android:id="@+id/comment_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:padding="8dp"
-                                    android:text="Comment"
-                                    android:textColor="#fff"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-                            </TableRow>
-                        </TableLayout>
-                    </HorizontalScrollView>
-                </ScrollView>
-            </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="phosphorus :"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:text="Calculated analysis"
-                android:textAllCaps="true"
-                android:textColor="#348502"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:typeface="serif" />
+                                    <TextView
+                                        android:id="@+id/value_phosphorus"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="1000"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </TableRow>
 
-            <LinearLayout
-                android:id="@+id/linlay_calc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                                <TableRow android:gravity="center">
 
-                <TableLayout
-                    android:id="@+id/table_calc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="5dp"
-                    android:shrinkColumns="1"
-                    android:stretchColumns="*">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="Calcium :"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
 
-                    <TableRow>
+                                    <TextView
+                                        android:id="@+id/value_calcium"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="1000"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </TableRow>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="Crude Protein :"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                                <TableRow android:gravity="center">
 
-                        <TextView
-                            android:id="@+id/value_crudeprotein"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="1000"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </TableRow>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="Energy :"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
 
-                    <TableRow android:gravity="center">
+                                    <TextView
+                                        android:id="@+id/value_energy"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:padding="8dp"
+                                        android:text="1000"
+                                        android:textColor="#348502"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </TableRow>
+                            </TableLayout>
+                        </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="phosphorus :"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                    </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/value_phosphorus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="1000"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </TableRow>
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/background_button"
+                        android:padding="10dp"
+                        android:text="close"
+                        android:onClick="closeSummary"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
 
-                    <TableRow android:gravity="center">
+                </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="Calcium :"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+            </ScrollView>
 
-                        <TextView
-                            android:id="@+id/value_calcium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="1000"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </TableRow>
-
-                    <TableRow android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="Energy :"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/value_energy"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:padding="8dp"
-                            android:text="1000"
-                            android:textColor="#348502"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </TableRow>
-                </TableLayout>
-            </LinearLayout>
-
-            <Button
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/background_button"
-                android:padding="10dp"
-                android:text="close"
-                android:onClick="closeSummary"
-                android:textColor="#fff"
-                android:textSize="20sp" />
         </LinearLayout>
-    </ScrollView>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
     </LinearLayout>
-
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
@@ -418,5 +439,4 @@
         app:itemIconTint="#ffffff"
         app:itemTextColor="#FFFFFF"
         app:menu="@menu/drawer_view" />
-
 </android.support.v4.widget.DrawerLayout>
