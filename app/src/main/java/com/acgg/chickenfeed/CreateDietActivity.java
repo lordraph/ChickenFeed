@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -143,7 +144,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
     public void getNumberofFormulation(){
 
-      //get the number of formulation made so far from the database
+        //get the number of formulation made so far from the database
         Cursor numOfFormu = dbHelper.getFormuRecord();
 
         while(numOfFormu.moveToNext()) {
@@ -372,10 +373,10 @@ public class CreateDietActivity extends AppCompatActivity {
         getNewProportionUnit.add(qtyOfMixMinValueCP);
 
         //calculating calcium leveo
-        Double newCalciumLevel = ((qtyOfMixMaxValueCP * maxCal) + (qtyOfMixMinValueCP * minCal)) * 0.01;
-        Double newPhosphprusLevel = ((qtyOfMixMaxValueCP * maxPhos) + (qtyOfMixMinValueCP * minPhos)) * 0.01;
-        Double newEnergyLevel = ((qtyOfMixMaxValueCP * maxEnergy) + (qtyOfMixMinValueCP * minEnergy)) * 0.01;
-        Double newCrudeProteinLevel = ((qtyOfMixMaxValueCP * maxCrude) + (qtyOfMixMinValueCP * minCrude)) * 0.01;
+        Double newCalciumLevel = ((getPercentForIngreWithMaxValue * maxCal) + (getPercentForIngreWithMinValue * minCal)) * 0.01;
+        Double newPhosphprusLevel = ((getPercentForIngreWithMaxValue * maxPhos) + (getPercentForIngreWithMinValue* minPhos)) * 0.01;
+        Double newEnergyLevel = ((getPercentForIngreWithMaxValue * maxEnergy) + (getPercentForIngreWithMinValue* minEnergy)) * 0.01;
+        Double newCrudeProteinLevel = NewCPForIngreWithMinValue + NewCPForIngreWithMaxValue;
 
 
 //         qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
@@ -413,8 +414,10 @@ public class CreateDietActivity extends AppCompatActivity {
             });
 
             AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.setTitle("OBSERVATION!!!");
-            alertDialog.setMessage(String.format("The quantity specified for %s is not enough. Do you want to scale down", ingredientWithMaxCP));
+            alertDialog.setTitle("OBSERVATION!!");
+            alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                    "Get " +  decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                    " Do you want to scale down to the next mixable quantity?", ingredientWithMaxCP));
             alertDialog.show();
         }else{
             recalculate = recalculate || false;
@@ -452,7 +455,9 @@ public class CreateDietActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = alertBuilder.create();
             alertDialog.setTitle("OBSERVATION!!!");
-            alertDialog.setMessage(String.format("The quantity specified for %s is not enough. Do you want to scale down", ingredientWithMinCP));
+            alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                    "Get " +  decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                    " Do you want to scale down to the next mixable quantity?", ingredientWithMinCP));
             alertDialog.show();
         }else{
             recalculate = recalculate || false;
