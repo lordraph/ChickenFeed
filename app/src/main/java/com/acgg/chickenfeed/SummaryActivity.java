@@ -118,36 +118,43 @@ public class SummaryActivity extends AppCompatActivity {
             //Create a row for formulated ingredient
             TableRow new_row = new TableRow(this);
             TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
+            lp.bottomMargin = 10;
             new_row.setLayoutParams(lp);
 
             TextView ingredient = new TextView(this);
             ingredient.setText(cursor.getString(1));
+            ingredient.setPadding(8,8,8,8);
             ingredient.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row.addView(ingredient);
 
             TextView classArr = new TextView(this);
             classArr.setText(cursor.getString(10));
+            classArr.setPadding(8,8,8,8);
             classArr.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row.addView(classArr);
 
             TextView crudeProteinArr = new TextView(this);
             crudeProteinArr.setText(decimalFormat.format(cursor.getDouble(7)));
             crudeProteinArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            crudeProteinArr.setPadding(8,8,8,8);
             new_row.addView(crudeProteinArr);
 
             TextView phosphorusArr = new TextView(this);
             phosphorusArr.setText(decimalFormat.format(cursor.getDouble(9)));
             phosphorusArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            phosphorusArr.setPadding(8,8,8,8);
             new_row.addView(phosphorusArr);
 
             TextView calciumArr = new TextView(this);
             calciumArr.setText(decimalFormat.format(cursor.getDouble(8)));
             calciumArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            calciumArr.setPadding(8,8,8,8);
             new_row.addView(calciumArr);
 
             TextView QtyArr = new TextView(this);
             QtyArr.setText(decimalFormat.format(cursor.getInt(5)));
             QtyArr.setGravity(Gravity.CENTER_HORIZONTAL);
+            QtyArr.setPadding(8,8,8,8);
             new_row.addView(QtyArr);
 //            formulatedTable.canScrollHorizontally(100);
 
@@ -156,34 +163,38 @@ public class SummaryActivity extends AppCompatActivity {
             //Create a new row for outcome formulated table
             TableRow new_row_outcome = new TableRow(this);
             TableRow.LayoutParams lpoutcome = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
+            lpoutcome.bottomMargin = 10;
             new_row_outcome.setLayoutParams(lpoutcome);
 
             TextView ingredientOutcome = new TextView(this);
             ingredientOutcome.setText(cursor.getString(1));
+            ingredientOutcome.setPadding(8,8,8,8);
             ingredientOutcome.setGravity(Gravity.CENTER_HORIZONTAL);
             new_row_outcome.addView(ingredientOutcome);
 
             TextView resultProportionPercent = new TextView(this);
             resultProportionPercent.setText(decimalFormat.format(cursor.getDouble(3)));
             resultProportionPercent.setGravity(Gravity.CENTER_HORIZONTAL);
+            resultProportionPercent.setPadding(8,8,8,8);
             new_row_outcome.addView(resultProportionPercent);
 
             TextView resultProportionUnit = new TextView(this);
             resultProportionUnit.setText(decimalFormat.format(cursor.getDouble(4)));
             resultProportionUnit.setGravity(Gravity.CENTER_HORIZONTAL);
+            resultProportionUnit.setPadding(8,8,8,8);
             new_row_outcome.addView(resultProportionUnit);
 
             TextView QtyArrcalc = new TextView(this);
             QtyArrcalc.setText(decimalFormat.format(cursor.getInt(5)));
             QtyArrcalc.setGravity(Gravity.CENTER_HORIZONTAL);
+            QtyArrcalc.setPadding(8,8,8,8);
             new_row_outcome.addView(QtyArrcalc);
 
             TextView resultComment = new TextView(this);
             resultComment.setText(cursor.getString(6));
             resultComment.setGravity(Gravity.CENTER_HORIZONTAL);
+            resultComment.setPadding(8,8,8,8);
             new_row_outcome.addView(resultComment);
-
-//            outcomeTable.canScrollHorizontally(100);
 
             outcomeTable.addView(new_row_outcome);
 
@@ -234,6 +245,11 @@ public class SummaryActivity extends AppCompatActivity {
 
     public void openHelpActivity(MenuItem item) {
         Intent intent = new Intent(SummaryActivity.this, HelpActivity.class);
+        startActivity(intent);
+    }
+
+    public void openChart(View view) {
+        Intent intent = new Intent(SummaryActivity.this, ChartActivity.class);
         startActivity(intent);
     }
 }
