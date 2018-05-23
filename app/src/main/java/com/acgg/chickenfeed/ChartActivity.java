@@ -1,31 +1,22 @@
 package com.acgg.chickenfeed;
 
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChartActivity extends AppCompatActivity  {
-    
-  
+
+
     float ingredientValues[] = {10.9f, 20f, 17f, 9f, 6f};
     String ingredient [] = {"Acha", "Maize", "Yam", "Cocoyam", "Beans"};
 
@@ -40,7 +31,7 @@ public class ChartActivity extends AppCompatActivity  {
 
 
     }
-    private void setupPieChart1() {
+    public void setupPieChart1() {
         //populating a list of entries
         List<PieEntry> entries = new ArrayList<>();
         for (int i = 0; i < ingredientValues.length; i++){
@@ -52,7 +43,7 @@ public class ChartActivity extends AppCompatActivity  {
         PieData data = new PieData(dataSet);
 
         //Get the chart
-        PieChart chart1 = (PieChart) findViewById(R.id.proportion_100kg_chart);
+        PieChart chart1 = findViewById(R.id.proportion_100kg_chart);
         chart1.setUsePercentValues(true);
         chart1.getDescription().setEnabled(false);
         Description description = new Description();
@@ -67,7 +58,7 @@ public class ChartActivity extends AppCompatActivity  {
         chart1.invalidate();
 
     }
-    private void setupPieChart2() {
+    public void setupPieChart2() {
         //populating a list of entries
         List<PieEntry> entries = new ArrayList<>();
         for (int i = 0; i < ingredientValues.length; i++){
@@ -79,7 +70,7 @@ public class ChartActivity extends AppCompatActivity  {
         PieData data = new PieData(dataSet);
 
         //Get the chart
-        PieChart chart2 = (PieChart) findViewById(R.id.proportionKg_chart);
+        PieChart chart2 = findViewById(R.id.proportionKg_chart);
         chart2.setUsePercentValues(true);
         chart2.getDescription().setEnabled(false);
         Description description = new Description();
