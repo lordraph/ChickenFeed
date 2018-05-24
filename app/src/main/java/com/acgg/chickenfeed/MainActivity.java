@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openAccountActivity(MenuItem item) {
-        Intent intent = new Intent(MainActivity.this, ChartActivity.class);
+        Intent intent = new Intent(MainActivity.this, AccountActivity.class);
         startActivity(intent);
     }
 

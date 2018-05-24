@@ -76,7 +76,7 @@ public class ChartActivity extends AppCompatActivity  {
 //            entries.add(new PieEntry((float)(proportionPercent.get(i)), ingredientName.get(i)));
 //        }
 
-        PieDataSet dataSet = new PieDataSet(entriespropotionPercent, "Ingredient Mixed");
+        PieDataSet dataSet = new PieDataSet(entriespropotionPercent, "Ingredient Mixed(%)");
         dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
         PieData data = new PieData(dataSet);
 
@@ -103,7 +103,7 @@ public class ChartActivity extends AppCompatActivity  {
 //            entries.add(new PieEntry(ingredientValues[i], ingredient[i]));
 //        }
 
-        PieDataSet dataSet = new PieDataSet(entriesproportionUnit, "Ingredient Mixed");
+        PieDataSet dataSet = new PieDataSet(entriesproportionUnit, "Ingredient Mixed(kg)");
         dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
         PieData data = new PieData(dataSet);
 
