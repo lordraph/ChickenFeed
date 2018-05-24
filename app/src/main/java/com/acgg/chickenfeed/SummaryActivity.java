@@ -250,6 +250,7 @@ public class SummaryActivity extends AppCompatActivity {
 
     public void openChart(View view) {
         Intent intent = new Intent(SummaryActivity.this, ChartActivity.class);
+        intent.putExtra("chartformNo", formNo);
         startActivity(intent);
     }
 }

@@ -48,7 +48,6 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginTop="5dp"
-                            android:textSize="20sp"
                             android:text="Ingredient Selected for mixing"
                             android:textAllCaps="true"
                             android:textColor="#348502"
@@ -166,7 +165,6 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="20dp"
                             android:text="Outcome from Formulation"
-                            android:textSize="20sp"
                             android:textAllCaps="true"
                             android:textColor="#348502"
                             android:textAppearance="?android:textAppearanceSmall"
@@ -272,7 +270,7 @@
                             android:text="Calculated analysis"
                             android:textAllCaps="true"
                             android:textColor="#348502"
-                            android:textSize="20sp"
+                            android:textAppearance="?android:textAppearanceSmall"
                             android:textStyle="bold"
                             android:typeface="serif" />
 
