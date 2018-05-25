@@ -43,7 +43,7 @@ public class CreateDietActivity extends AppCompatActivity {
     ArrayList<Double> getNewProportionUnit, calCrudeProtein, calCalcium, calPhosphorus, calEnergy;
     ArrayList<Integer> energyNutrient, qtyselected, qtySpecified, forEnergy;
     Spinner quantityTypeSpinner;
-    int numOfSelectedFeed=0, noOfFomulation=0;
+    int numOfSelectedFeed=0, noOfFomulation=0 ;
     Button createmixBtn;
     RadioGroup radioGroup;
     String birdSelected;
@@ -112,8 +112,6 @@ public class CreateDietActivity extends AppCompatActivity {
         selectBirdToFormulate();
         mix();
 
-
-
     }
 
 
@@ -131,7 +129,6 @@ public class CreateDietActivity extends AppCompatActivity {
                     intent.putExtra("formuNo", noOfFomulation);
                     startActivity(intent);
                 }
-
 
             }else{
                 Toast.makeText(CreateDietActivity.this, "Please Select At least " +
@@ -209,7 +206,13 @@ public class CreateDietActivity extends AppCompatActivity {
                 }else{
 
                     formulate = false;
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is greater than 8.0 and the other is lesser than 8.0");
+                    alertDialog.show();
 
                 }
 
@@ -226,7 +229,13 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 }else{
                     formulate = false;
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is greater than the 8.5 and the other is lesser than 8.5");
+                    alertDialog.show();
 
 
                 }
