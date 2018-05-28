@@ -3,16 +3,15 @@ package com.acgg.chickenfeed;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static android.R.layout.simple_dropdown_item_1line;
-import static java.lang.String.valueOf;
 
 public class CreateDietActivity extends AppCompatActivity {
     ChickenFeedHelper dbHelper;
@@ -51,8 +49,6 @@ public class CreateDietActivity extends AppCompatActivity {
     boolean formulate = false, recalculate = false, clickYes = false, clickNo = false;
     boolean minConditionCheck = false, maxConditionCheck = false;
     Double qtyToMix;
-
-
 
 
     @Override
@@ -133,13 +129,87 @@ public class CreateDietActivity extends AppCompatActivity {
                 }
 
 
-            }else{
+            }else if(numOfFeedSelected() == 3){
+
+                formulateForThreeFeeds();
+
+                if(formulate && maxConditionCheck && minConditionCheck) {
+
+                    Intent intent = new Intent(this, SummaryActivity.class);
+                    intent.putExtra("formuNo", noOfFomulation);
+                    startActivity(intent);
+                }
+
+            }
+            else{
                 Toast.makeText(CreateDietActivity.this, "Please Select At least " +
                         "two Ingredient ", Toast.LENGTH_SHORT).show();
             }
 
 
         });
+    }
+
+    public void formulateForThreeFeeds(){
+        // Check if the formulation can be carried out
+
+        //        check protein formulation
+        if(birdSelected.length() != 0){
+            //  check the bird selected
+            if(birdSelected.equals("Grower")){
+                double Crude_protein = 8.0, Calcium =0.8 ,Phosphorus = 0.4;
+
+                // Check if the nutrient meet the requirement
+                if((Collections.max(crudeProteinNutrient) >= Crude_protein) && (Collections.min(crudeProteinNutrient) < Crude_protein) ){
+
+                    formulate = true;
+
+                    if(formulate){
+                        formulateProteinForThreeFeed(Crude_protein, birdSelected);
+                    }
+
+
+                }else{
+
+                    formulate = false;
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }else{
+
+                double Crude_protein = 8.5, Calcium = 3.4, Phosphorus = 0.32;
+                // Check if the nutrient meet the requirement
+                if((Collections.max(crudeProteinNutrient) >= Crude_protein) && (Collections.min(crudeProteinNutrient) < Crude_protein) ){
+
+                    formulate = true;
+                    if(formulate) {
+                        formulateProteinForThreeFeed(Crude_protein, birdSelected);
+                    }
+
+                }else{
+                    formulate = false;
+                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+
+
+                }
+            }
+
+        }else{
+            Toast.makeText(CreateDietActivity.this, "Please Select a bird", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void formulateProteinForThreeFeed(Double targetProtein, String birdCat){
+        // Seperate the feeds into two groups
+        divGroups();
+
+
+    }
+
+    private void divGroups() {
+
     }
 
     public void getNumberofFormulation(){
@@ -363,7 +433,7 @@ public class CreateDietActivity extends AppCompatActivity {
             qtyToMix = 0.00;
             qtyToMix = Double.parseDouble(getQtyToMix.getText().toString());
             recalculate = false;
-        };
+        }
 
         // Step 4 of of the calculation
         Double qtyOfMixMinValueCP = (qtyToMix/100) * getPercentForIngreWithMinValue;
