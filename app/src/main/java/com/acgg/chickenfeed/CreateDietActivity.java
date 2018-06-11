@@ -42,18 +42,22 @@ public class CreateDietActivity extends AppCompatActivity {
     ArrayList<Double> groupA, groupB, ordGroupA, ordGroupB, comGroupA, comGroupB, forCalA, forPhosB, forPhosA, forCalB ;
     ArrayList<Integer> energyNutrient, qtyselected, qtySpecified, forEnergy, ordqtyAvailableA, ordqtyAvailableB, forenergyA, forenergyB;
     Spinner quantityTypeSpinner;
-    int numOfSelectedFeed=0, noOfFomulation=0,  assProp2first = 51, assProp2secon = 49, qtyTMix = 0 ;
+    int numOfSelectedFeed=0, noOfFomulation=0,  assProp2first = 51, assProp2secon = 49, iter1=0, iter2 =0;
     ArrayList<String>  ingredientGrpA, ingredientGrpB, ordIngredientGrpA, ordIngredientGrpB;
     ArrayList<String>  ordClassA, ordClassB;
     Button createmixBtn;
     RadioGroup radioGroup;
     String birdSelected;
+    boolean iterProtein= false, iterRest = false;
     EditText getQtyToMix;
-    boolean formulate = false, recalculate = false, clickYes = false, clickNo = false;
-    boolean minConditionCheck = false, maxConditionCheck = false;
+    boolean formulate = false, recalculate = false, clickYes = false, clickNo = false, conditionCheck = true;
+    boolean minConditionCheck = false, maxConditionCheck = false, reform = false, saveAlready = false;
+    boolean scalegroup = false, addcomprop = false;
     Double qtyToMix, Crude_protein, Calcium, Phosphorus, Total = 0.00;
-    double Crude_proteintarget = 0.0, Calciumtarget = 0.00 ,Phosphorustarget = 0.0;
+    double Crude_proteintarget = 0.0, Calciumtarget = 0.00 ,Phosphorustarget = 0.0, qtyTMix = 0.00;
     DecimalFormat decimalFormat;
+    Integer[] formulationiter1 = {50,60,70,80,90};
+    Integer[] formulationiter2 = {50,40,30,20,10};
 
 
     @Override
@@ -162,8 +166,14 @@ public class CreateDietActivity extends AppCompatActivity {
 
         //        check protein formulation
         if(birdSelected.length() != 0){
+            int sum =0;
+            //check number of protein either plant or animal
+            int plantProtein = Collections.frequency(classIngredientSelected, "Plant");
+            int animalProtein = Collections.frequency(classIngredientSelected, "Animal");
+            sum = plantProtein + animalProtein;
+
             //  check the bird selected
-            if(birdSelected.equals("Grower")){
+            if((birdSelected.equals("Grower")) && (sum != 3) && conditionCheck ){
 //                double Crude_protein = 8.0, Calcium = 0.8 ,Phosphorus = 0.4;
 
                 Crude_proteintarget = 8.0;
@@ -183,30 +193,53 @@ public class CreateDietActivity extends AppCompatActivity {
                 }else{
 
                     formulate = false;
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is not in protein class");
+                    alertDialog.show();
+//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
                 }
 
-            }else{
+            }else {
 
-                Crude_proteintarget = 8.5;
+                if ((sum != 3) && conditionCheck){
+
+                    Crude_proteintarget = 8.5;
                 Calciumtarget = 3.4;
                 Phosphorustarget = 0.32;
 
 //                double Crude_protein = 8.5, Calcium = 3.4, Phosphorus = 0.32;
                 // Check if the nutrient meet the requirement
-                if((Collections.max(crudeProteinNutrient) >= Crude_proteintarget) && (Collections.min(crudeProteinNutrient) < Crude_proteintarget) ){
+                if ((Collections.max(crudeProteinNutrient) >= Crude_proteintarget) && (Collections.min(crudeProteinNutrient) < Crude_proteintarget)) {
 
                     formulate = true;
-                    if(formulate) {
+                    if (formulate) {
                         formulateProteinForThreeFeed(Crude_proteintarget, birdSelected);
                     }
 
-                }else{
+                } else {
                     formulate = false;
-                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is not in protein class");
+                    alertDialog.show();
+//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
 
 
+                }
+            }else{
+                    formulate = false;
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is not in protein class");
+                    alertDialog.show();
                 }
             }
 
@@ -227,17 +260,643 @@ public class CreateDietActivity extends AppCompatActivity {
         // add formulated ingredient into database
         addFormulatedIngredientToDb(birdCat);
 
-        // Seperate the feeds into two groups
+        //check which conditions ingrdient falls to
+
+        //condition 1: check energy
+//        checkIfAllAreEnergyClass();
+
+        //condition 2: check all are fibre
+//        checkIfAllAreFibreClass();
+
+        //condition 4 & 5: check number of energy and fibre
+        checkIfContainEnergyAndFibre();
+
+
+        //condition 6 & 7: check number of protein and energy
+        checkIfContainProteinAndEnergy();
+
+        //condition 8 & 9: check number of protein and fibre
+        checkIfContainProteinAndFibre();
+
+        //condition 10: check number of protein, energy and fibre
+        checkIfContainProteinFibreEnergy();
+
+
+
+    }
+
+    private void checkIfContainProteinFibreEnergy() {
+
+        int sumprotein = 0;
+        int sum = 0;
+        int checkNoOfProteinPlant = Collections.frequency(classIngredientSelected, "Plant");
+        int checkNoOfProteinAnimal = Collections.frequency(classIngredientSelected, "Animal");
+        int checkNoOfFibre = Collections.frequency(classIngredientSelected, "High Fibre/Byproduct");
+        int checkNoOfEnergy = Collections.frequency(classIngredientSelected, "Energy");
+        sumprotein = checkNoOfProteinPlant + checkNoOfProteinAnimal;
+
+        if((sumprotein == 1 ) && (checkNoOfFibre==1) && (checkNoOfEnergy ==1) ){
+            implementFormuProteinFibreEnergy();
+            //conditionCheck = true;
+        }
+
+
+    }
+
+    private void implementFormuProteinFibreEnergy() {
+        divProteinFibreEnergy();
+        reOrderGroup();
+        calNewCPLevel();
+        formulateProteinFeed(groupA, groupB);
+
+        if(!saveAlready) {
+            storeResultToDb();
+            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+        }
+
+    }
+
+    private void divProteinFibreEnergy(){
+        groupA = new ArrayList <>();
+        groupB = new ArrayList <>();
+        comGroupA = new ArrayList <>();
+        comGroupB = new ArrayList <>();
+        ingredientGrpA = new ArrayList <>();
+        ingredientGrpB = new ArrayList <>();
+
+        groupB = new ArrayList <>();
+        ingredientGrpB = new ArrayList <>();
+
+        for (int i=0; i<classIngredientSelected.size(); i++){
+
+            if((classIngredientSelected.get(i).equals("Animal")) || (classIngredientSelected.get(i).equals("Plant"))){
+
+                groupA.add(crudeProteinNutrient.get(i));
+                comGroupA.add(crudeProteinNutrient.get(i));
+
+                ingredientGrpA.add(ingredientSelected.get(i));
+            }else if(classIngredientSelected.get(i).equals("High Fibre/Byproduct")){
+                if(crudeProteinNutrient.get(i) >= Crude_proteintarget){
+                    groupA.add(crudeProteinNutrient.get(i));
+                    comGroupA.add(crudeProteinNutrient.get(i));
+                    ingredientGrpA.add(ingredientSelected.get(i));
+                }else{
+                    groupB.add(crudeProteinNutrient.get(i));
+                    comGroupB.add(crudeProteinNutrient.get(i));
+                    ingredientGrpB.add(ingredientSelected.get(i));
+                }
+
+            }else {
+                groupB.add(crudeProteinNutrient.get(i));
+                comGroupB.add(crudeProteinNutrient.get(i));
+                ingredientGrpB.add(ingredientSelected.get(i));
+            }
+
+        }
+
+    }
+
+    private void checkIfContainProteinAndFibre() {
+        int sum = 0;
+        int checkNoOfProteinPlant = Collections.frequency(classIngredientSelected, "Plant");
+        int checkNoOfProteinAnimal = Collections.frequency(classIngredientSelected, "Animal");
+        int checkNoOfFibre = Collections.frequency(classIngredientSelected, "High Fibre/Byproduct");
+        sum = checkNoOfProteinPlant + checkNoOfProteinAnimal + checkNoOfFibre;
+
+        if(sum == 3){
+            implementFormuProtein();
+            //conditionCheck = true;
+        }
+    }
+
+    private void checkIfContainProteinAndEnergy() {
+        int sum = 0;
+        int checkNoOfProteinPlant = Collections.frequency(classIngredientSelected, "Plant");
+        int checkNoOfProteinAnimal = Collections.frequency(classIngredientSelected, "Animal");
+        int checkNoOfEnergy = Collections.frequency(classIngredientSelected, "Energy");
+        sum = checkNoOfProteinPlant + checkNoOfProteinAnimal + checkNoOfEnergy;
+
+        if((sum == 3) && ((checkNoOfProteinAnimal >0) || checkNoOfProteinPlant > 0)) {
+            implementFormuProtein();
+            //conditionCheck = true;
+        }
+
+
+    }
+
+    private void checkIfContainEnergyAndFibre() {
+        int sum = 0;
+        int checkNoOfEnergy = Collections.frequency(classIngredientSelected, "Energy");
+        int checkNoOfFibre = Collections.frequency(classIngredientSelected, "High Fibre/Byproduct");
+        sum = checkNoOfEnergy + checkNoOfFibre;
+
+        if(sum == 3){
+            implementFormu();
+            conditionCheck = true;
+        }
+
+    }
+
+
+    private void implementFormuProtein() {
+
+        divClass();
+        reOrderGroup();
+        calNewCPLevel();
+        formulateProteinFeed(groupA, groupB);
+
+        if(!saveAlready) {
+            storeResultToDb();
+            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+        }
+
+    }
+
+    private void formulateProteinFeed(ArrayList<Double> groupDivA, ArrayList<Double> groupDivB) {
+        if(groupDivA.size() > 1) {
+
+            if (groupDivB.get(0) < Crude_proteintarget) {
+                //Declare initiate variable
+                calCalcium = new ArrayList <>();
+                calCrudeProtein = new ArrayList <>();
+                calPhosphorus = new ArrayList <>();
+                calEnergy = new ArrayList <>();
+
+                forCalcium = new ArrayList <>();
+                forPhosphorus = new ArrayList <>();
+                forCrudeProtein = new ArrayList <>();
+                forClass = new ArrayList <>();
+                forEnergy = new ArrayList <>();
+                commentArr = new ArrayList <>();
+
+                qtySpecified = new ArrayList <>();
+                newIngredient = new ArrayList <>();
+                newProportion = new ArrayList <>();
+                getNewProportionUnit = new ArrayList <>();
+
+                if(!reform) {
+                    qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+                }
+
+                Double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
+                Double groupDivBCP = Math.abs(Crude_proteintarget - Total);
+                Double forTotal = groupDivACP + groupDivBCP;
+
+                Double newCPFirst = assProp2first * 0.01 * groupDivACP;
+                Double newCPsecond = assProp2secon * 0.01 * groupDivACP;
+
+                //Implement step 6
+                double prop_100_kg_groupB = groupDivBCP * 100 / forTotal;
+                double prop_100_kg_groupA_first = newCPFirst * 100 / forTotal;
+                double prop_100_kg_groupA_second = newCPsecond * 100 / forTotal;
+
+                // Implement step 7
+                double propfirstgroupB = 0.01 * prop_100_kg_groupB * groupB.get(0);
+                double propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupA.get(0);
+                double propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupA.get(1);
+
+                //store class
+                forClass.add(ordClassB.get(0));
+                forClass.add(ordClassA.get(0));
+                forClass.add(ordClassA.get(1));
+
+                //store energy
+                forEnergy.add(forenergyB.get(0));
+                forEnergy.add(forenergyA.get(0));
+                forEnergy.add(forenergyA.get(1));
+
+                //store phosphorus
+                forPhosphorus.add(forPhosB.get(0));
+                forPhosphorus.add(forPhosA.get(0));
+                forPhosphorus.add(forPhosA.get(1));
+
+                // store calcium
+                forCalcium.add(forCalB.get(0));
+                forCalcium.add(forCalA.get(0));
+                forCalcium.add(forCalA.get(1));
+
+                //store crude_protein
+                forCrudeProtein.add(groupB.get(0));
+                forCrudeProtein.add(groupA.get(0));
+                forCrudeProtein.add(groupA.get(1));
+
+                //store proportion percentage
+                newProportion.add(propfirstgroupB);
+                newProportion.add(propfirstgroupA);
+                newProportion.add(propsecondgroupA);
+
+                //store ingredient
+                newIngredient.add(ordIngredientGrpB.get(0));
+                newIngredient.add(ordIngredientGrpA.get(0));
+                newIngredient.add(ordIngredientGrpA.get(1));
+
+                //store qty specified
+                qtySpecified.add(ordqtyAvailableB.get(0));
+                qtySpecified.add(ordqtyAvailableA.get(0));
+                qtySpecified.add(ordqtyAvailableA.get(1));
+
+
+                //scale down proportion to mix
+                double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
+                double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
+                double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+
+                //calculate analysis for calcium
+                double anacalcium = (scaleprop_groupB * forCalB.get(0)) + (scaleprop_first_groupA * forCalA.get(0)) + (scaleprop_second_groupA * forCalA.get(1));
+
+                double anaphos = (scaleprop_groupB * forPhosB.get(0)) + (scaleprop_first_groupA * forPhosA.get(0)) + (scaleprop_second_groupA * forPhosA.get(1));
+
+                double anaenergy = (scaleprop_groupB * forenergyB.get(0)) + (scaleprop_first_groupA * forenergyA.get(0)) + (scaleprop_second_groupA * forenergyA.get(1));
+
+                calCalcium.add(anacalcium);
+                calPhosphorus.add(anaphos);
+                calEnergy.add(anaenergy);
+                iterProtein = true;
+                iterRest = false;
+
+                checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
+
+                if((scaleprop_first_groupA < ordqtyAvailableA.get(0)) || (scaleprop_second_groupA < ordqtyAvailableA.get(1))){
+                    if(scaleprop_groupB > ordqtyAvailableB.get(0)){
+                        scaleprop_groupB = ordqtyAvailableB.get(0) * qtyTMix/scaleprop_groupB;
+                        qtyTMix = scaleprop_groupB;
+                        reform = true;
+                        implementFormuProtein();
+                        saveAlready = true;
+                        addcomprop = true;
+                    }
+
+                    if(!addcomprop) {
+                        addcomprop = false;
+                    }
+                }
+
+                if(!addcomprop) {
+                    getNewProportionUnit.add(scaleprop_groupB);
+                    getNewProportionUnit.add(scaleprop_first_groupA);
+                    getNewProportionUnit.add(scaleprop_second_groupA);
+                    addcomprop = true;
+
+                    //add quantity to mix into the database
+//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+
+
+                    if (scaleprop_groupB <= ordqtyAvailableB.get(0)) {
+                        commentArr.add("Appropriate");
+                    } else {
+                        commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                    }
+
+                    if (scaleprop_first_groupA <= ordqtyAvailableA.get(0)) {
+                        commentArr.add("Appropriate");
+                    } else {
+                        commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                    }
+
+                    if (scaleprop_second_groupA <= ordqtyAvailableA.get(1)) {
+                        commentArr.add("Appropriate");
+                    } else {
+                        commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                    }
+                }
+
+
+            }else{
+                conditionCheck = false;
+            }
+        }else if(groupDivB.size() > 1) {
+
+            if (Collections.min(groupDivB) < Crude_proteintarget) {
+
+                //Declare initiate variable
+                calCalcium = new ArrayList <>();
+                calCrudeProtein = new ArrayList <>();
+                calPhosphorus = new ArrayList <>();
+                calEnergy = new ArrayList <>();
+
+                forCalcium = new ArrayList <>();
+                forPhosphorus = new ArrayList <>();
+                forCrudeProtein = new ArrayList <>();
+                forClass = new ArrayList <>();
+                forEnergy = new ArrayList <>();
+                commentArr = new ArrayList <>();
+
+                qtySpecified = new ArrayList <>();
+                newIngredient = new ArrayList <>();
+                newProportion = new ArrayList <>();
+                getNewProportionUnit = new ArrayList <>();
+
+
+                if(!reform) {
+                    qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+                }
+
+                Double groupDivACP = Math.abs(groupDivA.get(0) - Crude_proteintarget);
+                Double groupDivBCP = Math.abs(Crude_proteintarget - Total);
+                Double forTotal = groupDivACP + groupDivBCP;
+
+                Double newCPFirst = assProp2first * 0.01 * groupDivACP;
+                Double newCPsecond = assProp2secon * 0.01 * groupDivACP;
+
+                //Implement step 6
+                double prop_100_kg_groupB = groupDivBCP * 100 / forTotal;
+                double prop_100_kg_groupA_first = newCPFirst * 100 / forTotal;
+                double prop_100_kg_groupA_second = newCPsecond * 100 / forTotal;
+
+                // Implement step 7
+                double propfirstgroupB = 0.01 * prop_100_kg_groupB * groupA.get(0);
+                double propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupB.get(0);
+                double propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupB.get(1);
+
+                //store class
+                forClass.add(ordClassA.get(0));
+                forClass.add(ordClassB.get(0));
+                forClass.add(ordClassB.get(1));
+
+                //store energy
+                forEnergy.add(forenergyA.get(0));
+                forEnergy.add(forenergyB.get(0));
+                forEnergy.add(forenergyB.get(1));
+
+                //store phosphorus
+                forPhosphorus.add(forPhosA.get(0));
+                forPhosphorus.add(forPhosB.get(0));
+                forPhosphorus.add(forPhosB.get(1));
+
+                // store calcium
+                forCalcium.add(forCalA.get(0));
+                forCalcium.add(forCalB.get(0));
+                forCalcium.add(forCalB.get(1));
+
+                //store crude_protein
+                forCrudeProtein.add(groupA.get(0));
+                forCrudeProtein.add(groupB.get(0));
+                forCrudeProtein.add(groupB.get(1));
+
+                //store proportion percentage
+                newProportion.add(propfirstgroupB);
+                newProportion.add(propfirstgroupA);
+                newProportion.add(propsecondgroupA);
+
+                //store ingredient
+                newIngredient.add(ordIngredientGrpA.get(0));
+                newIngredient.add(ordIngredientGrpB.get(0));
+                newIngredient.add(ordIngredientGrpB.get(1));
+
+                //store qty specified
+                qtySpecified.add(ordqtyAvailableA.get(0));
+                qtySpecified.add(ordqtyAvailableB.get(0));
+                qtySpecified.add(ordqtyAvailableB.get(1));
+
+
+                //scale down proportion to mix
+                double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
+                double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
+                double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+
+                //calculate analysis for calcium
+                double anacalcium = (scaleprop_groupB * forCalA.get(0)) + (scaleprop_first_groupA * forCalB.get(0)) + (scaleprop_second_groupA * forCalB.get(1));
+
+                double anaphos = (scaleprop_groupB * forPhosA.get(0)) + (scaleprop_first_groupA * forPhosB.get(0)) + (scaleprop_second_groupA * forPhosB.get(1));
+
+                double anaenergy = (scaleprop_groupB * forenergyA.get(0)) + (scaleprop_first_groupA * forenergyB.get(0)) + (scaleprop_second_groupA * forenergyB.get(1));
+
+                calCalcium.add(anacalcium);
+                calPhosphorus.add(anaphos);
+                calEnergy.add(anaenergy);
+                iterProtein = true;
+                iterRest = false;
+
+                checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
+
+                if((scaleprop_first_groupA <= ordqtyAvailableB.get(0)) || (scaleprop_second_groupA <= ordqtyAvailableB.get(1))){
+                    if(scaleprop_groupB > ordqtyAvailableA.get(0)){
+                        scaleprop_groupB = ordqtyAvailableA.get(0) * qtyTMix/scaleprop_groupB;
+                        qtyTMix = scaleprop_groupB;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormuProtein();
+                        saveAlready = true;
+                        addcomprop = true;
+
+                    }
+
+                    if(!addcomprop) {
+                        addcomprop = false;
+                    }
+
+                }
+
+                if(!addcomprop) {
+                    getNewProportionUnit.add(scaleprop_groupB);
+                    getNewProportionUnit.add(scaleprop_first_groupA);
+                    getNewProportionUnit.add(scaleprop_second_groupA);
+                    addcomprop = true;
+
+                    //add quantity to mix into the database
+//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+
+
+                    if (scaleprop_groupB <= ordqtyAvailableA.get(0)) {
+                        commentArr.add("Appropriate");
+                    } else {
+                        commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                    }
+
+                    if (scaleprop_first_groupA <= ordqtyAvailableB.get(0)) {
+                        commentArr.add("Appropriate");
+                    } else {
+                        commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                    }
+
+                    if (scaleprop_second_groupA <= ordqtyAvailableB.get(1)) {
+                        commentArr.add("Appropriate");
+                    } else {
+                        commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableB.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                    }
+                }
+
+
+
+            }else{
+                conditionCheck = false;
+            }
+        }
+    }
+
+    private void implementFormu() {
+
         divGroups();
         reOrderGroup();
         calNewCPLevel();
         formulateFeed(groupA, groupB);
-        formulateFeed(groupB, groupA);
-        storeResultToDb();
-        storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+        formulateFeed2(groupB, groupA);
 
+        if(!saveAlready) {
+            storeResultToDb();
+            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+        }
+
+//        storecalculatedAnalysis(C
+    }
+
+
+    private void formulateFeed2(ArrayList<Double> groupDivA, ArrayList<Double> groupDivB) {
+
+        if(groupDivA.size() > 1){
+
+            //Declare initiate variable
+            calCalcium = new ArrayList <>();
+            calCrudeProtein = new ArrayList <>();
+            calPhosphorus = new ArrayList <>();
+            calEnergy = new ArrayList <>();
+
+            forCalcium = new ArrayList <>();
+            forPhosphorus = new ArrayList <>();
+            forCrudeProtein = new ArrayList <>();
+            forClass = new ArrayList <>();
+            forEnergy = new ArrayList <>();
+            commentArr = new ArrayList <>();
+
+            qtySpecified = new ArrayList <>();
+            newIngredient = new ArrayList <>();
+            newProportion = new ArrayList <>();
+            getNewProportionUnit = new ArrayList <>();
+
+            if(!reform) {
+                qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+            }
+
+            Double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
+            Double groupDivBCP = Math.abs(Crude_proteintarget - Total);
+            Double forTotal = groupDivACP + groupDivBCP;
+
+            Double newCPFirst = assProp2first * 0.01 * groupDivACP;
+            Double newCPsecond = assProp2secon * 0.01 * groupDivACP;
+
+            //Implement step 6
+            double prop_100_kg_groupB = groupDivBCP * 100/forTotal;
+            double prop_100_kg_groupA_first = newCPFirst * 100/forTotal;
+            double prop_100_kg_groupA_second  = newCPsecond * 100/forTotal;
+
+            // Implement step 7
+            double propfirstgroupB = 0.01 * prop_100_kg_groupB * groupDivB.get(0);
+            double propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupDivA.get(0);
+            double propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupDivA.get(1);
+
+            //store class
+            forClass.add(ordClassA.get(0));
+            forClass.add(ordClassB.get(0));
+            forClass.add(ordClassB.get(1));
+
+            //store energy
+            forEnergy.add(forenergyA.get(0));
+            forEnergy.add(forenergyB.get(0));
+            forEnergy.add(forenergyB.get(1));
+
+            //store phosphorus
+            forPhosphorus.add(forPhosA.get(0));
+            forPhosphorus.add(forPhosB.get(0));
+            forPhosphorus.add(forPhosB.get(1));
+
+            // store calcium
+            forCalcium.add(forCalA.get(0));
+            forCalcium.add(forCalB.get(0));
+            forCalcium.add(forCalB.get(1));
+
+            //store crude_protein
+            forCrudeProtein.add(groupA.get(0));
+            forCrudeProtein.add(groupB.get(0));
+            forCrudeProtein.add(groupB.get(1));
+
+            //store proportion percentage
+            newProportion.add(propfirstgroupB);
+            newProportion.add(propfirstgroupA);
+            newProportion.add(propsecondgroupA);
+
+            //store ingredient
+            newIngredient.add(ordIngredientGrpA.get(0));
+            newIngredient.add(ordIngredientGrpB.get(0));
+            newIngredient.add(ordIngredientGrpB.get(1));
+
+            //store qty specified
+            qtySpecified.add(ordqtyAvailableA.get(0));
+            qtySpecified.add(ordqtyAvailableB.get(0));
+            qtySpecified.add(ordqtyAvailableB.get(1));
+
+
+            //scale down proportion to mix
+            double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
+            double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
+            double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+
+            //calculate analysis for calcium
+            double anacalcium = (scaleprop_groupB * forCalA.get(0)) + (scaleprop_first_groupA * forCalB.get(0)) + (scaleprop_second_groupA * forCalB.get(1));
+
+            double anaphos = (scaleprop_groupB * forPhosA.get(0)) + (scaleprop_first_groupA * forPhosB.get(0)) + (scaleprop_second_groupA * forPhosB.get(1));
+
+            double anaenergy = (scaleprop_groupB * forenergyA.get(0)) + (scaleprop_first_groupA * forenergyB.get(0)) + (scaleprop_second_groupA * forenergyB.get(1));
+
+            calCalcium.add(anacalcium);
+            calPhosphorus.add(anaphos);
+            calEnergy.add(anaenergy);
+            iterProtein = false;
+            iterRest = true;
+
+            checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
+
+            if((scaleprop_first_groupA <= ordqtyAvailableB.get(0)) && (scaleprop_second_groupA <= ordqtyAvailableB.get(1))){
+                if(scaleprop_groupB > ordqtyAvailableA.get(0)){
+
+                    scaleprop_groupB = ordqtyAvailableA.get(0) * qtyTMix/scaleprop_groupB;
+                    qtyTMix = scaleprop_groupB;
+                    reform = true;
+                    implementFormu();
+                    saveAlready = true;
+                    addcomprop = true;
+
+                }else{
+                    saveAlready = false;
+                }
+            }
+
+            if(!addcomprop) {
+
+                getNewProportionUnit.add(scaleprop_groupB);
+                getNewProportionUnit.add(scaleprop_first_groupA);
+                getNewProportionUnit.add(scaleprop_second_groupA);
+                addcomprop = true;
+
+                //add quantity to mix into the database
+//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+
+
+                if (scaleprop_groupB <= ordqtyAvailableA.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_first_groupA <= ordqtyAvailableB.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_second_groupA <= ordqtyAvailableB.get(1)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableB.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+            }
+
+
+
+        }
 
     }
+
 
     public void storeResultToDb() {
         for(int i=0; i<numOfSelectedFeed; i++) {
@@ -269,7 +928,11 @@ public class CreateDietActivity extends AppCompatActivity {
             newIngredient = new ArrayList <>();
             newProportion = new ArrayList <>();
             getNewProportionUnit = new ArrayList <>();
-            qtyTMix = Integer.parseInt(getQtyToMix.getText().toString());
+
+
+            if(!reform) {
+                qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+            }
 
             Double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
             Double groupDivBCP = Math.abs(Crude_proteintarget - Total);
@@ -284,9 +947,9 @@ public class CreateDietActivity extends AppCompatActivity {
             double prop_100_kg_groupA_second  = newCPsecond * 100/forTotal;
 
             // Implement step 7
-            double propfirstgroupB = 0.01 * prop_100_kg_groupB * groupB.get(0);
-            double propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupA.get(0);
-            double propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupA.get(1);
+            double propfirstgroupB = 0.01 * prop_100_kg_groupB * groupDivB.get(0);
+            double propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupDivA.get(0);
+            double propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupDivA.get(1);
 
             //store class
             forClass.add(ordClassB.get(0));
@@ -345,33 +1008,49 @@ public class CreateDietActivity extends AppCompatActivity {
             calPhosphorus.add(anaphos);
             calEnergy.add(anaenergy);
 
-            getNewProportionUnit.add(scaleprop_groupB);
-            getNewProportionUnit.add(scaleprop_first_groupA);
-            getNewProportionUnit.add(scaleprop_second_groupA);
+            if((scaleprop_first_groupA < ordqtyAvailableA.get(0)) || (scaleprop_second_groupA < ordqtyAvailableA.get(1))){
+                if(scaleprop_groupB > ordqtyAvailableB.get(0)){
+                    scaleprop_groupB = ordqtyAvailableB.get(0) * qtyTMix/scaleprop_groupB;
+                    qtyTMix = scaleprop_groupB;
+                    reform = true;
+                    implementFormu();
+                    saveAlready = true;
 
-            //add quantity to mix into the database
+                }else{
+                    saveAlready = false;
+                }
+            }
+
+            if(!saveAlready) {
+                getNewProportionUnit.add(scaleprop_groupB);
+                getNewProportionUnit.add(scaleprop_first_groupA);
+                getNewProportionUnit.add(scaleprop_second_groupA);
+
+                //add quantity to mix into the database
 //            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
 
+                checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
 
-            if(scaleprop_groupB <= ordqtyAvailableB.get(0)){
-                commentArr.add("Appropriate");
-            }else{
-                commentArr.add("Get " +  decimalFormat.format(scaleprop_groupB - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+
+                if (scaleprop_groupB <= ordqtyAvailableB.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_first_groupA <= ordqtyAvailableA.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_second_groupA <= ordqtyAvailableA.get(1)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
             }
-
-            if(scaleprop_first_groupA <= ordqtyAvailableA.get(0)){
-                commentArr.add("Appropriate");
-            }else{
-                commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() +" more");
-            }
-
-            if(scaleprop_second_groupA <= ordqtyAvailableA.get(1)){
-                commentArr.add("Appropriate");
-            }else{
-                commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() +" more");
-            }
-
-            checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
 
         }
 
@@ -379,119 +1058,215 @@ public class CreateDietActivity extends AppCompatActivity {
 
     private void checkQtyScaledDown(double scaleprop_groupB, double scaleprop_first_groupA, double scaleprop_second_groupA) {
 
-        if(scaleprop_groupB > ordqtyAvailableB.get(0)){
-            performPearson();
-        }
 
-        if((scaleprop_first_groupA > ordqtyAvailableA.get(0)) && (scaleprop_second_groupA > ordqtyAvailableA.get(1))){
-            performPearson();
-        }
+        if(ordqtyAvailableA.size()>1) {
 
-        if((scaleprop_first_groupA < ordqtyAvailableA.get(0)) && (scaleprop_second_groupA > ordqtyAvailableA.get(1))){
-            // 2nd ingridient not appropriate
-            assProp2first++;
-            assProp2secon--;
-            formulateFeed(groupA, groupB);
-            formulateFeed(groupB, groupA);
+            if ((scaleprop_first_groupA <= ordqtyAvailableA.get(0)) && (scaleprop_second_groupA > ordqtyAvailableA.get(1))) {
 
-            if(assProp2secon == 92){
-                performPearson();
+                if (iter1 == (formulationiter1.length - 1)) {
+
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableA.get(1);
+                    qtyscaled = scaleprop_second_groupA;
+
+
+                    if (iterRest) {
+
+                        qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormu();
+//                        formulateFeed(groupA, groupB);
+//                        formulateFeed2(groupB, groupA);
+                        scalegroup = true;
+                    }
+
+                    if (iterProtein) {
+                        qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormuProtein();
+//                        formulateProteinFeed(groupA, groupB);
+                        scalegroup = true;
+                        saveAlready = true;
+                        addcomprop = true;
+                    }
+
+                }
+
+                // 2nd ingridient not appropriate
+                if(!scalegroup){
+                assProp2first++;
+                assProp2secon--;
+                if (iterRest) {
+                    implementFormu();
+//                    formulateFeed(groupA, groupB);
+//                    formulateFeed2(groupB, groupA);
+                }
+
+                if (iterProtein) {
+                    implementFormuProtein();
+//                    formulateProteinFeed(groupA, groupB);
+                }
+
+                if (assProp2first == 99) {
+                    iter1++;
+                    iter2++;
+                    assProp2first = formulationiter1[iter1];
+                    assProp2secon = formulationiter2[iter2];
+
+                    if (iterRest) {
+                        implementFormu();
+//                        formulateFeed(groupA, groupB);
+//                        formulateFeed2(groupB, groupA);
+                    }
+
+                    if (iterProtein) {
+                        implementFormuProtein();
+//                        formulateProteinFeed(groupA, groupB);
+                    }
+//                performPearson();
+                }
             }
-        }
-
-        if((scaleprop_first_groupA > ordqtyAvailableA.get(0)) && (scaleprop_second_groupA < ordqtyAvailableA.get(0))){
-            //1st ingredient not appropriate
-            assProp2first--;
-            assProp2secon++;
-            formulateFeed(groupA, groupB);
-            formulateFeed(groupB, groupA);
-
-            if(assProp2first == 8){
-                performPearson();
             }
-        }
+        }else{
+            if ((scaleprop_first_groupA > ordqtyAvailableB.get(0)) && (scaleprop_second_groupA <= ordqtyAvailableB.get(1))) {
+
+                if (iter1 == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
 
 
-    }
-
-    private void performPearson() {
-        //Implementing step 1
-        checkgroupIngre(groupA, groupB);
-        checkgroupIngre(groupB, groupA);
-
-    }
-
-    private void checkgroupIngre(ArrayList<Double> groupA, ArrayList<Double> groupB) {
+                    qtyavailableGrp = ordqtyAvailableB.get(0);
+                    qtyscaled = scaleprop_first_groupA;
 
 
-        if(groupA.size() > 1){
-            //Declare initiate variable
-            calCalcium = new ArrayList <>();
-            calCrudeProtein = new ArrayList <>();
-            calPhosphorus = new ArrayList <>();
-            calEnergy = new ArrayList <>();
-            newProportion = new ArrayList <>();
-            getNewProportionUnit = new ArrayList <>();
+                    if (iterRest) {
 
-            qtyTMix = Integer.parseInt(getQtyToMix.getText().toString());
-            double total = 0;
+                        qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormu();
+//                        formulateFeed(groupA, groupB);
+//                        formulateFeed2(groupB, groupA);
+                        scalegroup = true;
+                    }
 
-            for(int i=0; i<groupA.size(); i++){
-                total += groupA.get(i);
+                    if (iterProtein) {
+                        qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormuProtein();
+//                        formulateProteinFeed(groupA, groupB);
+                        scalegroup = true;
+                        saveAlready = true;
+                        addcomprop = true;
+                    }
+
+                }
+
+                // 2nd ingridient not appropriate
+                if(!scalegroup){
+                assProp2first--;
+                assProp2secon++;
+                if (iterRest) {
+                    implementFormu();
+//                    formulateFeed(groupA, groupB);
+//                    formulateFeed2(groupB, groupA);
+                }
+
+                if (iterProtein) {
+                    implementFormuProtein();
+//                    formulateProteinFeed(groupA, groupB);
+                }
+
+                if (assProp2secon == 99) {
+                    iter1++;
+                    iter2++;
+                    assProp2first = formulationiter1[iter1];
+                    assProp2secon = formulationiter2[iter2];
+
+                    if (iterRest) {
+                        implementFormu();
+//                        formulateFeed(groupA, groupB);
+//                        formulateFeed2(groupB, groupA);
+                    }
+
+                    if (iterProtein) {
+                        implementFormuProtein();
+//                        formulateProteinFeed(groupA, groupB);
+                    }
+//                performPearson();
+                }
+            }
             }
 
-            // Step 2
-            double firstIngrAPercent = groupA.get(0) * 0.01/total;
-            double secondIngrAPercent = groupA.get(1) * 0.01/total;
 
-            //step 3
-            double groupCPfirstA = firstIngrAPercent * 0.01 * groupA.get(0);
-            double groupCPsecondA = secondIngrAPercent * 0.01 * groupA.get(1);
+            if ((scaleprop_first_groupA > ordqtyAvailableB.get(0)) && (scaleprop_second_groupA > ordqtyAvailableB.get(1))) {
+                double qtyAvail = 0.0;
+                double scaleTouse = 0.0;
 
-            double totalCP = groupCPfirstA + groupCPsecondA ;
+                if(scaleprop_first_groupA < scaleprop_second_groupA){
+                     qtyAvail = ordqtyAvailableB.get(1);
+                    scaleTouse = scaleprop_second_groupA;
+                }else{
+                    qtyAvail = ordqtyAvailableB.get(0);
+                    scaleTouse = scaleprop_first_groupA;
+                }
 
-            //step 4
-            double newGroupCP = Math.abs(groupB.get(0) - Crude_proteintarget);
-            double newUngroupedCP = Math.abs(totalCP - Crude_proteintarget);
-            double totalPart = newGroupCP + newUngroupedCP;
+                if(iter1 == (formulationiter1.length - 1 )){
 
-            //step 5
-            double newgroupCPfirst = firstIngrAPercent * 0.01 * newGroupCP;
-            double newgroupCPsecond = secondIngrAPercent * 0.01 * newGroupCP;
+                    if(iterRest) {
 
-            //step 5
-            double ungroupedCPPercent = newUngroupedCP * 100/totalPart;
-            double groupedCPFirstPercent = newgroupCPfirst * 100/totalPart;
-            double groupedCPSecondPercent = newgroupCPsecond * 100/totalPart;
+                        qtyTMix = qtyTMix * qtyAvail/scaleTouse;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormu();
+//                        formulateFeed(groupA, groupB);
+//                        formulateFeed2(groupB, groupA);
+                        scalegroup = true;
+                    }
 
+                    if(iterProtein){
+                        qtyTMix = qtyTMix * qtyAvail/scaleTouse;
+                        reform = true;
+                        iter1 = 0;
+                        iter2 = 0;
+                        implementFormuProtein();
+//                        formulateProteinFeed(groupA, groupB);
+                        saveAlready = true;
+                        addcomprop = true;
+                        scalegroup = true;
+                    }
 
-            //store proportion percentage
-            newProportion.add(ungroupedCPPercent);
-            newProportion.add(groupedCPFirstPercent);
-            newProportion.add(groupedCPSecondPercent);
+                }
+                if(!scalegroup) {
+                    iter1++;
+                    iter2++;
+                    assProp2first = formulationiter1[iter1];
+                    assProp2secon = formulationiter2[iter2];
+                    if(iterRest) {
+                        implementFormu();
+//                        formulateFeed(groupA, groupB);
+//                        formulateFeed2(groupB, groupA);
+                    }
 
-            //last step
-            double ungroupedqtyToMix = ungroupedCPPercent * 0.01 * qtyTMix;
-            double groupedFirstqtyToMix = groupedCPFirstPercent * 0.01 * qtyTMix;
-            double groupedSecondqtyToMix = groupedCPSecondPercent * 0.01 * qtyTMix;
-
-            getNewProportionUnit.add(ungroupedqtyToMix);
-            getNewProportionUnit.add(groupedFirstqtyToMix);
-            getNewProportionUnit.add(groupedSecondqtyToMix);
-
-            //calculate analysis for calcium
-            double anacalcium = (ungroupedqtyToMix * forCalB.get(0)) + (groupedFirstqtyToMix * forCalA.get(0)) + (groupedSecondqtyToMix * forCalA.get(1));
-
-            double anaphos = (ungroupedqtyToMix * forPhosB.get(0)) + (groupedFirstqtyToMix * forPhosA.get(0)) + (groupedSecondqtyToMix * forPhosA.get(1));
-
-            double anaenergy = (ungroupedqtyToMix * forenergyB.get(0)) + (groupedFirstqtyToMix * forenergyA.get(0)) + (groupedSecondqtyToMix * forenergyA.get(1));
-
-            calCalcium.add(anacalcium);
-            calPhosphorus.add(anaphos);
-            calEnergy.add(anaenergy);
-
+                    if(iterProtein){
+                        implementFormuProtein();
+//                        formulateProteinFeed(groupA, groupB);
+                    }
+                }
+            }
 
         }
+
+
     }
 
     private void calNewCPLevel() {
@@ -503,8 +1278,8 @@ public class CreateDietActivity extends AppCompatActivity {
         }
 
         if(groupB.size() == 2){
-            Double firstNutrient = (0.01 * assProp2first) * groupA.get(0);
-            Double secondNutrient = (0.01 * assProp2secon) * groupA.get(1);
+            Double firstNutrient = (0.01 * assProp2first) * groupB.get(0);
+            Double secondNutrient = (0.01 * assProp2secon) * groupB.get(1);
             Total = firstNutrient + secondNutrient;
         }
 
@@ -530,42 +1305,71 @@ public class CreateDietActivity extends AppCompatActivity {
            Collections.sort(groupA);
            for (int i=0; i<groupA.size(); i++){
 
-           ordIngredientGrpA.add(ingredientGrpA.get(comGroupA.indexOf(groupA.get(i))));
-           ordqtyAvailableA.add(qtyselected.get(comGroupA.indexOf(groupA.get(i))));
-           forCalA.add(calciumNutrient.get(comGroupA.indexOf(groupA.get(i))));
-           forPhosA.add(phosphorusNutrient.get(comGroupA.indexOf(groupA.get(i))));
-           forenergyA.add(energyNutrient.get(comGroupA.indexOf(groupA.get(i))));
-           ordClassA.add(classIngredientSelected.get(comGroupA.indexOf(groupA.get(i))));
+           ordIngredientGrpA.add(ingredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           ordqtyAvailableA.add(qtyselected.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           forCalA.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           forPhosA.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           forenergyA.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           ordClassA.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(i))));
 
            }
 
             ordIngredientGrpB.add(ingredientGrpB.get(0));
-            ordqtyAvailableB.add(qtyselected.get(comGroupB.indexOf(groupB.get(0))));
-            forCalB.add(calciumNutrient.get(comGroupB.indexOf(groupB.get(0))));
-            forPhosB.add(phosphorusNutrient.get(comGroupB.indexOf(groupB.get(0))));
-            forenergyB.add(energyNutrient.get(comGroupB.indexOf(groupB.get(0))));
-            ordClassB.add(classIngredientSelected.get(comGroupB.indexOf(groupB.get(0))));
+            ordqtyAvailableB.add(qtyselected.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+            forCalB.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+            forPhosB.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+            forenergyB.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+            ordClassB.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupB.get(0))));
         }
 
         if(groupB.size()>1){
            Collections.sort(groupB);
            for (int i=0; i<groupB.size(); i++){
 
-           ordIngredientGrpB.add(ingredientGrpB.get(comGroupB.indexOf(groupB.get(i))));
-           ordqtyAvailableB.add(qtyselected.get(comGroupB.indexOf(groupB.get(i))));
-           forCalB.add(calciumNutrient.get(comGroupB.indexOf(groupB.get(i))));
-           forPhosB.add(phosphorusNutrient.get(comGroupB.indexOf(groupB.get(i))));
-           forenergyB.add(energyNutrient.get(comGroupB.indexOf(groupB.get(i))));
-           ordClassB.add(classIngredientSelected.get(comGroupB.indexOf(groupB.get(i))));
+           ordIngredientGrpB.add(ingredientSelected.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           ordqtyAvailableB.add(qtyselected.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           forCalB.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           forPhosB.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           forenergyB.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           ordClassB.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupB.get(i))));
            }
 
             ordIngredientGrpA.add(ingredientGrpA.get(0));
-            ordqtyAvailableA.add(qtyselected.get(comGroupA.indexOf(groupA.get(0))));
-            forCalB.add(calciumNutrient.get(comGroupA.indexOf(groupA.get(0))));
-            forPhosB.add(phosphorusNutrient.get(comGroupA.indexOf(groupA.get(0))));
-            forenergyB.add(energyNutrient.get(comGroupA.indexOf(groupA.get(0))));
-            ordClassB.add(classIngredientSelected.get(comGroupA.indexOf(groupA.get(0))));
+            ordqtyAvailableA.add(qtyselected.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+            forCalA.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+            forPhosA.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+            forenergyA.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+            ordClassA.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(0))));
         }
+    }
+
+    private void divClass(){
+        groupA = new ArrayList <>();
+        groupB = new ArrayList <>();
+        comGroupA = new ArrayList <>();
+        comGroupB = new ArrayList <>();
+        ingredientGrpA = new ArrayList <>();
+        ingredientGrpB = new ArrayList <>();
+
+        groupB = new ArrayList <>();
+        ingredientGrpB = new ArrayList <>();
+
+        for (int i=0; i<classIngredientSelected.size(); i++){
+
+            if((classIngredientSelected.get(i).equals("Animal")) || (classIngredientSelected.get(i).equals("Plant"))){
+
+                groupA.add(crudeProteinNutrient.get(i));
+                comGroupA.add(crudeProteinNutrient.get(i));
+
+                ingredientGrpA.add(ingredientSelected.get(i));
+            }else{
+                groupB.add(crudeProteinNutrient.get(i));
+                comGroupB.add(crudeProteinNutrient.get(i));
+                ingredientGrpB.add(ingredientSelected.get(i));
+            }
+
+        }
+
     }
 
     private void divGroups() {
@@ -579,12 +1383,6 @@ public class CreateDietActivity extends AppCompatActivity {
         groupB = new ArrayList <>();
         ingredientGrpB = new ArrayList <>();
 
-        //ingredientSelected.add(
-        //classIngredientSelected
-        //crudeProteinNutrient.ad
-        //energyNutrient.add(getF
-        //calciumNutrient.add(get
-        //phosphorusNutrient.add(
         for (int i=0; i<crudeProteinNutrient.size(); i++){
 
         if(crudeProteinNutrient.get(i) >= Crude_proteintarget){
