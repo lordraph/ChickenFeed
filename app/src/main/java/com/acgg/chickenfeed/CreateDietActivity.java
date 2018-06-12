@@ -405,6 +405,7 @@ public class CreateDietActivity extends AppCompatActivity {
         if(!saveAlready) {
             storeResultToDb();
             storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
         }
 
     }
