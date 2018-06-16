@@ -42,10 +42,12 @@ public class CreateDietActivity extends AppCompatActivity {
     ArrayList<Double> groupA, groupB, ordGroupA, ordGroupB, comGroupA, comGroupB, forCalA, forPhosB, forPhosA, forCalB ;
     ArrayList<Integer> energyNutrient, qtyselected, qtySpecified, forEnergy, ordqtyAvailableA, ordqtyAvailableB, forenergyA, forenergyB;
     Spinner quantityTypeSpinner;
-    int numOfSelectedFeed=0, noOfFomulation=0,  assProp2first = 51, assProp2secon = 49, iter1=0, iter2 =0;
+    int numOfSelectedFeed=0, noOfFomulation=0,  assProp2first = 51, assProp2secon = 49, countProp = 0, iter1=0, iter2 =0;
     ArrayList<String>  ingredientGrpA, ingredientGrpB, ordIngredientGrpA, ordIngredientGrpB;
     ArrayList<String>  ordClassA, ordClassB;
     Button createmixBtn;
+    double assignPropfirst=0, assignPropsecond=0, assignPropthird=0;
+    double assPropSeconddouble =0.0, assPropFirstdouble =0.0;
     RadioGroup radioGroup;
     String birdSelected;
     boolean iterProtein= false, iterRest = false;
@@ -53,11 +55,19 @@ public class CreateDietActivity extends AppCompatActivity {
     boolean formulate = false, recalculate = false, clickYes = false, clickNo = false, conditionCheck = true;
     boolean minConditionCheck = false, maxConditionCheck = false, reform = false, saveAlready = false;
     boolean scalegroup = false, addcomprop = false;
-    Double qtyToMix, Crude_protein, Calcium, Phosphorus, Total = 0.00;
+    double qtyToMix, Crude_protein, Calcium, Phosphorus, Total = 0.00, Total2A = 0.0, Total2B = 0.0;
+    double Total3A = 0.0, Total3B = 0.0;
     double Crude_proteintarget = 0.0, Calciumtarget = 0.00 ,Phosphorustarget = 0.0, qtyTMix = 0.00;
+    double scaleprop_groupBFeed = 0.0, scaleprop_first_groupAFeed = 0.0, scaleprop_second_groupAFeed = 0.0;
+    double scaleprop_third_groupAFeed = 0.0;
     DecimalFormat decimalFormat;
-    Integer[] formulationiter1 = {50,60,70,80,90};
-    Integer[] formulationiter2 = {50,40,30,20,10};
+    Integer[] formulationiter1 = {51,60,70,80,90};
+    Integer[] formulationiter2 = {49,40,30,20,10};
+    Integer[] formulationiter3a = {40,50,50,60,60,70,80};
+    Integer[] formulationiter3b = {40,40,30,30,20,20,10};
+    Integer[] formulationiter3c = {20,10,20,10,20,10,10};
+    boolean nextprop = true;
+    double scale_prop_four_first_grpA =0.0, scale_prop_four_second_grpA =0.0, scale_prop_four_first_grpB =0.0, scale_prop_four_second_grpB =0.0;
 
 
     @Override
@@ -150,8 +160,17 @@ public class CreateDietActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
 
-            }
-            else{
+            }else if (numOfFeedSelected() == 4){
+
+                formulateFourFeed();
+
+                if(formulate){
+                    Intent intent = new Intent(this, SummaryActivity.class);
+                    intent.putExtra("formuNo", noOfFomulation);
+                    startActivity(intent);
+                }
+
+            }else{
 
                 Toast.makeText(CreateDietActivity.this, "Please Select At least " +
                         "two Ingredient ", Toast.LENGTH_SHORT).show();
@@ -162,6 +181,1286 @@ public class CreateDietActivity extends AppCompatActivity {
         });
     }
 
+    private void formulateFourFeed() {
+
+        boolean checkNoOfFeed = checkIfFourFeedareselected();
+
+        if(checkNoOfFeed) {
+
+            getNumberofFormulation();
+
+            boolean conditionset = setConditions();
+
+            //formulate the feed
+            if(conditionset){
+                boolean setNewCPLevel = calNewCPLevelFourFeed();
+                reOrderGroupFour();
+                boolean finish = false;
+
+                while(!finish) {
+                    formulateProteinFeedFour(groupA, groupB);
+                    finish = checkQtyScaledDownFourFeed();
+                }
+
+                if(finish) {
+                    storeComment();
+                    storeResultToDb();
+                    storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+                    // add formulated ingredient into database
+                    addFormulatedIngredientToDb(birdSelected);
+                }
+            }
+
+
+
+        }
+
+
+
+
+
+
+    }
+
+    private boolean formulateProteinFeedFour(ArrayList<Double> groupDivA, ArrayList<Double> groupDivB) {
+        if(((groupDivA.size() == 3) && (groupDivB.size() == 1)) || ((groupDivA.size() == 1) && (groupDivB.size() == 3))) {
+
+                //Declare initiate variable
+                calCalcium = new ArrayList <>();
+                calCrudeProtein = new ArrayList <>();
+                calPhosphorus = new ArrayList <>();
+                calEnergy = new ArrayList <>();
+
+                forCalcium = new ArrayList <>();
+                forPhosphorus = new ArrayList <>();
+                forCrudeProtein = new ArrayList <>();
+                forClass = new ArrayList <>();
+                forEnergy = new ArrayList <>();
+                commentArr = new ArrayList <>();
+
+                qtySpecified = new ArrayList <>();
+                newIngredient = new ArrayList <>();
+                newProportion = new ArrayList <>();
+                getNewProportionUnit = new ArrayList <>();
+
+                double groupDivACP = 0.0, groupDivBCP = 0.0, forTotal=0.0, newCPFirst =0.0;
+                double newCPsecond = 0.0, newCPthird = 0.0, prop_100_kg_groupB=0.0;
+                double prop_100_kg_groupA_first =0.0, prop_100_kg_groupA_second =0.0;
+                double prop_100_kg_groupA_third = 0.0, propfirstgroupB =0.0, propfirstgroupA =0.0, propsecondgroupA =0.0;
+                double propthirdgroupA = 0.0;
+
+                if(!reform) {
+                    qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+                }
+
+
+                if(groupDivA.size() == 3) {
+                    groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
+                    groupDivBCP = Math.abs(Crude_proteintarget - Total3A);
+                    forTotal = groupDivACP + groupDivBCP;
+
+                    if(nextprop){
+                        assignPropfirst = formulationiter3a[countProp];
+                        assignPropsecond = formulationiter3b[countProp];
+                        assignPropthird = formulationiter3c[countProp];
+                        nextprop = false;
+                    }
+
+                    newCPFirst =  assignPropfirst * 0.01 * groupDivACP;
+                    newCPsecond = assignPropsecond * 0.01 * groupDivACP;
+                    newCPthird = assignPropthird * 0.01 * groupDivACP;
+
+                    //Implement step 6
+                    prop_100_kg_groupB = groupDivBCP * 100 / forTotal;
+                    prop_100_kg_groupA_first = newCPFirst * 100 / forTotal;
+                    prop_100_kg_groupA_second = newCPsecond * 100 / forTotal;
+                    prop_100_kg_groupA_third = newCPthird * 100 / forTotal;
+
+
+                    // Implement step 7
+                     propfirstgroupB = 0.01 * prop_100_kg_groupB * groupB.get(0);
+                     propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupA.get(0);
+                     propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupA.get(1);
+                     propthirdgroupA = 0.01 * prop_100_kg_groupA_third * groupA.get(2);
+
+                    //store class
+                    forClass.add(ordClassB.get(0));
+                    forClass.add(ordClassA.get(0));
+                    forClass.add(ordClassA.get(1));
+                    forClass.add(ordClassA.get(2));
+
+                    //store energy
+                    forEnergy.add(forenergyB.get(0));
+                    forEnergy.add(forenergyA.get(0));
+                    forEnergy.add(forenergyA.get(1));
+                    forEnergy.add(forenergyA.get(2));
+
+                    //store phosphorus
+                    forPhosphorus.add(forPhosB.get(0));
+                    forPhosphorus.add(forPhosA.get(0));
+                    forPhosphorus.add(forPhosA.get(1));
+                    forPhosphorus.add(forPhosA.get(2));
+
+                    // store calcium
+                    forCalcium.add(forCalB.get(0));
+                    forCalcium.add(forCalA.get(0));
+                    forCalcium.add(forCalA.get(1));
+                    forCalcium.add(forCalA.get(2));
+
+                    //store crude_protein
+                    forCrudeProtein.add(groupB.get(0));
+                    forCrudeProtein.add(groupA.get(0));
+                    forCrudeProtein.add(groupA.get(1));
+                    forCrudeProtein.add(groupA.get(2));
+
+                    //store proportion percentage
+                    newProportion.add(prop_100_kg_groupB);
+                    newProportion.add(prop_100_kg_groupA_first);
+                    newProportion.add(prop_100_kg_groupA_second);
+                    newProportion.add(prop_100_kg_groupA_third);
+
+                    //store ingredient
+                    newIngredient.add(ordIngredientGrpB.get(0));
+                    newIngredient.add(ordIngredientGrpA.get(0));
+                    newIngredient.add(ordIngredientGrpA.get(1));
+                    newIngredient.add(ordIngredientGrpA.get(2));
+
+                    //store qty specified
+                    qtySpecified.add(ordqtyAvailableB.get(0));
+                    qtySpecified.add(ordqtyAvailableA.get(0));
+                    qtySpecified.add(ordqtyAvailableA.get(1));
+                    qtySpecified.add(ordqtyAvailableA.get(2));
+
+
+
+                }else{
+                    groupDivACP = Math.abs(Total3B  - Crude_proteintarget);
+                    groupDivBCP = Math.abs(Crude_proteintarget - groupDivA.get(0));
+                    forTotal = groupDivACP + groupDivBCP;
+
+
+                    if(nextprop){
+                        assignPropfirst = formulationiter3a[countProp];
+                        assignPropsecond = formulationiter3b[countProp];
+                        assignPropthird = formulationiter3c[countProp];
+                        nextprop = false;
+                    }
+
+                    newCPFirst = assignPropfirst * 0.01 * groupDivBCP;
+                    newCPsecond = assignPropsecond * 0.01 * groupDivBCP;
+                    newCPthird = assignPropthird * 0.01 * groupDivBCP;
+
+                    //Implement step 6
+                    prop_100_kg_groupB = groupDivACP * 100 / forTotal;
+                    prop_100_kg_groupA_first = newCPFirst * 100 / forTotal;
+                    prop_100_kg_groupA_second = newCPsecond * 100 / forTotal;
+                    prop_100_kg_groupA_third = newCPthird * 100 / forTotal;
+
+
+                    // Implement step 7
+                     propfirstgroupB = 0.01 * prop_100_kg_groupB * groupA.get(0);
+                     propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupB.get(0);
+                     propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupB.get(1);
+                     propthirdgroupA = 0.01 * prop_100_kg_groupA_third * groupB.get(2);
+
+                    //store class
+                    forClass.add(ordClassA.get(0));
+                    forClass.add(ordClassB.get(0));
+                    forClass.add(ordClassB.get(1));
+                    forClass.add(ordClassB.get(2));
+
+                    //store energy
+                    forEnergy.add(forenergyA.get(0));
+                    forEnergy.add(forenergyB.get(0));
+                    forEnergy.add(forenergyB.get(1));
+                    forEnergy.add(forenergyB.get(2));
+
+                    //store phosphorus
+                    forPhosphorus.add(forPhosA.get(0));
+                    forPhosphorus.add(forPhosB.get(0));
+                    forPhosphorus.add(forPhosB.get(1));
+                    forPhosphorus.add(forPhosB.get(2));
+
+                    // store calcium
+                    forCalcium.add(forCalA.get(0));
+                    forCalcium.add(forCalB.get(0));
+                    forCalcium.add(forCalB.get(1));
+                    forCalcium.add(forCalB.get(2));
+
+                    //store crude_protein
+                    forCrudeProtein.add(groupA.get(0));
+                    forCrudeProtein.add(groupB.get(0));
+                    forCrudeProtein.add(groupB.get(1));
+                    forCrudeProtein.add(groupB.get(2));
+
+                    //store proportion percentage
+                    newProportion.add(prop_100_kg_groupB);
+                    newProportion.add(prop_100_kg_groupA_first);
+                    newProportion.add(prop_100_kg_groupA_second);
+                    newProportion.add(prop_100_kg_groupA_third);
+
+                    //store ingredient
+                    newIngredient.add(ordIngredientGrpA.get(0));
+                    newIngredient.add(ordIngredientGrpB.get(0));
+                    newIngredient.add(ordIngredientGrpB.get(1));
+                    newIngredient.add(ordIngredientGrpB.get(2));
+
+                    //store qty specified
+                    qtySpecified.add(ordqtyAvailableA.get(0));
+                    qtySpecified.add(ordqtyAvailableB.get(0));
+                    qtySpecified.add(ordqtyAvailableB.get(1));
+                    qtySpecified.add(ordqtyAvailableB.get(2));
+                }
+
+
+                //scale down proportion to mix
+                scaleprop_groupBFeed = prop_100_kg_groupB * qtyTMix * 0.01;
+                scaleprop_first_groupAFeed = prop_100_kg_groupA_first * qtyTMix * 0.01;
+                scaleprop_second_groupAFeed = prop_100_kg_groupA_second * qtyTMix * 0.01;
+                scaleprop_third_groupAFeed = prop_100_kg_groupA_third * qtyTMix * 0.01;
+
+
+                //calculate analysis for calcium
+            if(groupDivA.size() == 3) {
+                double anacalcium = (scaleprop_groupBFeed * forCalB.get(0)) + (scaleprop_first_groupAFeed * forCalA.get(0)) + (scaleprop_second_groupAFeed * forCalA.get(1)) + (scaleprop_third_groupAFeed * forCalA.get(2));
+
+                double anaphos = (scaleprop_groupBFeed * forPhosB.get(0)) + (scaleprop_first_groupAFeed * forPhosA.get(0)) + (scaleprop_second_groupAFeed * forPhosA.get(1)) + (scaleprop_third_groupAFeed * forPhosA.get(2));
+
+                double anaenergy = (scaleprop_groupBFeed * forenergyB.get(0)) + (scaleprop_first_groupAFeed * forenergyA.get(0)) + (scaleprop_second_groupAFeed * forenergyA.get(1)) + (scaleprop_third_groupAFeed * forenergyA.get(2));
+
+                calCalcium.add(anacalcium);
+                calPhosphorus.add(anaphos);
+                calEnergy.add(anaenergy);
+                return true;
+            }else{
+
+                double anacalcium = (scaleprop_groupBFeed * forCalA.get(0)) + (scaleprop_first_groupAFeed * forCalB.get(0)) + (scaleprop_second_groupAFeed * forCalB.get(1)) + (scaleprop_third_groupAFeed * forCalB.get(2));
+
+                double anaphos = (scaleprop_groupBFeed * forPhosA.get(0)) + (scaleprop_first_groupAFeed * forPhosB.get(0)) + (scaleprop_second_groupAFeed * forPhosB.get(1)) + (scaleprop_third_groupAFeed * forPhosB.get(2));
+
+                double anaenergy = (scaleprop_groupBFeed * forenergyA.get(0)) + (scaleprop_first_groupAFeed * forenergyB.get(0)) + (scaleprop_second_groupAFeed * forenergyB.get(1)) + (scaleprop_third_groupAFeed * forenergyB.get(2));
+
+                calCalcium.add(anacalcium);
+                calPhosphorus.add(anaphos);
+                calEnergy.add(anaenergy);
+                return true;
+
+            }
+
+
+        }else if((groupDivA.size() == 2) && (groupDivB.size() == 2)) {
+
+                //Declare initiate variable
+                calCalcium = new ArrayList <>();
+                calCrudeProtein = new ArrayList <>();
+                calPhosphorus = new ArrayList <>();
+                calEnergy = new ArrayList <>();
+
+                forCalcium = new ArrayList <>();
+                forPhosphorus = new ArrayList <>();
+                forCrudeProtein = new ArrayList <>();
+                forClass = new ArrayList <>();
+                forEnergy = new ArrayList <>();
+                commentArr = new ArrayList <>();
+
+                qtySpecified = new ArrayList <>();
+                newIngredient = new ArrayList <>();
+                newProportion = new ArrayList <>();
+                getNewProportionUnit = new ArrayList <>();
+
+
+                double groupDivACP = 0.0, groupDivBCP = 0.0, forTotal=0.0, newCPFirstAC =0.0;
+                double newCPsecond = 0.0, newCPthird = 0.0, prop_100_kg_groupB=0.0;
+                double prop_100_kg_groupA_first =0.0, prop_100_kg_groupA_second =0.0;
+                double prop_100_kg_groupA_third = 0.0, propfirstgroupB =0.0, propfirstgroupA =0.0, propsecondgroupA =0.0;
+                double propthirdgroupA = 0.0, prop_100_kg_groupB_first =0.0, prop_100_kg_groupB_second =0.0;
+                double newCPFirstA =0.0, newCPsecondA = 0.0, newCPFirstB =0.0, newCPsecondB = 0.0;
+                double propsecondgroupB=0.0;
+
+
+                if(!reform) {
+                    qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+                }
+
+                    groupDivACP = Math.abs(Total2B - Crude_proteintarget);
+                    groupDivBCP = Math.abs(Crude_proteintarget - Total2A);
+                    forTotal = groupDivACP + groupDivBCP;
+
+
+                    if(nextprop){
+                        assignPropfirst = formulationiter1[countProp];
+                        assignPropsecond = formulationiter2[countProp];
+                        nextprop = false;
+                    }
+
+
+                     newCPFirstA = assignPropfirst * 0.01 * groupDivACP;
+                     newCPsecondA = assignPropsecond * 0.01 * groupDivACP;
+
+
+                    newCPFirstB = assignPropfirst * 0.01 * groupDivBCP;
+                    newCPsecondB = assignPropsecond * 0.01 * groupDivBCP;
+
+                //Implement step 6
+                 prop_100_kg_groupB_first = newCPFirstB * 100 / forTotal;
+                 prop_100_kg_groupB_second = newCPsecondB * 100 / forTotal;
+                 prop_100_kg_groupA_first = newCPFirstA * 100 / forTotal;
+                 prop_100_kg_groupA_second = newCPsecondA * 100 / forTotal;
+
+                // Implement step 7
+                 propfirstgroupB = 0.01 * prop_100_kg_groupB_first * groupB.get(0);
+                 propsecondgroupB = 0.01 * prop_100_kg_groupB_second * groupB.get(1);
+                 propfirstgroupA = 0.01 * prop_100_kg_groupA_first * groupA.get(0);
+                 propsecondgroupA = 0.01 * prop_100_kg_groupA_second * groupA.get(1);
+
+                //store class
+                forClass.add(ordClassA.get(0));
+                forClass.add(ordClassA.get(1));
+                forClass.add(ordClassB.get(0));
+                forClass.add(ordClassB.get(1));
+
+                //store energy
+                forEnergy.add(forenergyA.get(0));
+                forEnergy.add(forenergyA.get(1));
+                forEnergy.add(forenergyB.get(0));
+                forEnergy.add(forenergyB.get(1));
+
+                //store phosphorus
+                forPhosphorus.add(forPhosA.get(0));
+                forPhosphorus.add(forPhosA.get(1));
+                forPhosphorus.add(forPhosB.get(0));
+                forPhosphorus.add(forPhosB.get(1));
+
+                // store calcium
+                forCalcium.add(forCalA.get(0));
+                forCalcium.add(forCalA.get(1));
+                forCalcium.add(forCalB.get(0));
+                forCalcium.add(forCalB.get(1));
+
+                //store crude_protein
+                forCrudeProtein.add(groupA.get(0));
+                forCrudeProtein.add(groupA.get(1));
+                forCrudeProtein.add(groupB.get(0));
+                forCrudeProtein.add(groupB.get(1));
+
+                //store proportion percentage
+                newProportion.add(prop_100_kg_groupB_first);
+                newProportion.add(prop_100_kg_groupB_second);
+                newProportion.add(prop_100_kg_groupA_first);
+                newProportion.add(prop_100_kg_groupA_second);
+
+                //store ingredient
+                newIngredient.add(ordIngredientGrpA.get(0));
+                newIngredient.add(ordIngredientGrpA.get(1));
+                newIngredient.add(ordIngredientGrpB.get(0));
+                newIngredient.add(ordIngredientGrpB.get(1));
+
+                //store qty specified
+                qtySpecified.add(ordqtyAvailableA.get(0));
+                qtySpecified.add(ordqtyAvailableA.get(1));
+                qtySpecified.add(ordqtyAvailableB.get(0));
+                qtySpecified.add(ordqtyAvailableB.get(1));
+
+
+                //scale down proportion to mix
+                scale_prop_four_first_grpB = prop_100_kg_groupB_first * qtyTMix * 0.01;
+                scale_prop_four_second_grpB = prop_100_kg_groupB_second * qtyTMix * 0.01;
+                scale_prop_four_first_grpA = prop_100_kg_groupA_first * qtyTMix * 0.01;
+                scale_prop_four_second_grpA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+//                double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
+//                double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+
+                //calculate analysis for calcium
+                double anacalcium = (scale_prop_four_first_grpB * forCalB.get(0)) + (scale_prop_four_second_grpB * forCalB.get(1)) + (scale_prop_four_first_grpA * forCalA.get(0)) + (scale_prop_four_second_grpA * forCalA.get(1));
+
+                double anaphos = (scale_prop_four_first_grpB * forPhosB.get(0)) + (scale_prop_four_second_grpB * forPhosB.get(1)) + (scale_prop_four_first_grpA * forPhosA.get(0)) + (scale_prop_four_second_grpA * forPhosA.get(1));
+
+                double anaenergy = (scale_prop_four_first_grpB * forenergyB.get(0)) + (scale_prop_four_second_grpB * forenergyB.get(1)) + (scale_prop_four_first_grpA * forenergyA.get(0)) + (scale_prop_four_second_grpA * forenergyA.get(1));
+
+                calCalcium.add(anacalcium);
+                calPhosphorus.add(anaphos);
+                calEnergy.add(anaenergy);
+
+        }
+
+        return false;
+    }
+
+    private boolean checkQtyScaledDownFourFeed() {
+
+
+        if(ordqtyAvailableA.size() == 3) {
+
+            // check the difference to scale down
+            double firstScaleDown = scaleprop_first_groupAFeed - ordqtyAvailableA.get(0);
+            double secondScaleDown = scaleprop_second_groupAFeed - ordqtyAvailableA.get(1);
+            double thirdScaleDown = scaleprop_third_groupAFeed - ordqtyAvailableA.get(2);
+
+            if ((firstScaleDown <= 0) && (secondScaleDown > 0) && (thirdScaleDown > 0)) {
+
+                assignPropfirst+=2;
+                assignPropsecond--;
+                assignPropthird--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(secondScaleDown < thirdScaleDown){
+                    qtyavailableGrp = ordqtyAvailableA.get(1);
+                    qtyscaled = scaleprop_second_groupAFeed;
+                    }else {
+                        qtyavailableGrp = ordqtyAvailableA.get(2);
+                        qtyscaled = scaleprop_third_groupAFeed;
+                    }
+
+                        qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                        countProp = 0;
+                        nextprop = true;
+                        reform = true;
+                        return false;
+                }
+
+
+                    if (assignPropfirst == 98) {
+                        countProp++;
+                        nextprop = true;
+                        return false;
+                    }
+
+                    return false;
+
+            }else if((firstScaleDown > 0) && (secondScaleDown <= 0) && (thirdScaleDown > 0)){
+                assignPropsecond += 2;
+                assignPropfirst--;
+                assignPropthird--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(firstScaleDown < thirdScaleDown){
+                        qtyavailableGrp = ordqtyAvailableA.get(0);
+                        qtyscaled = scaleprop_first_groupAFeed;
+                    }else {
+                        qtyavailableGrp = ordqtyAvailableA.get(2);
+                        qtyscaled = scaleprop_third_groupAFeed;
+                    }
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropsecond == 98) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown > 0) && (secondScaleDown > 0) && (thirdScaleDown <= 0)){
+                assignPropthird+=2;
+                assignPropfirst--;
+                assignPropsecond--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(firstScaleDown < secondScaleDown){
+                        qtyavailableGrp = ordqtyAvailableA.get(0);
+                        qtyscaled = scaleprop_first_groupAFeed;
+                    }else {
+                        qtyavailableGrp = ordqtyAvailableA.get(1);
+                        qtyscaled = scaleprop_second_groupAFeed;
+                    }
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropthird == 98) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown <= 0) && (secondScaleDown <= 0) && (thirdScaleDown > 0)){
+                assignPropthird--;
+                assignPropfirst += 0.25;
+                assignPropsecond += 0.75;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableA.get(2);
+                    qtyscaled = scaleprop_third_groupAFeed;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropsecond == 99.25) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown <= 0) && (secondScaleDown > 0) && (thirdScaleDown <= 0)){
+
+                assignPropthird += 0.75;
+                assignPropfirst += 0.25;
+                assignPropsecond--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableA.get(1);
+                    qtyscaled = scaleprop_second_groupAFeed;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropthird == 99.25) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown > 0) && (secondScaleDown <= 0) && (thirdScaleDown <= 0)){
+                assignPropthird += 0.75;
+                assignPropfirst--;
+                assignPropsecond+= 0.25;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableA.get(0);
+                    qtyscaled = scaleprop_first_groupAFeed;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropthird == 99.25) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+            }
+//            else if((firstScaleDown<=0) && (secondScaleDown <=0 ) && (thirdScaleDown <=0)){
+//                return true;
+//            }
+
+            else if ((firstScaleDown > 0) && (secondScaleDown > 0) && (thirdScaleDown > 0)){
+                //none is appropriate
+                if((firstScaleDown < secondScaleDown) && (firstScaleDown < thirdScaleDown)){
+
+                    qtyTMix = qtyTMix * ordqtyAvailableA.get(0) / scaleprop_first_groupAFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+
+                }else if((firstScaleDown > secondScaleDown) && (secondScaleDown < thirdScaleDown)){
+
+                    qtyTMix = qtyTMix * ordqtyAvailableA.get(1) / scaleprop_second_groupAFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }else if((firstScaleDown > thirdScaleDown) && (secondScaleDown > thirdScaleDown)){
+
+                    qtyTMix = qtyTMix * ordqtyAvailableA.get(2) / scaleprop_third_groupAFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+                if(scaleprop_groupBFeed > ordqtyAvailableB.get(0)){
+                    qtyTMix = qtyTMix * ordqtyAvailableB.get(0) / scaleprop_groupBFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+            }
+        }else if(ordqtyAvailableB.size() == 3) {
+            // check the difference to scale down
+            double firstScaleDown = scaleprop_first_groupAFeed - ordqtyAvailableB.get(0);
+            double secondScaleDown = scaleprop_second_groupAFeed - ordqtyAvailableB.get(1);
+            double thirdScaleDown = scaleprop_third_groupAFeed - ordqtyAvailableB.get(2);
+
+            if ((firstScaleDown <= 0) && (secondScaleDown > 0) && (thirdScaleDown > 0)) {
+
+                assignPropfirst+=2;
+                assignPropsecond--;
+                assignPropthird--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(secondScaleDown < thirdScaleDown){
+                        qtyavailableGrp = ordqtyAvailableB.get(1);
+                        qtyscaled = scaleprop_second_groupAFeed;
+                    }else {
+                        qtyavailableGrp = ordqtyAvailableB.get(2);
+                        qtyscaled = scaleprop_third_groupAFeed;
+                    }
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropfirst == 98) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown > 0) && (secondScaleDown <= 0) && (thirdScaleDown > 0)){
+                assignPropsecond += 2;
+                assignPropfirst--;
+                assignPropthird--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(firstScaleDown < thirdScaleDown){
+                        qtyavailableGrp = ordqtyAvailableB.get(0);
+                        qtyscaled = scaleprop_first_groupAFeed;
+                    }else {
+                        qtyavailableGrp = ordqtyAvailableB.get(2);
+                        qtyscaled = scaleprop_third_groupAFeed;
+                    }
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropsecond == 98) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown > 0) && (secondScaleDown > 0) && (thirdScaleDown <= 0)){
+                assignPropthird+=2;
+                assignPropfirst--;
+                assignPropsecond--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(firstScaleDown < secondScaleDown){
+                        qtyavailableGrp = ordqtyAvailableB.get(0);
+                        qtyscaled = scaleprop_first_groupAFeed;
+                    }else {
+                        qtyavailableGrp = ordqtyAvailableB.get(1);
+                        qtyscaled = scaleprop_second_groupAFeed;
+                    }
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropthird == 98) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown <= 0) && (secondScaleDown <= 0) && (thirdScaleDown > 0)){
+                assignPropthird--;
+                assignPropfirst += 0.25;
+                assignPropsecond += 0.75;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableB.get(2);
+                    qtyscaled = scaleprop_third_groupAFeed;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropsecond == 99.25) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown <= 0) && (secondScaleDown > 0) && (thirdScaleDown <= 0)){
+
+                assignPropthird += 0.75;
+                assignPropfirst += 0.25;
+                assignPropsecond--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableB.get(1);
+                    qtyscaled = scaleprop_second_groupAFeed;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropthird == 99.25) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDown > 0) && (secondScaleDown <= 0) && (thirdScaleDown <= 0)){
+                assignPropthird += 0.75;
+                assignPropfirst--;
+                assignPropsecond+= 0.25;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableB.get(0);
+                    qtyscaled = scaleprop_first_groupAFeed;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+
+                if (assignPropthird == 99.25) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+            }
+
+            else if ((firstScaleDown > 0) && (secondScaleDown > 0) && (thirdScaleDown > 0)){
+                //none is appropriate
+                if((firstScaleDown <= secondScaleDown) && (firstScaleDown <= thirdScaleDown)){
+
+                    qtyTMix = qtyTMix * ordqtyAvailableB.get(0) / scaleprop_first_groupAFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+
+                }else if((secondScaleDown <= firstScaleDown) && (secondScaleDown <= thirdScaleDown)){
+
+                    qtyTMix = qtyTMix * ordqtyAvailableB.get(1) / scaleprop_second_groupAFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }else if((thirdScaleDown <= firstScaleDown) && (thirdScaleDown <= secondScaleDown)){
+
+                    qtyTMix = qtyTMix * ordqtyAvailableB.get(2) / scaleprop_third_groupAFeed;
+                    countProp = 0;
+                    reform = true;
+                    nextprop = true;
+                    return false;
+                }
+
+            }
+            if(scaleprop_groupBFeed > ordqtyAvailableA.get(0)){
+                qtyTMix = qtyTMix * ordqtyAvailableA.get(0) / scaleprop_groupBFeed;
+                countProp = 0;
+                reform = true;
+                nextprop = true;
+                return false;
+            }
+        }
+
+        if(ordqtyAvailableA.size() == 2 && ordqtyAvailableB.size() == 2){
+
+            // check the difference to scale down
+            double firstScaleDownB = scale_prop_four_first_grpB - ordqtyAvailableB.get(0);
+            double secondScaleDownB = scale_prop_four_second_grpB - ordqtyAvailableB.get(1);
+            double firstScaleDownA = scale_prop_four_first_grpA - ordqtyAvailableA.get(0);
+            double secondScaleDownA = scale_prop_four_second_grpA - ordqtyAvailableA.get(1);
+
+            if((firstScaleDownB > 0) && (secondScaleDownB <=0)){
+                assignPropfirst--;
+                assignPropsecond++;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableB.get(0);
+                    qtyscaled = scale_prop_four_first_grpB;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+                }
+
+
+                if (assignPropsecond == 99) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+            }else if((firstScaleDownB <= 0) && (secondScaleDownB > 0)){
+                assignPropfirst++;
+                assignPropsecond--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableB.get(1);
+                    qtyscaled = scale_prop_four_second_grpB;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+                }
+
+
+                if (assignPropfirst == 99) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+                return false;
+            }else if((firstScaleDownB > 0) && (secondScaleDownB > 0)){
+
+                if(firstScaleDownB <= secondScaleDownB){
+
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableB.get(0);
+                    qtyscaled = scale_prop_four_first_grpB;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+
+                }else{
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableB.get(1);
+                    qtyscaled = scale_prop_four_second_grpB;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+                }
+
+
+
+            }else if((firstScaleDownA > 0) && (secondScaleDownA <=0)){
+                assignPropfirst--;
+                assignPropsecond++;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableA.get(0);
+                    qtyscaled = scale_prop_four_first_grpA;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+                }
+
+
+                if (assignPropsecond == 99) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+            }else if((firstScaleDownA <= 0) && (secondScaleDownA > 0)){
+                assignPropfirst++;
+                assignPropsecond--;
+
+                if (countProp == (formulationiter1.length - 1)) {
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableA.get(1);
+                    qtyscaled = scale_prop_four_second_grpA;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+                }
+
+
+                if (assignPropfirst == 99) {
+                    countProp++;
+                    nextprop = true;
+                    return false;
+                }
+
+                return false;
+
+            }else if((firstScaleDownA > 0) && (secondScaleDownA > 0)){
+
+                if(firstScaleDownA <= secondScaleDownA){
+
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableA.get(0);
+                    qtyscaled = scale_prop_four_first_grpA;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+
+                }else{
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    qtyavailableGrp = ordqtyAvailableA.get(1);
+                    qtyscaled = scale_prop_four_second_grpA;
+
+                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    countProp = 0;
+                    nextprop = true;
+                    reform = true;
+                    return false;
+                }
+
+
+            }
+
+
+        }
+
+
+        return true;
+
+
+    }
+
+
+    private boolean storeComment(){
+        if((groupA.size() == 3) || (groupB.size() == 3)) {
+            getNewProportionUnit.add(scaleprop_groupBFeed);
+            getNewProportionUnit.add(scaleprop_first_groupAFeed);
+            getNewProportionUnit.add(scaleprop_second_groupAFeed);
+            getNewProportionUnit.add(scaleprop_third_groupAFeed);
+            addcomprop = true;
+
+            //add quantity to mix into the database
+            dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
+
+            if (groupA.size() == 3) {
+                if (scaleprop_groupBFeed <= ordqtyAvailableB.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+                if (scaleprop_third_groupAFeed <= ordqtyAvailableA.get(2)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_third_groupAFeed - ordqtyAvailableA.get(2)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+            } else if (groupB.size() == 3) {
+                if (scaleprop_groupBFeed <= ordqtyAvailableA.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_first_groupAFeed <= ordqtyAvailableB.get(0)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+
+                if (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableB.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+                if (scaleprop_third_groupAFeed <= ordqtyAvailableB.get(2)) {
+                    commentArr.add("Appropriate");
+                } else {
+                    commentArr.add("Get " + decimalFormat.format(scaleprop_third_groupAFeed - ordqtyAvailableB.get(2)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+                }
+            }
+        }else if((groupA.size() == 2) && (groupB.size() == 2)){
+
+            getNewProportionUnit.add(scale_prop_four_first_grpB);
+            getNewProportionUnit.add(scale_prop_four_second_grpB);
+            getNewProportionUnit.add(scale_prop_four_first_grpA);
+            getNewProportionUnit.add(scale_prop_four_second_grpA);
+            addcomprop = true;
+
+            //add quantity to mix into the database
+            dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
+
+            if (scale_prop_four_first_grpB <= ordqtyAvailableB.get(0)) {
+                commentArr.add("Appropriate");
+            } else {
+                commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+            }
+
+            if (scale_prop_four_second_grpB <= ordqtyAvailableB.get(1)) {
+                commentArr.add("Appropriate");
+            } else {
+                commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+            }
+
+            if (scale_prop_four_first_grpA <= ordqtyAvailableA.get(0)) {
+                commentArr.add("Appropriate");
+            } else {
+                commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+            }
+            if (scale_prop_four_second_grpA <= ordqtyAvailableA.get(1)) {
+                commentArr.add("Appropriate");
+            } else {
+                commentArr.add("Get " + decimalFormat.format(scaleprop_third_groupAFeed - ordqtyAvailableA.get(2)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+            }
+
+        }
+
+        return true;
+    }
+    private boolean setConditions() {
+        int sumProtein = 0;
+        int checkNoOfProteinPlant = Collections.frequency(classIngredientSelected, "Plant");
+        int checkNoOfProteinAnimal = Collections.frequency(classIngredientSelected, "Animal");
+        int checkNoOfFibre = Collections.frequency(classIngredientSelected, "High Fibre/Byproduct");
+        int checkNoOfEnergy = Collections.frequency(classIngredientSelected, "Energy");
+
+        sumProtein = checkNoOfProteinPlant + checkNoOfProteinAnimal;
+
+        if(((sumProtein== 2) && (checkNoOfEnergy == 2)) ||
+                ((checkNoOfEnergy == 3) && (sumProtein == 1)) ||
+                ((checkNoOfEnergy == 1) && (sumProtein == 3)) ){
+
+            divClass();
+            return true;
+
+
+        }else{
+            if((sumProtein == 1) && (checkNoOfEnergy ==1) && (checkNoOfFibre == 2)){
+                //check fibre CP
+                divProteinFibreEnergy();
+                return true;
+
+            }else if((sumProtein == 1) && (checkNoOfEnergy == 2) && (checkNoOfFibre == 1)){
+                //check fibre CP
+                divProteinFibreEnergy();
+
+                return true;
+
+            }else if((sumProtein == 2) && (checkNoOfEnergy ==1) && (checkNoOfFibre == 1)){
+                // check fibre CP
+                divProteinFibreEnergy();
+
+                return true;
+            }
+
+        }
+
+        //group by CP
+        divGroups();
+
+        return true;
+    }
+
+
+    private boolean checkIfFourFeedareselected() {
+        if((birdSelected.length() !=0) && (getQtyToMix.getText().toString().length() > 0)){
+            int sum =0;
+            //check number of protein either plant or animal
+            int plantProtein = Collections.frequency(classIngredientSelected, "Plant");
+            int animalProtein = Collections.frequency(classIngredientSelected, "Animal");
+            int mineral = Collections.frequency(classIngredientSelected, "Minerals");
+            sum = plantProtein + animalProtein;
+
+            //  check the bird selected
+            if((birdSelected.equals("Grower")) && (sum != 4) && conditionCheck && (mineral < 1)){
+
+                Crude_proteintarget = 8.0;
+                Calciumtarget = 0.8;
+                Phosphorustarget = 0.4;
+
+                // Check if the nutrient meet the requirement
+                if((Collections.max(crudeProteinNutrient) >= Crude_proteintarget) && (Collections.min(crudeProteinNutrient) < Crude_proteintarget) ){
+
+                    formulate = true;
+
+                    if(formulate){
+                        return true;
+                    }
+
+
+                }else{
+
+                    formulate = false;
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is not in protein class");
+                    alertDialog.show();
+//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }else {
+
+                if ((sum != 4) && conditionCheck & (mineral < 1)){
+
+                    Crude_proteintarget = 8.5;
+                    Calciumtarget = 3.4;
+                    Phosphorustarget = 0.32;
+
+//                double Crude_protein = 8.5, Calcium = 3.4, Phosphorus = 0.32;
+                    // Check if the nutrient meet the requirement
+                    if ((Collections.max(crudeProteinNutrient) >= Crude_proteintarget) && (Collections.min(crudeProteinNutrient) < Crude_proteintarget)) {
+
+                        formulate = true;
+                        if (formulate) {
+                            return true;
+                        }
+
+                    } else {
+                        formulate = false;
+
+                        Intent intent = new Intent(this, SummaryActivity.class);
+                        intent.putExtra("formuNo", noOfFomulation);
+                        startActivity(intent);     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                        alertBuilder.setCancelable(true);
+                        AlertDialog alertDialog = alertBuilder.create();
+                        alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                        alertDialog.setMessage("Please select ingredients where, one is not in protein class");
+                        alertDialog.show();
+//                    Toast.makeText(CreateDietActivity.this, "Formulation cannot be made", Toast.LENGTH_SHORT).show();
+
+
+                    }
+                }else{
+                    formulate = false;
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                    alertBuilder.setCancelable(true);
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
+                    alertDialog.setMessage("Please select ingredients where, one is not in protein class");
+                    alertDialog.show();
+                }
+            }
+
+        }else{
+            Toast.makeText(CreateDietActivity.this, "Please Select a bird and Quantity to Mix", Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
+    }
+
+    //    public v
     public void formulateForThreeFeeds(){
         // Check if the formulation can be carried out
 
@@ -224,7 +1523,10 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 } else {
                     formulate = false;
-                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+                    Intent intent = new Intent(this, SummaryActivity.class);
+                    intent.putExtra("formuNo", noOfFomulation);
+                    startActivity(intent);     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                     alertBuilder.setCancelable(true);
                     AlertDialog alertDialog = alertBuilder.create();
                     alertDialog.setTitle("FORMULATION CANNOT BE MADE!!");
@@ -536,7 +1838,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     addcomprop = true;
 
                     //add quantity to mix into the database
-//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+                    dbHelper.addQuantityToMix(noOfFomulation,qtyTMix);
 
 
                     if (scaleprop_groupB <= ordqtyAvailableB.get(0)) {
@@ -693,7 +1995,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     addcomprop = true;
 
                     //add quantity to mix into the database
-//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+                    dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
 
 
                     if (scaleprop_groupB <= ordqtyAvailableA.get(0)) {
@@ -868,7 +2170,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 addcomprop = true;
 
                 //add quantity to mix into the database
-//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+                dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
 
 
                 if (scaleprop_groupB <= ordqtyAvailableA.get(0)) {
@@ -1026,7 +2328,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 getNewProportionUnit.add(scaleprop_second_groupA);
 
                 //add quantity to mix into the database
-//            dbHelper.addQuantityToMix(noOfFomulation, Double.parseDouble(qtyTMix));
+                dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
 
                 checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
 
@@ -1268,6 +2570,45 @@ public class CreateDietActivity extends AppCompatActivity {
 
     }
 
+
+    private boolean calNewCPLevelFourFeed() {
+
+        if(groupA.size() == 2){
+            Double firstNutrient = (0.01 * assProp2first) * groupA.get(0);
+            Double secondNutrient = (0.01 * assProp2secon) * groupA.get(1);
+            Total2A = firstNutrient + secondNutrient;
+        }
+
+        if(groupB.size() == 2){
+            Double firstNutrient = (0.01 * assProp2first) * groupB.get(0);
+            Double secondNutrient = (0.01 * assProp2secon) * groupB.get(1);
+            Total2B = firstNutrient + secondNutrient;
+            return true;
+        }
+
+        if(groupA.size() == 3){
+            Double firstNutrient = (0.01 * formulationiter3c[countProp]) * groupA.get(0);
+            Double secondNutrient = (0.01 * formulationiter3b[countProp]) * groupA.get(1);
+            Double thirdNutrient = (0.01 * formulationiter3a[countProp]) * groupA.get(2);
+            Total3A = firstNutrient + secondNutrient + thirdNutrient;
+            return true;
+        }
+
+        if(groupB.size() == 3){
+            Double firstNutrient = (0.01 * formulationiter3c[countProp]) * groupB.get(0);
+            Double secondNutrient = (0.01 * formulationiter3b[countProp]) * groupB.get(1);
+            Double thirdNutrient = (0.01 * formulationiter3a[countProp]) * groupB.get(2);
+            Total3B = firstNutrient + secondNutrient + thirdNutrient;
+            return true;
+        }
+
+        return false;
+
+
+    }
+
+
+
     private void calNewCPLevel() {
 
         if(groupA.size() == 2){
@@ -1281,8 +2622,6 @@ public class CreateDietActivity extends AppCompatActivity {
             Double secondNutrient = (0.01 * assProp2secon) * groupB.get(1);
             Total = firstNutrient + secondNutrient;
         }
-
-
 
     }
 
@@ -1339,6 +2678,67 @@ public class CreateDietActivity extends AppCompatActivity {
             forPhosA.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
             forenergyA.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
             ordClassA.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+        }
+    }
+
+    private void reOrderGroupFour() {
+        ordIngredientGrpA = new ArrayList <>();
+        ordIngredientGrpB = new ArrayList <>();
+        ordqtyAvailableA = new ArrayList <>();
+        ordqtyAvailableB = new ArrayList <>();
+        forCalA = new ArrayList<>();
+        forCalB = new ArrayList<>();
+        forPhosA = new ArrayList<>();
+        forPhosB = new ArrayList<>();
+        forenergyA = new ArrayList<>();
+        forenergyB = new ArrayList<>();
+        ordClassA = new ArrayList<>();
+        ordClassB = new ArrayList<>();
+
+        if(groupA.size()>1){
+           Collections.sort(groupA);
+           for (int i=0; i<groupA.size(); i++){
+
+           ordIngredientGrpA.add(ingredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           ordqtyAvailableA.add(qtyselected.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           forCalA.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           forPhosA.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           forenergyA.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+           ordClassA.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(i))));
+
+           }
+
+           if(groupB.size() == 1){
+               ordIngredientGrpB.add(ingredientGrpB.get(0));
+               ordqtyAvailableB.add(qtyselected.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+               forCalB.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+               forPhosB.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+               forenergyB.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+               ordClassB.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupB.get(0))));
+           }
+        }
+
+        if(groupB.size()>1){
+           Collections.sort(groupB);
+           for (int i=0; i<groupB.size(); i++){
+
+           ordIngredientGrpB.add(ingredientSelected.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           ordqtyAvailableB.add(qtyselected.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           forCalB.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           forPhosB.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           forenergyB.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           ordClassB.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupB.get(i))));
+           }
+
+           if(groupA.size() == 1 ){
+               ordIngredientGrpA.add(ingredientGrpA.get(0));
+               ordqtyAvailableA.add(qtyselected.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+               forCalA.add(calciumNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+               forPhosA.add(phosphorusNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+               forenergyA.add(energyNutrient.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+               ordClassA.add(classIngredientSelected.get(crudeProteinNutrient.indexOf(groupA.get(0))));
+           }
+
         }
     }
 
