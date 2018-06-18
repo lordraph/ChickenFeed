@@ -63,9 +63,9 @@ public class CreateDietActivity extends AppCompatActivity {
     DecimalFormat decimalFormat;
     Integer[] formulationiter1 = {50,60,70,80,90};
     Integer[] formulationiter2 = {50,40,30,20,10};
-    Integer[] formulationiter3a = {40,50,50,60,60,70,80};
-    Integer[] formulationiter3b = {40,40,30,30,20,20,10};
-    Integer[] formulationiter3c = {20,10,20,10,20,10,10};
+    Integer[] formulationiter3a = {40,40,50,50,60,70,80};
+    Integer[] formulationiter3b = {30,40,40,30,30,20,10};
+    Integer[] formulationiter3c = {30,20,10,20,10,10,10};
     boolean nextprop = true;
     double scale_prop_four_first_grpA =0.0, scale_prop_four_second_grpA =0.0, scale_prop_four_first_grpB =0.0, scale_prop_four_second_grpB =0.0;
 
@@ -570,11 +570,11 @@ public class CreateDietActivity extends AppCompatActivity {
                 scale_prop_four_second_grpA = prop_100_kg_groupA_second * qtyTMix * 0.01;
 
                 //calculate analysis for calcium
-                double anacalcium = ((scale_prop_four_first_grpB * forCalB.get(0)) + (scale_prop_four_second_grpB * forCalB.get(1)) + (scale_prop_four_first_grpA * forCalA.get(0)) + (scale_prop_four_second_grpA * forCalA.get(1))) * 0.01;
+                double anacalcium = ((prop_100_kg_groupB_first * forCalB.get(0)) + (prop_100_kg_groupB_second * forCalB.get(1)) + (prop_100_kg_groupA_first * forCalA.get(0)) + (prop_100_kg_groupA_second * forCalA.get(1))) * 0.01;
 
-                double anaphos = ((scale_prop_four_first_grpB * forPhosB.get(0)) + (scale_prop_four_second_grpB * forPhosB.get(1)) + (scale_prop_four_first_grpA * forPhosA.get(0)) + (scale_prop_four_second_grpA * forPhosA.get(1))) * 0.01;
+                double anaphos = ((prop_100_kg_groupB_first * forPhosB.get(0)) + (prop_100_kg_groupB_second * forPhosB.get(1)) + (prop_100_kg_groupA_first * forPhosA.get(0)) + (prop_100_kg_groupA_second * forPhosA.get(1))) * 0.01;
 
-                double anaenergy = ((scale_prop_four_first_grpB * forenergyB.get(0)) + (scale_prop_four_second_grpB * forenergyB.get(1)) + (scale_prop_four_first_grpA * forenergyA.get(0)) + (scale_prop_four_second_grpA * forenergyA.get(1))) * 0.01;
+                double anaenergy = ((prop_100_kg_groupB_first * forenergyB.get(0)) + (prop_100_kg_groupB_second * forenergyB.get(1)) + (prop_100_kg_groupA_first * forenergyA.get(0)) + (prop_100_kg_groupA_second * forenergyA.get(1))) * 0.01;
 
                 calCalcium.add(anacalcium);
                 calPhosphorus.add(anaphos);
@@ -613,7 +613,7 @@ public class CreateDietActivity extends AppCompatActivity {
                         qtyscaled = scaleprop_third_groupAFeed;
                     }
 
-                        qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                         countProp = 0;
                         nextprop = true;
                         reform = true;
@@ -646,7 +646,7 @@ public class CreateDietActivity extends AppCompatActivity {
                         qtyscaled = scaleprop_first_groupAFeed;
                     }
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -679,7 +679,7 @@ public class CreateDietActivity extends AppCompatActivity {
                         qtyscaled = scaleprop_first_groupAFeed;
                     }
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -706,7 +706,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(2);
                     qtyscaled = scaleprop_third_groupAFeed;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -734,7 +734,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(1);
                     qtyscaled = scaleprop_second_groupAFeed;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -761,7 +761,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(0);
                     qtyscaled = scaleprop_first_groupAFeed;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -785,7 +785,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 //none is appropriate
                 if((firstScaleDown >= secondScaleDown) && (firstScaleDown >= thirdScaleDown)){
 
-                    qtyTMix = qtyTMix * ordqtyAvailableA.get(0) / scaleprop_first_groupAFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableA.get(0) / scaleprop_first_groupAFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -793,14 +793,14 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 }else if((firstScaleDown <= secondScaleDown) && (secondScaleDown >= thirdScaleDown)){
 
-                    qtyTMix = qtyTMix * ordqtyAvailableA.get(1) / scaleprop_second_groupAFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableA.get(1) / scaleprop_second_groupAFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
                     return false;
                 }else if((firstScaleDown <= thirdScaleDown) && (secondScaleDown <= thirdScaleDown)){
 
-                    qtyTMix = qtyTMix * ordqtyAvailableA.get(2) / scaleprop_third_groupAFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableA.get(2) / scaleprop_third_groupAFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -808,7 +808,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 }
 
                 if(scaleprop_groupBFeed > ordqtyAvailableB.get(0)){
-                    qtyTMix = qtyTMix * ordqtyAvailableB.get(0) / scaleprop_groupBFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableB.get(0) / scaleprop_groupBFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -840,7 +840,7 @@ public class CreateDietActivity extends AppCompatActivity {
                         qtyscaled = scaleprop_third_groupAFeed;
                     }
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -873,7 +873,7 @@ public class CreateDietActivity extends AppCompatActivity {
                         qtyscaled = scaleprop_third_groupAFeed;
                     }
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -906,7 +906,7 @@ public class CreateDietActivity extends AppCompatActivity {
                         qtyscaled = scaleprop_second_groupAFeed;
                     }
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -933,7 +933,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(2);
                     qtyscaled = scaleprop_third_groupAFeed;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -961,7 +961,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(1);
                     qtyscaled = scaleprop_second_groupAFeed;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -988,7 +988,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(0);
                     qtyscaled = scaleprop_first_groupAFeed;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -1009,7 +1009,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 //none is appropriate
                 if((firstScaleDown >= secondScaleDown) && (firstScaleDown >= thirdScaleDown)){
 
-                    qtyTMix = qtyTMix * ordqtyAvailableB.get(0) / scaleprop_first_groupAFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableB.get(0) / scaleprop_first_groupAFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -1017,14 +1017,14 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 }else if((secondScaleDown >= firstScaleDown) && (secondScaleDown >= thirdScaleDown)){
 
-                    qtyTMix = qtyTMix * ordqtyAvailableB.get(1) / scaleprop_second_groupAFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableB.get(1) / scaleprop_second_groupAFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
                     return false;
                 }else if((thirdScaleDown >= firstScaleDown) && (thirdScaleDown >= secondScaleDown)){
 
-                    qtyTMix = qtyTMix * ordqtyAvailableB.get(2) / scaleprop_third_groupAFeed;
+                    qtyTMix = Math.floor(qtyTMix * ordqtyAvailableB.get(2) / scaleprop_third_groupAFeed);
                     countProp = 0;
                     reform = true;
                     nextprop = true;
@@ -1033,7 +1033,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
             }
             if(scaleprop_groupBFeed > ordqtyAvailableA.get(0)){
-                qtyTMix = qtyTMix * ordqtyAvailableA.get(0) / scaleprop_groupBFeed;
+                qtyTMix = Math.floor(qtyTMix * ordqtyAvailableA.get(0) / scaleprop_groupBFeed);
                 countProp = 0;
                 reform = true;
                 nextprop = true;
@@ -1060,7 +1060,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(0);
                     qtyscaled = scale_prop_four_first_grpB;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1086,7 +1086,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(1);
                     qtyscaled = scale_prop_four_second_grpB;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1110,7 +1110,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(0);
                     qtyscaled = scale_prop_four_first_grpB;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1123,7 +1123,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableB.get(1);
                     qtyscaled = scale_prop_four_second_grpB;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1143,7 +1143,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(0);
                     qtyscaled = scale_prop_four_first_grpA;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1169,7 +1169,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(1);
                     qtyscaled = scale_prop_four_second_grpA;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1195,7 +1195,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(0);
                     qtyscaled = scale_prop_four_first_grpA;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
@@ -1208,7 +1208,7 @@ public class CreateDietActivity extends AppCompatActivity {
                     qtyavailableGrp = ordqtyAvailableA.get(1);
                     qtyscaled = scale_prop_four_second_grpA;
 
-                    qtyTMix = qtyTMix * qtyavailableGrp / qtyscaled;
+                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                     countProp = 0;
                     nextprop = true;
                     reform = true;
