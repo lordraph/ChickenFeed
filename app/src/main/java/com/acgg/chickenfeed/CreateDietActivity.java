@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acgg.chickenfeed.data.ChickenFeedHelper;
-import com.acgg.chickenfeed.data.SessionHandler;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import java.util.Collections;
 import static android.R.layout.simple_dropdown_item_1line;
 
 public class CreateDietActivity extends AppCompatActivity {
-    private SessionHandler session;
     ChickenFeedHelper dbHelper;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -54,25 +52,29 @@ public class CreateDietActivity extends AppCompatActivity {
     double assPropSeconddouble =0.0, assPropFirstdouble =0.0;
     RadioGroup radioGroup;
     String birdSelected;
-    boolean iterProtein= false, iterRest = false;
+    boolean scaledownToForm = false, finishformu = false, breakoff = false, alreadyDisplay = false;
+    boolean iterProtein= false, iterRest = false, finishProteinformu = false;
+    String ingredientA = "", ingredientB="";
     EditText getQtyToMix;
-    boolean formulate = false, recalculate = false, clickYes = false, clickNo = false, conditionCheck = true;
+    boolean formulate = false, recalculate = false, clickYes = false, clickNo = false, conditionCheck = false;
     boolean minConditionCheck = false, maxConditionCheck = false, reform = false, saveAlready = false;
-    boolean scalegroup = false, addcomprop = false;
+    boolean scalegroup = false, addcomprop = false, nextpropTwoFeed = false;
     double qtyToMix, Crude_protein, Calcium, Phosphorus, Total = 0.00, Total2A = 0.0, Total2B = 0.0;
     double Total3A = 0.0, Total3B = 0.0;
     double Crude_proteintarget = 0.0, Calciumtarget = 0.00 ,Phosphorustarget = 0.0, qtyTMix = 0.00;
     double scaleprop_groupBFeed = 0.0, scaleprop_first_groupAFeed = 0.0, scaleprop_second_groupAFeed = 0.0;
-    double scaleprop_third_groupAFeed = 0.0;
+    double scaleprop_third_groupAFeed = 0.0, qtyToAddGrpA=0.0, qtyToAddGrpB=0.0, qtyAvailableGrpA=0.0, qtyAvailableGrpB=0.0;
+    double scaledownA = 0.0, scaledownB = 0.0;
     DecimalFormat decimalFormat;
-    Integer[] formulationiter1 = {50,60,70,80,90};
-    Integer[] formulationiter2 = {50,40,30,20,10};
+    Integer[] formulationiter1 = {50,60,70,80,90,10,20,30,40};
+    Integer[] formulationiter2 = {50,40,30,20,10,90,80,70,60};
     Integer[] formulationiter3feeds1 ={59};
     Integer[] formulationiter3feeds2 ={41};
     Integer[] formulationiter3a = {40,40,50,50,60,70,80};
     Integer[] formulationiter3b = {30,40,40,30,30,20,10};
     Integer[] formulationiter3c = {30,20,10,20,10,10,10};
-    boolean nextprop = true;
+    boolean nextprop = true, answerDialog = false, appr = false, twoFeedApp = false;
+    double newCal=0.0, newPhos=0.0, newCrude = 0.0, newEnergy=0.0;
     double scale_prop_four_first_grpA =0.0, scale_prop_four_second_grpA =0.0, scale_prop_four_first_grpB =0.0, scale_prop_four_second_grpB =0.0;
 
 
@@ -95,7 +97,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
 
-//        finding edit text
+        // finding edit text
         edit_1 = findViewById(R.id.quantity1_editText);
         secondqty_edit_text = findViewById(R.id.quantity2_editText);
         thirdqty_edit_text = findViewById(R.id.quantity3_editText);
@@ -104,7 +106,7 @@ public class CreateDietActivity extends AppCompatActivity {
         // Find the quantity type spinner
         quantityTypeSpinner= findViewById(R.id.quantitySpinner);
 
-//        Find Create mix button
+       // Find Create mix button
         createmixBtn = findViewById(R.id.createDietMix_button);
 
         // Find the bird category selected
@@ -146,25 +148,10 @@ public class CreateDietActivity extends AppCompatActivity {
 //                    formulate
                 formulateForTwoFeed();
 
-                if(formulate && maxConditionCheck && minConditionCheck) {
-
-                    Intent intent = new Intent(this, SummaryActivity.class);
-                    intent.putExtra("formuNo", noOfFomulation);
-                    startActivity(intent);
-                }
-
-
-
             }else if(numOfFeedSelected() == 3){
 
                 formulateForThreeFeeds();
 
-                if(formulate) {
-
-                    Intent intent = new Intent(this, SummaryActivity.class);
-                    intent.putExtra("formuNo", noOfFomulation);
-                    startActivity(intent);
-                }
 
             }else if (numOfFeedSelected() == 4){
 
@@ -181,7 +168,6 @@ public class CreateDietActivity extends AppCompatActivity {
                 Toast.makeText(CreateDietActivity.this, "Please Select At least " +
                         "two Ingredient ", Toast.LENGTH_SHORT).show();
             }
-
 
 
         });
@@ -1476,7 +1462,7 @@ public class CreateDietActivity extends AppCompatActivity {
             sum = plantProtein + animalProtein;
 
             //  check the bird selected
-            if((birdSelected.equals("Grower")) && (sum != 3) && conditionCheck && (mineral < 1)){
+            if((birdSelected.equals("Grower")) && (sum != 3) && (mineral < 1)){
 //                double Crude_protein = 8.0, Calcium = 0.8 ,Phosphorus = 0.4;
 
                 Crude_proteintarget = 8.0;
@@ -1508,7 +1494,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
             }else {
 
-                if ((sum != 3) && conditionCheck & (mineral < 1)){
+                if ((sum != 3) & (mineral < 1)){
 
                     Crude_proteintarget = 8.5;
                     Calciumtarget = 3.4;
@@ -1557,28 +1543,41 @@ public class CreateDietActivity extends AppCompatActivity {
 
     public void formulateProteinForThreeFeed(Double targetProtein, String birdCat){
 
-
         // get the number of formulation made
         getNumberofFormulation();
 
-        // add formulated ingredient into database
-        addFormulatedIngredientToDb(birdCat);
 
 
         //condition 4 & 5: check number of energy and fibre
-        checkIfContainEnergyAndFibre();
 
+        if(!conditionCheck){
+            checkIfContainEnergyAndFibre();
+
+        }
 
         //condition 6 & 7: check number of protein and energy
+        if(!conditionCheck){
+
         checkIfContainProteinAndEnergy();
+        }
 
         //condition 8 & 9: check number of protein and fibre
+        if(!conditionCheck){
+
         checkIfContainProteinAndFibre();
+        }
 
         //condition 10: check number of protein, energy and fibre
+        if(!conditionCheck){
         checkIfContainProteinFibreEnergy();
 
+        }
 
+        // add formulated ingredient into database
+        if(finishformu ||finishProteinformu ){
+
+            addFormulatedIngredientToDb(birdCat);
+        }
 
     }
 
@@ -1690,6 +1689,7 @@ public class CreateDietActivity extends AppCompatActivity {
         sum = checkNoOfEnergy + checkNoOfFibre;
 
         if(sum == 3){
+
             implementFormu();
             conditionCheck = true;
         }
@@ -1701,14 +1701,25 @@ public class CreateDietActivity extends AppCompatActivity {
         divClass();
         reOrderGroup();
         calNewCPLevel();
-        formulateProteinFeed(groupA, groupB);
 
-        if(!saveAlready) {
-            storeResultToDb();
-            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
-
+        while(!finishProteinformu && !breakoff ){
+            formulateProteinFeed(groupA, groupB);
+            checkQtyScaledDown();
         }
 
+            if(finishProteinformu) {
+                setCommentArrForThreeFeed();
+                storeResultToDb();
+                storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                if(formulate) {
+                    Intent intent = new Intent(this, SummaryActivity.class);
+                    intent.putExtra("formuNo", noOfFomulation);
+                    startActivity(intent);
+                }
+
+            }
     }
 
     private void formulateProteinFeed(ArrayList<Double> groupDivA, ArrayList<Double> groupDivB) {
@@ -1735,6 +1746,12 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 if(!reform) {
                     qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+                }
+
+                if(nextpropTwoFeed){
+                    assProp2first = formulationiter1[iter1];
+                    assProp2secon = formulationiter2[iter1];
+                    nextpropTwoFeed = false;
                 }
 
                 Double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
@@ -1796,9 +1813,9 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
                 //scale down proportion to mix
-                double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
-                double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
-                double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+                scaleprop_groupBFeed = prop_100_kg_groupB * qtyTMix * 0.01;
+                 scaleprop_first_groupAFeed = prop_100_kg_groupA_first * qtyTMix * 0.01;
+                 scaleprop_second_groupAFeed = prop_100_kg_groupA_second * qtyTMix * 0.01;
 
                 //calculate analysis for calcium
                 double anacalcium = ((prop_100_kg_groupB * forCalB.get(0)) + (prop_100_kg_groupA_first * forCalA.get(0)) + (prop_100_kg_groupA_second * forCalA.get(1))) * 0.01;
@@ -1813,51 +1830,6 @@ public class CreateDietActivity extends AppCompatActivity {
                 iterProtein = true;
                 iterRest = false;
 
-                checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
-
-                if((scaleprop_first_groupA < ordqtyAvailableA.get(0)) || (scaleprop_second_groupA < ordqtyAvailableA.get(1))){
-                    if(scaleprop_groupB > ordqtyAvailableB.get(0)){
-                        scaleprop_groupB = ordqtyAvailableB.get(0) * qtyTMix/scaleprop_groupB;
-                        qtyTMix = Math.floor(scaleprop_groupB);
-                        reform = true;
-                        implementFormuProtein();
-                        saveAlready = true;
-                        addcomprop = true;
-                    }
-
-                    if(!addcomprop) {
-                        addcomprop = false;
-                    }
-                }
-
-                if(!addcomprop) {
-                    getNewProportionUnit.add(scaleprop_groupB);
-                    getNewProportionUnit.add(scaleprop_first_groupA);
-                    getNewProportionUnit.add(scaleprop_second_groupA);
-                    addcomprop = true;
-
-                    //add quantity to mix into the database
-                    dbHelper.addQuantityToMix(noOfFomulation,qtyTMix);
-
-
-                    if (scaleprop_groupB <= ordqtyAvailableB.get(0)) {
-                        commentArr.add("Appropriate");
-                    } else {
-                        commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                    }
-
-                    if (scaleprop_first_groupA <= ordqtyAvailableA.get(0)) {
-                        commentArr.add("Appropriate");
-                    } else {
-                        commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                    }
-
-                    if (scaleprop_second_groupA <= ordqtyAvailableA.get(1)) {
-                        commentArr.add("Appropriate");
-                    } else {
-                        commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                    }
-                }
 
 
             }else{
@@ -1888,6 +1860,12 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 if(!reform) {
                     qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+                }
+
+                if(nextpropTwoFeed){
+                    assProp2first = formulationiter1[iter1];
+                    assProp2secon = formulationiter2[iter1];
+                    nextpropTwoFeed = false;
                 }
 
                 Double groupDivACP = Math.abs(groupDivA.get(0) - Crude_proteintarget);
@@ -1949,9 +1927,9 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
                 //scale down proportion to mix
-                double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
-                double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
-                double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+                 scaleprop_groupBFeed = prop_100_kg_groupB * qtyTMix * 0.01;
+                 scaleprop_first_groupAFeed = prop_100_kg_groupA_first * qtyTMix * 0.01;
+                 scaleprop_second_groupAFeed = prop_100_kg_groupA_second * qtyTMix * 0.01;
 
                 //calculate analysis for calcium
                 double anacalcium = ((prop_100_kg_groupB * forCalA.get(0)) + (prop_100_kg_groupA_first * forCalB.get(0)) + (prop_100_kg_groupA_second * forCalB.get(1))) * 0.01;
@@ -1966,58 +1944,6 @@ public class CreateDietActivity extends AppCompatActivity {
                 iterProtein = true;
                 iterRest = false;
 
-                checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
-
-                if((scaleprop_first_groupA <= ordqtyAvailableB.get(0)) || (scaleprop_second_groupA <= ordqtyAvailableB.get(1))){
-                    if(scaleprop_groupB > ordqtyAvailableA.get(0)){
-                        scaleprop_groupB = ordqtyAvailableA.get(0) * qtyTMix/scaleprop_groupB;
-                        qtyTMix = Math.floor(scaleprop_groupB);
-                        reform = true;
-                        iter1 = 0;
-                        iter2 = 0;
-                        implementFormuProtein();
-                        saveAlready = true;
-                        addcomprop = true;
-
-                    }
-
-                    if(!addcomprop) {
-                        addcomprop = false;
-                    }
-
-                }
-
-                if(!addcomprop) {
-                    getNewProportionUnit.add(scaleprop_groupB);
-                    getNewProportionUnit.add(scaleprop_first_groupA);
-                    getNewProportionUnit.add(scaleprop_second_groupA);
-                    addcomprop = true;
-
-                    //add quantity to mix into the database
-                    dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
-
-
-                    if (scaleprop_groupB <= ordqtyAvailableA.get(0)) {
-                        commentArr.add("Appropriate");
-                    } else {
-                        commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                    }
-
-                    if (scaleprop_first_groupA <= ordqtyAvailableB.get(0)) {
-                        commentArr.add("Appropriate");
-                    } else {
-                        commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                    }
-
-                    if (scaleprop_second_groupA <= ordqtyAvailableB.get(1)) {
-                        commentArr.add("Appropriate");
-                    } else {
-                        commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableB.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                    }
-                }
-
-
-
             }else{
                 conditionCheck = false;
             }
@@ -2029,16 +1955,34 @@ public class CreateDietActivity extends AppCompatActivity {
         divGroups();
         reOrderGroup();
         calNewCPLevel();
-        formulateFeed(groupA, groupB);
-        formulateFeed2(groupB, groupA);
 
-        if(!saveAlready) {
-            storeResultToDb();
-            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
-            saveAlready = true;
+
+        while(!finishformu && !breakoff ){
+
+            if(groupA.size() > 1){
+                formulateFeed(groupA, groupB);
+                checkQtyScaledDown();
+
+            }else{
+
+                formulateFeed2(groupB, groupA);
+                checkQtyScaledDown();
+            }
+
         }
 
-//        storecalculatedAnalysis(C
+        if(finishformu) {
+            setCommentArrForThreeFeed();
+            storeResultToDb();
+            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+//            saveAlready = true;
+            if(formulate) {
+                Intent intent = new Intent(this, SummaryActivity.class);
+                intent.putExtra("formuNo", noOfFomulation);
+                startActivity(intent);
+            }
+        }
+
     }
 
     private void formulateFeed2(ArrayList<Double> groupDivA, ArrayList<Double> groupDivB) {
@@ -2067,12 +2011,18 @@ public class CreateDietActivity extends AppCompatActivity {
                 qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
             }
 
-            Double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
-            Double groupDivBCP = Math.abs(Crude_proteintarget - Total);
-            Double forTotal = groupDivACP + groupDivBCP;
+            if(nextpropTwoFeed){
+                assProp2first = formulationiter1[iter1];
+                assProp2secon = formulationiter2[iter1];
+                nextpropTwoFeed = false;
+            }
 
-            Double newCPFirst = assProp2first * 0.01 * groupDivACP;
-            Double newCPsecond = assProp2secon * 0.01 * groupDivACP;
+            double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
+            double groupDivBCP = Math.abs(Crude_proteintarget - Total);
+            double forTotal = groupDivACP + groupDivBCP;
+
+            double newCPFirst = assProp2first * 0.01 * groupDivACP;
+            double newCPsecond = assProp2secon * 0.01 * groupDivACP;
 
             //Implement step 6
             double prop_100_kg_groupB = groupDivBCP * 100/forTotal;
@@ -2126,9 +2076,9 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
             //scale down proportion to mix
-            double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
-            double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
-            double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+            scaleprop_groupBFeed = prop_100_kg_groupB * qtyTMix * 0.01;
+            scaleprop_first_groupAFeed = prop_100_kg_groupA_first * qtyTMix * 0.01;
+            scaleprop_second_groupAFeed = prop_100_kg_groupA_second * qtyTMix * 0.01;
 
             //calculate analysis for calcium
             double anacalcium = ((prop_100_kg_groupB * forCalA.get(0)  * 0.01) + (prop_100_kg_groupA_first * forCalB.get(0) * 0.01) + (prop_100_kg_groupA_second * forCalB.get(1)) * 0.01);
@@ -2142,53 +2092,6 @@ public class CreateDietActivity extends AppCompatActivity {
             calEnergy.add(anaenergy);
             iterProtein = false;
             iterRest = true;
-
-            checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
-
-            if((scaleprop_first_groupA <= ordqtyAvailableB.get(0)) && (scaleprop_second_groupA <= ordqtyAvailableB.get(1))){
-                if(scaleprop_groupB > ordqtyAvailableA.get(0)){
-
-                    scaleprop_groupB = ordqtyAvailableA.get(0) * qtyTMix/scaleprop_groupB;
-                    qtyTMix = Math.floor(scaleprop_groupB);
-                    reform = true;
-                    implementFormu();
-                    saveAlready = true;
-                    addcomprop = true;
-
-                }else{
-                    saveAlready = false;
-                }
-            }
-
-            if(!addcomprop) {
-
-                getNewProportionUnit.add(scaleprop_groupB);
-                getNewProportionUnit.add(scaleprop_first_groupA);
-                getNewProportionUnit.add(scaleprop_second_groupA);
-                addcomprop = true;
-
-                //add quantity to mix into the database
-                dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
-
-
-                if (scaleprop_groupB <= ordqtyAvailableA.get(0)) {
-                    commentArr.add("Appropriate");
-                } else {
-                    commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                }
-
-                if (scaleprop_first_groupA <= ordqtyAvailableB.get(0)) {
-                    commentArr.add("Appropriate");
-                } else {
-                    commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                }
-
-                if (scaleprop_second_groupA <= ordqtyAvailableB.get(1)) {
-                    commentArr.add("Appropriate");
-                } else {
-                    commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableB.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                }
-            }
 
 
 
@@ -2230,6 +2133,13 @@ public class CreateDietActivity extends AppCompatActivity {
 
             if(!reform) {
                 qtyTMix = Double.parseDouble(getQtyToMix.getText().toString());
+
+            }
+
+            if(nextpropTwoFeed){
+                assProp2first = formulationiter1[iter1];
+                assProp2secon = formulationiter2[iter1];
+                nextpropTwoFeed = false;
             }
 
             Double groupDivACP = Math.abs(groupDivB.get(0) - Crude_proteintarget);
@@ -2291,9 +2201,9 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
             //scale down proportion to mix
-            double scaleprop_groupB = prop_100_kg_groupB * qtyTMix * 0.01;
-            double scaleprop_first_groupA = prop_100_kg_groupA_first * qtyTMix * 0.01;
-            double scaleprop_second_groupA = prop_100_kg_groupA_second * qtyTMix * 0.01;
+            scaleprop_groupBFeed = prop_100_kg_groupB * qtyTMix * 0.01;
+            scaleprop_first_groupAFeed = prop_100_kg_groupA_first * qtyTMix * 0.01;
+             scaleprop_second_groupAFeed = prop_100_kg_groupA_second * qtyTMix * 0.01;
 
             //calculate analysis for calcium
             double anacalcium = ((prop_100_kg_groupB * forCalB.get(0)) + (prop_100_kg_groupA_first * forCalA.get(0)) + (prop_100_kg_groupA_second * forCalA.get(1))) * 0.01;
@@ -2309,470 +2219,1107 @@ public class CreateDietActivity extends AppCompatActivity {
             iterProtein = false;
             iterRest = true;
 
-
-            checkQtyScaledDown(scaleprop_groupB, scaleprop_first_groupA, scaleprop_second_groupA);
-
-            if((scaleprop_first_groupA < ordqtyAvailableA.get(0)) || (scaleprop_second_groupA < ordqtyAvailableA.get(1))){
-                if(scaleprop_groupB > ordqtyAvailableB.get(0)){
-                    scaleprop_groupB = ordqtyAvailableB.get(0) * qtyTMix/scaleprop_groupB;
-                    qtyTMix = Math.floor(scaleprop_groupB);
-                    reform = true;
-                    implementFormu();
-                    saveAlready = true;
-
-                }else{
-                    saveAlready = false;
-                }
-            }
-
-            if(!saveAlready) {
-                getNewProportionUnit.add(scaleprop_groupB);
-                getNewProportionUnit.add(scaleprop_first_groupA);
-                getNewProportionUnit.add(scaleprop_second_groupA);
-
-                //add quantity to mix into the database
-                dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
-
-
-                if (scaleprop_groupB <= ordqtyAvailableB.get(0)) {
-                    commentArr.add("Appropriate");
-                } else {
-                    commentArr.add("Get " + decimalFormat.format(scaleprop_groupB - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                }
-
-                if (scaleprop_first_groupA <= ordqtyAvailableA.get(0)) {
-                    commentArr.add("Appropriate");
-                } else {
-                    commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupA - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                }
-
-                if (scaleprop_second_groupA <= ordqtyAvailableA.get(1)) {
-                    commentArr.add("Appropriate");
-                } else {
-                    commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupA - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-                }
-
-            }
-
         }
 
     }
 
-    private void checkQtyScaledDown(double scaleprop_groupB, double scaleprop_first_groupA, double scaleprop_second_groupA) {
+    private void setCommentArrForThreeFeed(){
+
+        getNewProportionUnit.add(scaleprop_groupBFeed);
+        getNewProportionUnit.add(scaleprop_first_groupAFeed);
+        getNewProportionUnit.add(scaleprop_second_groupAFeed);
+
+        //add quantity to mix into the database
+        dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
+
+
+        if (scaleprop_groupBFeed <= ordqtyAvailableB.get(0)) {
+            commentArr.add("Appropriate");
+        } else {
+            commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+        }
+
+        if (scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) {
+            commentArr.add("Appropriate");
+        } else {
+            commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+        }
+
+        if (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1)) {
+            commentArr.add("Appropriate");
+        } else {
+            commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+        }
+
+    }
+
+    private void checkQtyScaledDown() {
+
+        double ExtraGrpA = scaleprop_first_groupAFeed - ordqtyAvailableA.get(0);
+        double ExtraGrpB = scaleprop_second_groupAFeed - ordqtyAvailableA.get(1);
 
 
         if(ordqtyAvailableA.size()>1) {
 
-            if ((scaleprop_first_groupA <= ordqtyAvailableA.get(0)) && (scaleprop_second_groupA > ordqtyAvailableA.get(1))) {
+            if ((scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableA.get(1))) {
 
-                if (iter1 == (formulationiter1.length - 1)) {
+                if (iter1 == (formulationiter1.length - 1) && !alreadyDisplay ) {
+                    breakoff = true;
+
+                    //pop up a dialog to ask if the user want to scale down
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+                    alertBuilder.setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    double qtyscaled = 0.0;
+                                    double qtyavailableGrp = 0.0;
+                                    qtyavailableGrp = ordqtyAvailableA.get(1);
+                                    qtyscaled = scaleprop_second_groupAFeed;
+
+
+                                    if (iterRest) {
+                                        iter1 = 0;
+                                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                                        while(!finishformu){
+
+                                            if(groupA.size() > 1){
+                                                formulateFeed(groupA, groupB);
+                                                checkQtyScaledDown();
+
+                                            }else{
+
+                                                formulateFeed2(groupB, groupA);
+                                                checkQtyScaledDown();
+                                            }
+
+                                        }
+
+                                        if(finishformu) {
+                                            setCommentArrForThreeFeed();
+                                            storeResultToDb();
+                                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                                            if(formulate) {
+                                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                                intent.putExtra("formuNo", noOfFomulation);
+                                                startActivity(intent);
+                                            }
+                                        }
+
+                                    }
+
+                                    if (iterProtein) {
+                                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                                        while(!finishProteinformu && !breakoff ){
+                                            formulateProteinFeed(groupA, groupB);
+                                            checkQtyScaledDown();
+                                        }
+
+                                        if(finishProteinformu) {
+                                            setCommentArrForThreeFeed();
+                                            storeResultToDb();
+                                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                                            if(formulate) {
+                                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                                intent.putExtra("formuNo", noOfFomulation);
+                                                startActivity(intent);
+                                            }
+
+                                        }
+//
+                                    }
+                                    alreadyDisplay = true;
+//
+                                }
+
+                            });
+
+                    alertBuilder.setNegativeButton("No", (dialog, which) -> {
+                        alreadyDisplay = true;
+                        dialog.cancel();
+                        setCommentArrForThreeFeed();
+                        storeResultToDb();
+                        storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+                            Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                            intent.putExtra("formuNo", noOfFomulation);
+                            startActivity(intent);
+
+                    });
+
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("OBSERVATION!!");
+                    alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                            "Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                            " Do you want to scale down to the next mixable quantity?", ordIngredientGrpA.get(1)));
+                    alertDialog.show();
+
+
+                }
+
+                if (iter1 == (formulationiter1.length - 1) && alreadyDisplay ) {
+                    breakoff = true;
 
                     double qtyscaled = 0.0;
                     double qtyavailableGrp = 0.0;
                     qtyavailableGrp = ordqtyAvailableA.get(1);
-                    qtyscaled = scaleprop_second_groupA;
+                    qtyscaled = scaleprop_second_groupAFeed;
 
 
                     if (iterRest) {
-
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                        reform = true;
                         iter1 = 0;
                         iter2 = 0;
-                        implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        scalegroup = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                        while(!finishformu){
+
+                            if(groupA.size() > 1){
+                                formulateFeed(groupA, groupB);
+                                checkQtyScaledDown();
+
+                            }else{
+
+                                formulateFeed2(groupB, groupA);
+                                checkQtyScaledDown();
+                            }
+
+                        }
+
+                        if(finishformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+                        }
+
                     }
 
                     if (iterProtein) {
                         qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                        reform = true;
+                        while(!finishProteinformu && !breakoff ){
+                            formulateProteinFeed(groupA, groupB);
+                            checkQtyScaledDown();
+                        }
+
+                        if(finishProteinformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+
+                        }
+//
+                    }
+
+                }
+
+
+                    // 2nd ingridient not appropriate
+                if (assProp2first == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
+
+                    if (iterRest) {
+
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+                }
+
+                    assProp2first++;
+                    assProp2secon--;
+                    if (iterRest) {
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+
+
+
+            } else if ((scaleprop_first_groupAFeed > ordqtyAvailableA.get(0)) && (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1))) {
+
+                if (iter1 == (formulationiter1.length - 1)) {
+
+                    //pop up a dialog to ask if the user want to scale down
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+                    alertBuilder.setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    double qtyscaled = 0.0;
+                                    double qtyavailableGrp = 0.0;
+                                    qtyavailableGrp = ordqtyAvailableA.get(0);
+                                    qtyscaled = scaleprop_first_groupAFeed;
+                                    reform = true;
+
+                                    if (iterRest) {
+                                        iter1 = 0;
+                                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                                        while(!finishformu){
+
+                                            if(groupA.size() > 1){
+                                                formulateFeed(groupA, groupB);
+                                                checkQtyScaledDown();
+
+                                            }else{
+
+                                                formulateFeed2(groupB, groupA);
+                                                checkQtyScaledDown();
+                                            }
+
+                                        }
+
+                                        if(finishformu) {
+                                            setCommentArrForThreeFeed();
+                                            storeResultToDb();
+                                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                                            if(formulate) {
+                                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                                intent.putExtra("formuNo", noOfFomulation);
+                                                startActivity(intent);
+                                            }
+                                        }
+
+                                    }
+
+                                    if (iterProtein) {
+                                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                                        reform = true;
+                                        iter1 = 0;
+                                        finishProteinformu = false;
+
+                                        while(!finishProteinformu && !breakoff ){
+                                            formulateProteinFeed(groupA, groupB);
+                                            checkQtyScaledDown();
+                                        }
+
+                                        if(finishProteinformu) {
+                                            setCommentArrForThreeFeed();
+                                            storeResultToDb();
+                                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                                            if(formulate) {
+                                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                                intent.putExtra("formuNo", noOfFomulation);
+                                                startActivity(intent);
+                                            }
+
+                                        }
+//
+                                    }
+                                    alreadyDisplay = true;
+//
+                                }
+
+                            });
+
+                    alertBuilder.setNegativeButton("No", (dialog, which) -> {
+                        alreadyDisplay = true;
+                        dialog.cancel();
+                        setCommentArrForThreeFeed();
+                        storeResultToDb();
+                        storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+                        Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                        intent.putExtra("formuNo", noOfFomulation);
+                        startActivity(intent);
+
+                    });
+
+                    AlertDialog alertDialog = alertBuilder.create();
+                    alertDialog.setTitle("OBSERVATION!!");
+                    alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                            "Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                            " Do you want to scale down to the next mixable quantity?", ordIngredientGrpA.get(0)));
+                    alertDialog.show();
+
+
+                }
+
+                if (iter1 == (formulationiter1.length - 1) && alreadyDisplay ) {
+                    breakoff = true;
+
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+                    qtyavailableGrp = ordqtyAvailableA.get(0);
+                    qtyscaled = scaleprop_first_groupAFeed;
+
+
+                    if (iterRest) {
                         iter1 = 0;
-                        iter2 = 0;
-                        implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        scalegroup = true;
-                        saveAlready = true;
-                        addcomprop = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                        while(!finishformu){
+
+                            if(groupA.size() > 1){
+                                formulateFeed(groupA, groupB);
+                                checkQtyScaledDown();
+
+                            }else{
+
+                                formulateFeed2(groupB, groupA);
+                                checkQtyScaledDown();
+                            }
+
+                        }
+
+                        if(finishformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+                        }
+
+                    }
+
+                    if (iterProtein) {
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                        while(!finishProteinformu && !breakoff ){
+                            formulateProteinFeed(groupA, groupB);
+                            checkQtyScaledDown();
+                        }
+
+                        if(finishProteinformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+
+                        }
+//
                     }
 
                 }
 
                 // 2nd ingridient not appropriate
-                if(!scalegroup){
+                if (assProp2first == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
+                    if (iterRest) {
+
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+
+                        finishProteinformu = false;
+                    }
+                }
+
                     assProp2first++;
                     assProp2secon--;
                     if (iterRest) {
-                        implementFormu();
-//                    formulateFeed(groupA, groupB);
-//                    formulateFeed2(groupB, groupA);
+
+                        finishformu = false;
                     }
 
                     if (iterProtein) {
-                        implementFormuProtein();
-//                    formulateProteinFeed(groupA, groupB);
+
+                        finishProteinformu = false;
                     }
 
-                    if (assProp2first == 99) {
-                        iter1++;
-                        iter2++;
-                        assProp2first = formulationiter1[iter1];
-                        assProp2secon = formulationiter2[iter2];
 
-                        if (iterRest) {
-                            implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        }
 
-                        if (iterProtein) {
-                            implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        }
-//                performPearson();
-                    }
+            }else if ((scaleprop_first_groupAFeed > ordqtyAvailableA.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableA.get(1))){
+
+
+                if(iter1 == (formulationiter1.length -1) && !alreadyDisplay) {
+                    // popUpDialogTwofeed(double scalepropfirst,int qtyavailaA, String ingredienA, double scalepropsecond,int qtyavailaB, String ingredienB)
+                    popUpDialogTwofeed( scaleprop_first_groupAFeed, ordqtyAvailableA.get(0),  ordIngredientGrpA.get(0),  scaleprop_second_groupAFeed, ordqtyAvailableA.get(1), ordIngredientGrpA.get(1));
                 }
-            } else if ((scaleprop_first_groupA > ordqtyAvailableA.get(0)) && (scaleprop_second_groupA <= ordqtyAvailableA.get(1))) {
 
-                if (iter1 == (formulationiter1.length - 1)) {
+
+                if (iter1 == (formulationiter1.length - 1) && alreadyDisplay ) {
+                    breakoff = true;
 
                     double qtyscaled = 0.0;
                     double qtyavailableGrp = 0.0;
-                    qtyavailableGrp = ordqtyAvailableA.get(0);
-                    qtyscaled = scaleprop_first_groupA;
+
+                    if(ExtraGrpA >= ExtraGrpB) {
+                        qtyavailableGrp = ordqtyAvailableA.get(0);
+                        qtyscaled = scaleprop_first_groupAFeed;
+                    }else{
+
+                        qtyavailableGrp = ordqtyAvailableA.get(1);
+                        qtyscaled = scaleprop_second_groupAFeed;
+
+                    }
 
 
-                    if (iterRest) {
-
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                        reform = true;
                         iter1 = 0;
-                        iter2 = 0;
-                        implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        scalegroup = true;
+                    if (iterRest) {
+                        reform = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                        while(!finishformu){
+
+                            if(groupA.size() > 1){
+                                formulateFeed(groupA, groupB);
+                                checkQtyScaledDown();
+
+                            }else{
+
+                                formulateFeed2(groupB, groupA);
+                                checkQtyScaledDown();
+                            }
+
+                        }
+
+                        if(finishformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+                        }
+
                     }
 
                     if (iterProtein) {
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                         reform = true;
-                        iter1 = 0;
-                        iter2 = 0;
-                        implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        scalegroup = true;
-                        saveAlready = true;
-                        addcomprop = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                        while(!finishProteinformu && !breakoff ){
+                            formulateProteinFeed(groupA, groupB);
+                            checkQtyScaledDown();
+                        }
+
+                        if(finishProteinformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+
+                        }
+//
                     }
 
                 }
 
                 // 2nd ingridient not appropriate
-                if(!scalegroup){
-                    assProp2first++;
-                    assProp2secon--;
+                if (assProp2first == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
                     if (iterRest) {
-                        implementFormu();
-//                    formulateFeed(groupA, groupB);
-//                    formulateFeed2(groupB, groupA);
+
+                        finishformu = false;
                     }
 
                     if (iterProtein) {
-                        implementFormuProtein();
-//                    formulateProteinFeed(groupA, groupB);
-                    }
 
-                    if (assProp2first == 99) {
-                        iter1++;
-                        iter2++;
-                        assProp2first = formulationiter1[iter1];
-                        assProp2secon = formulationiter2[iter2];
-
-                        if (iterRest) {
-                            implementFormu();
-                        }
-
-                        if (iterProtein) {
-                            implementFormuProtein();
-                        }
+                        finishProteinformu = false;
                     }
                 }
-            }else if ((scaleprop_first_groupA > ordqtyAvailableA.get(0)) && (scaleprop_second_groupA > ordqtyAvailableA.get(1))){
 
-                double qtyscaled = 0.0;
-                double qtyavailableGrp = 0.0;
-
-                if(scaleprop_first_groupA >= scaleprop_second_groupA) {
-                    qtyavailableGrp = ordqtyAvailableA.get(0);
-                    qtyscaled = scaleprop_first_groupA;
-                }else{
-
-                    qtyavailableGrp = ordqtyAvailableA.get(1);
-                    qtyscaled = scaleprop_second_groupA;
-
-                }
-
-
+                assProp2first++;
+                assProp2secon--;
                 if (iterRest) {
 
-                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                    reform = true;
-                    iter1 = 0;
-                    iter2 = 0;
-                    implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                    scalegroup = true;
+                    finishformu = false;
                 }
 
                 if (iterProtein) {
-                    qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                    reform = true;
-                    iter1 = 0;
-                    iter2 = 0;
-                    implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                    scalegroup = true;
-                    saveAlready = true;
-                    addcomprop = true;
+
+                    finishProteinformu = false;
                 }
 
 
+
             }
-        }else{
-            if ((scaleprop_first_groupA > ordqtyAvailableB.get(0)) && (scaleprop_second_groupA <= ordqtyAvailableB.get(1))) {
 
-                if (iter1 == (formulationiter1.length - 1)) {
-                    double qtyscaled = 0.0;
-                    double qtyavailableGrp = 0.0;
+            if((scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) || (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1))) {
+
+                if (scaleprop_groupBFeed > ordqtyAvailableA.get(0)) {
+                    if (iter1 == (formulationiter1.length - 1) && !alreadyDisplay) {
+                        popUpDialogOnefeed(scaleprop_groupBFeed, ordqtyAvailableA.get(0), ordIngredientGrpA.get(0));
+                    }
+
+                    reform = true;
+
+                    // 2nd ingridient not appropriate
+                    if (assProp2secon == 96) {
+                        iter1++;
+                        nextpropTwoFeed = true;
+
+                        if (iterRest) {
+                            finishformu = false;
+                        }
+
+                        if (iterProtein) {
+                            finishProteinformu = false;
+                        }
+                    }
 
 
-                    qtyavailableGrp = ordqtyAvailableB.get(0);
-                    qtyscaled = scaleprop_first_groupA;
-
+                    assProp2first++;
+                    assProp2secon--;
 
                     if (iterRest) {
-
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                        reform = true;
-                        iter1 = 0;
-                        iter2 = 0;
-                        implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        scalegroup = true;
+                        finishformu = false;
                     }
 
                     if (iterProtein) {
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                        finishProteinformu = false;
+                    }
+
+                    saveAlready = true;
+
+                }
+            }
+
+
+
+            }else{
+            if ((scaleprop_first_groupAFeed > ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1))) {
+
+                if (iter1 == (formulationiter1.length - 1)) {
+                    //popUpDialogOnefeed(double scaleprop,int qtyavailaA, String ingredienA)
+                    popUpDialogOnefeed(scaleprop_first_groupAFeed, ordqtyAvailableB.get(0),ordIngredientGrpB.get(0));
+
+                }
+
+                // 2nd ingridient not appropriate
+                if (assProp2secon == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
+
+                    if (iterRest) {
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+                }
+
+                    assProp2first--;
+                    assProp2secon++;
+                    if (iterRest) {
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+
+
+
+            }else if ((scaleprop_first_groupAFeed <= ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableB.get(1))) {
+
+                if (iter1 == (formulationiter1.length - 1) && !alreadyDisplay) {
+
+                    popUpDialogOnefeed(scaleprop_second_groupAFeed, ordqtyAvailableB.get(1),ordIngredientGrpB.get(1));
+
+                }
+
+                if (iter1 == (formulationiter1.length - 1) && alreadyDisplay ) {
+                    breakoff = true;
+
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                        qtyavailableGrp = ordqtyAvailableB.get(1);
+                        qtyscaled = scaleprop_second_groupAFeed;
+
+
+
+                    iter1 = 0;
+                    if (iterRest) {
                         reform = true;
-                        iter1 = 0;
-                        iter2 = 0;
-                        implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        scalegroup = true;
-                        saveAlready = true;
-                        addcomprop = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                        while(!finishformu){
+
+                            if(groupA.size() > 1){
+                                formulateFeed(groupA, groupB);
+                                checkQtyScaledDown();
+
+                            }else{
+
+                                formulateFeed2(groupB, groupA);
+                                checkQtyScaledDown();
+                            }
+
+                        }
+
+                        if(finishformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+                        }
+
+                    }
+
+                    if (iterProtein) {
+                        reform = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                        while(!finishProteinformu && !breakoff ){
+                            formulateProteinFeed(groupA, groupB);
+                            checkQtyScaledDown();
+                        }
+
+                        if(finishProteinformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+
+                        }
+//
+                    }
+
+                }
+
+
+
+                // 2nd ingridient not appropriate
+
+                if (assProp2secon == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
+
+                    if (iterRest) {
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+                }
+
+                    assProp2first--;
+                    assProp2secon++;
+                    if (iterRest) {
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+
+
+
+            }
+
+
+            if ((scaleprop_first_groupAFeed > ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableB.get(1))) {
+
+                if(iter1 == (formulationiter1.length -1) && !alreadyDisplay) {
+                    // popUpDialogTwofeed(double scalepropfirst,int qtyavailaA, String ingredienA, double scalepropsecond,int qtyavailaB, String ingredienB)
+                    popUpDialogTwofeed( scaleprop_first_groupAFeed, ordqtyAvailableB.get(0),  ordIngredientGrpB.get(0),  scaleprop_second_groupAFeed, ordqtyAvailableB.get(1), ordIngredientGrpB.get(1));
+                }
+
+
+                if (iter1 == (formulationiter1.length - 1) && alreadyDisplay ) {
+                    breakoff = true;
+
+                    double qtyscaled = 0.0;
+                    double qtyavailableGrp = 0.0;
+
+                    if(ExtraGrpA >= ExtraGrpB) {
+                        qtyavailableGrp = ordqtyAvailableB.get(0);
+                        qtyscaled = scaleprop_first_groupAFeed;
+                    }else{
+
+                        qtyavailableGrp = ordqtyAvailableB.get(1);
+                        qtyscaled = scaleprop_second_groupAFeed;
+
+                    }
+
+
+                    iter1 = 0;
+                    if (iterRest) {
+                        reform = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                        while(!finishformu){
+
+                            if(groupA.size() > 1){
+                                formulateFeed(groupA, groupB);
+                                checkQtyScaledDown();
+
+                            }else{
+
+                                formulateFeed2(groupB, groupA);
+                                checkQtyScaledDown();
+                            }
+
+                        }
+
+                        if(finishformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+                        }
+
+                    }
+
+                    if (iterProtein) {
+                        reform = true;
+                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                        while(!finishProteinformu && !breakoff ){
+                            formulateProteinFeed(groupA, groupB);
+                            checkQtyScaledDown();
+                        }
+
+                        if(finishProteinformu) {
+                            setCommentArrForThreeFeed();
+                            storeResultToDb();
+                            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                            if(formulate) {
+                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                intent.putExtra("formuNo", noOfFomulation);
+                                startActivity(intent);
+                            }
+
+                        }
+//
                     }
 
                 }
 
                 // 2nd ingridient not appropriate
-                if(!scalegroup){
-                    assProp2first--;
-                    assProp2secon++;
+                if (assProp2first == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
                     if (iterRest) {
-                        implementFormu();
-//                    formulateFeed(groupA, groupB);
-//                    formulateFeed2(groupB, groupA);
+
+                        finishformu = false;
                     }
 
                     if (iterProtein) {
-                        implementFormuProtein();
-//                    formulateProteinFeed(groupA, groupB);
-                    }
 
-                    if (assProp2secon == 99) {
-                        iter1++;
-                        iter2++;
-                        assProp2first = formulationiter1[iter1];
-                        assProp2secon = formulationiter2[iter2];
-
-                        if (iterRest) {
-                            implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        }
-
-                        if (iterProtein) {
-                            implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        }
-//                performPearson();
+                        finishProteinformu = false;
                     }
                 }
-            }else if ((scaleprop_first_groupA <= ordqtyAvailableB.get(0)) && (scaleprop_second_groupA > ordqtyAvailableB.get(1))) {
 
-                if (iter1 == (formulationiter1.length - 1)) {
-                    double qtyscaled = 0.0;
-                    double qtyavailableGrp = 0.0;
+                assProp2first++;
+                assProp2secon--;
+                if (iterRest) {
 
-
-                    qtyavailableGrp = ordqtyAvailableB.get(1);
-                    qtyscaled = scaleprop_second_groupA;
-
-
-                    if (iterRest) {
-
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                        reform = true;
-                        iter1 = 0;
-                        iter2 = 0;
-                        implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        scalegroup = true;
-                    }
-
-                    if (iterProtein) {
-                        qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                        reform = true;
-                        iter1 = 0;
-                        iter2 = 0;
-                        implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        scalegroup = true;
-                        saveAlready = true;
-                        addcomprop = true;
-                    }
-
+                    finishformu = false;
                 }
 
-                // 2nd ingridient not appropriate
-                if(!scalegroup){
-                    assProp2first--;
-                    assProp2secon++;
-                    if (iterRest) {
-                        implementFormu();
-//                    formulateFeed(groupA, groupB);
-//                    formulateFeed2(groupB, groupA);
-                    }
+                if (iterProtein) {
 
-                    if (iterProtein) {
-                        implementFormuProtein();
-//                    formulateProteinFeed(groupA, groupB);
-                    }
-
-                    if (assProp2secon == 99) {
-                        iter1++;
-                        iter2++;
-                        assProp2first = formulationiter1[iter1];
-                        assProp2secon = formulationiter2[iter2];
-
-                        if (iterRest) {
-                            implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                        }
-
-                        if (iterProtein) {
-                            implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                        }
-//                performPearson();
-                    }
-                }
-            }
-
-
-            if ((scaleprop_first_groupA > ordqtyAvailableB.get(0)) && (scaleprop_second_groupA > ordqtyAvailableB.get(1))) {
-                double qtyAvail = 0.0;
-                double scaleTouse = 0.0;
-
-                if(scaleprop_first_groupA < scaleprop_second_groupA){
-                    qtyAvail = ordqtyAvailableB.get(1);
-                    scaleTouse = scaleprop_second_groupA;
-                }else{
-                    qtyAvail = ordqtyAvailableB.get(0);
-                    scaleTouse = scaleprop_first_groupA;
+                    finishProteinformu = false;
                 }
 
-//                if(iter1 == (formulationiter1.length - 1 )){
-
-                if(iterRest) {
-
-                    qtyTMix = Math.floor(qtyTMix * qtyAvail/scaleTouse);
-                    reform = true;
-                    iter1 = 0;
-                    iter2 = 0;
-                    implementFormu();
-//                        formulateFeed(groupA, groupB);
-//                        formulateFeed2(groupB, groupA);
-                    scalegroup = true;
-                }
-
-                if(iterProtein){
-                    qtyTMix = Math.floor(qtyTMix * qtyAvail/scaleTouse);
-                    reform = true;
-                    iter1 = 0;
-                    iter2 = 0;
-                    implementFormuProtein();
-//                        formulateProteinFeed(groupA, groupB);
-                    saveAlready = true;
-                    addcomprop = true;
-                    scalegroup = true;
-                }
-
-//                }
-// if(iter1 == (formulationiter1.length - 1 )){
-//
-//                    if(iterRest) {
-//
-//                        qtyTMix = Math.floor(qtyTMix * qtyAvail/scaleTouse);
-//                        reform = true;
-//                        iter1 = 0;
-//                        iter2 = 0;
-//                        implementFormu();
-////                        formulateFeed(groupA, groupB);
-////                        formulateFeed2(groupB, groupA);
-//                        scalegroup = true;
-//                    }
-//
-//                    if(iterProtein){
-//                        qtyTMix = Math.floor(qtyTMix * qtyAvail/scaleTouse);
-//                        reform = true;
-//                        iter1 = 0;
-//                        iter2 = 0;
-//                        implementFormuProtein();
-////                        formulateProteinFeed(groupA, groupB);
-//                        saveAlready = true;
-//                        addcomprop = true;
-//                        scalegroup = true;
-//                    }
-//
-//                }
-//                if(!scalegroup) {
-//                    iter1++;
-//                    iter2++;
-//                    assProp2first = formulationiter1[iter1];
-//                    assProp2secon = formulationiter2[iter2];
-//                    if(iterRest) {
-//                        implementFormu();
-//                    }
-//
-//                    if(iterProtein){
-//                        implementFormuProtein();
-////                        formulateProteinFeed(groupA, groupB);
-//                    }
-//                }
             }
 
         }
 
+        if((scaleprop_first_groupAFeed <= ordqtyAvailableB.get(0)) || (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1))){
+
+            if(scaleprop_groupBFeed > ordqtyAvailableB.get(0)){
+                if (iter1 == (formulationiter1.length - 1) && !alreadyDisplay) {
+                    popUpDialogOnefeed(scaleprop_groupBFeed,ordqtyAvailableB.get(0),ordIngredientGrpA.get(0));
+                }
+
+                reform = true;
+
+                // 2nd ingridient not appropriate
+                if (assProp2secon == 96) {
+                    iter1++;
+                    nextpropTwoFeed = true;
+
+                    if (iterRest) {
+                        finishformu = false;
+                    }
+
+                    if (iterProtein) {
+                        finishProteinformu = false;
+                    }
+                }
+
+
+                assProp2first++;
+                assProp2secon--;
+
+                if (iterRest) {
+                    finishformu = false;
+                }
+
+                if (iterProtein) {
+                    finishProteinformu = false;
+                }
+
+                saveAlready = true;
+
+            }
+        }
+
 
     }
+
+    private void popUpDialogOnefeed(double scaleprop,int qtyavailaA, String ingredienA){
+        breakoff = true;
+
+        //pop up a dialog to ask if the user want to scale down
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+        alertBuilder.setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        double qtyscaled = 0.0;
+                        double qtyavailableGrp = 0.0;
+                        qtyavailableGrp = qtyavailaA;
+                        qtyscaled = scaleprop;
+
+
+                        if (iterRest) {
+                            iter1 = 0;
+                            qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                            while(!finishformu){
+
+                                if(groupA.size() > 1){
+                                    formulateFeed(groupA, groupB);
+                                    checkQtyScaledDown();
+
+                                }else{
+
+                                    formulateFeed2(groupB, groupA);
+                                    checkQtyScaledDown();
+                                }
+
+                            }
+
+                            if(finishformu) {
+                                setCommentArrForThreeFeed();
+                                storeResultToDb();
+                                storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                                if(formulate) {
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+                                }
+                            }
+
+                        }
+
+                        if (iterProtein) {
+                            qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                            while(!finishProteinformu && !breakoff ){
+                                formulateProteinFeed(groupA, groupB);
+                                checkQtyScaledDown();
+                            }
+
+                            if(finishProteinformu) {
+                                setCommentArrForThreeFeed();
+                                storeResultToDb();
+                                storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                                if(formulate) {
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+                                }
+
+                            }
+//
+                        }
+                        alreadyDisplay = true;
+//
+                    }
+
+                });
+
+        alertBuilder.setNegativeButton("No", (dialog, which) -> {
+            alreadyDisplay = true;
+            dialog.cancel();
+            setCommentArrForThreeFeed();
+            storeResultToDb();
+            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+            Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+            intent.putExtra("formuNo", noOfFomulation);
+            startActivity(intent);
+
+        });
+
+
+            AlertDialog alertDialog = alertBuilder.create();
+            alertDialog.setTitle("OBSERVATION!!");
+            alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                    "Get " + decimalFormat.format(scaleprop - qtyavailaA) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                    " Do you want to scale down to the next mixable quantity?", ingredienA));
+
+            alertDialog.show();
+    }
+
+    private void popUpDialogTwofeed(double scalepropfirst,int qtyavailaA, String ingredienA, double scalepropsecond,int qtyavailaB, String ingredienB){
+        breakoff = true;
+
+        //pop up a dialog to ask if the user want to scale down
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+        alertBuilder.setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        double qtyscaled = 0.0;
+                        double qtyavailableGrp = 0.0;
+
+                        if(scalepropfirst <= scalepropsecond){
+                            qtyavailableGrp = qtyavailaA;
+                            qtyscaled = scalepropsecond;
+
+                        }else{
+                            qtyavailableGrp = ordqtyAvailableA.get(1);
+                            qtyscaled = scalepropfirst;
+
+                        }
+
+//                        alreadyDisplay = true;
+
+
+                        if (iterRest) {
+                            iter1 = 0;
+                            qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+
+                            while(!finishformu){
+
+                                if(groupA.size() > 1){
+                                    formulateFeed(groupA, groupB);
+                                    checkQtyScaledDown();
+
+                                }else{
+
+                                    formulateFeed2(groupB, groupA);
+                                    checkQtyScaledDown();
+                                }
+
+                            }
+
+                            if(finishformu) {
+                                setCommentArrForThreeFeed();
+                                storeResultToDb();
+                                storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+                                if(formulate) {
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+                                }
+                            }
+
+                        }
+
+                        if (iterProtein) {
+                            qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
+                            while(!finishProteinformu && !breakoff ){
+                                formulateProteinFeed(groupA, groupB);
+                                checkQtyScaledDown();
+                            }
+
+                            if(finishProteinformu) {
+                                setCommentArrForThreeFeed();
+                                storeResultToDb();
+                                storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+
+                                if(formulate) {
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+                                }
+
+                            }
+//
+                        }
+                        alreadyDisplay = true;
+//
+                    }
+
+                });
+
+        alertBuilder.setNegativeButton("No", (dialog, which) -> {
+            alreadyDisplay = true;
+            dialog.cancel();
+            setCommentArrForThreeFeed();
+            storeResultToDb();
+            storecalculatedAnalysis(Crude_proteintarget, noOfFomulation, calCalcium.get(0), calPhosphorus.get(0), calEnergy.get(0));
+
+            Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+            intent.putExtra("formuNo", noOfFomulation);
+            startActivity(intent);
+
+        });
+
+
+        AlertDialog alertDialog = alertBuilder.create();
+        alertDialog.setTitle("OBSERVATION!!");
+            alertDialog.setMessage("The target quantity can not be reached. You will need the following quantity to achieve it: \n " +
+                    (decimalFormat.format(scalepropfirst - qtyavailaA) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of " + ingredienA) + "\n " + (decimalFormat.format(scalepropsecond - qtyavailaB) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of " + ingredienB) +
+                    "\nDo you want to scale down to the next mixable quantity?");
+
+        alertDialog.show();
+    }
+
 
     private boolean calNewCPLevelFourFeed() {
 
@@ -3065,7 +3612,8 @@ public class CreateDietActivity extends AppCompatActivity {
                     formulate = true;
 
                     if(formulate){
-                        formulateProtein(Crude_proteintarget, birdSelected);
+                        formulateTwoFeed();
+
                     }
 
 
@@ -3088,13 +3636,13 @@ public class CreateDietActivity extends AppCompatActivity {
                 Calciumtarget = 3.4;
                 Phosphorustarget = 0.32;
 
-                String additionInformation = "To attain the recommended calcium (3.4%) and phosphorus level (0.32) level, kindly add up feed ingredient from the mineral based Ingredient(s). Below are listed some of the ingredient(s) that falls within this class.\n" +
-                        "1. Bone Meal   2. Oyester Shell\n" +
-                        "3.Limestone    4. Egg Shell meal\n" +
-                        "5. Periwinkle Shell    6. Dicalcium Phosphate";
-                Intent i = new Intent(CreateDietActivity.this, SummaryActivity.class);
-                i.putExtra("addition", additionInformation);
-                startActivity(i);
+//                String additionInformation = "To attain the recommended calcium (3.4%) and phosphorus level (0.32) level, kindly add up feed ingredient from the mineral based Ingredient(s). Below are listed some of the ingredient(s) that falls within this class.\n" +
+//                        "1. Bone Meal   2. Oyester Shell\n" +
+//                        "3.Limestone    4. Egg Shell meal\n" +
+//                        "5. Periwinkle Shell    6. Dicalcium Phosphate";
+//                Intent i = new Intent(CreateDietActivity.this, SummaryActivity.class);
+//                i.putExtra("addition", additionInformation);
+//                startActivity(i);
 
 
 //                double Crude_protein = 8.5, Calcium = 3.4, Phosphorus = 0.32;
@@ -3103,7 +3651,9 @@ public class CreateDietActivity extends AppCompatActivity {
 
                     formulate = true;
                     if(formulate) {
-                        formulateProtein(Crude_proteintarget, birdSelected);
+//                        formulateProtein(Crude_proteintarget, birdSelected);
+
+                        formulateTwoFeed();
                     }
 
                 }else{
@@ -3126,6 +3676,259 @@ public class CreateDietActivity extends AppCompatActivity {
 
     }
 
+    public void conditionForTwoFeed(){
+        if(scaledownToForm){
+            if(qtyToAddGrpA > 0 && qtyToAddGrpB <=  0){
+                Double newQty = 0.00;
+                newQty = (qtyAvailableGrpA * qtyToMix)/scaledownA;
+                qtyToMix = Math.floor(newQty);
+                recalculate = true;
+                maxConditionCheck = false;
+
+            }else if(qtyToAddGrpB > 0 && qtyToAddGrpA <= 0){
+                Double newQty = 0.00;
+                newQty = (qtyAvailableGrpB * qtyToMix)/scaledownB;
+                qtyToMix = Math.floor(newQty);
+                recalculate = true;
+                maxConditionCheck = false;
+            }else if(qtyToAddGrpA > 0 && qtyToAddGrpB > 0){
+                if (qtyToAddGrpA > qtyToAddGrpB){
+                    Double newQty = 0.00;
+                    newQty = (qtyAvailableGrpA * qtyToMix)/scaledownA;
+                    qtyToMix = Math.floor(newQty);
+                    recalculate = true;
+                    minConditionCheck = false;
+
+                } else if (qtyToAddGrpB > qtyToAddGrpA){
+                    Double newQty = 0.00;
+                    newQty = (qtyAvailableGrpB * qtyToMix)/scaledownB;
+                    qtyToMix = Math.floor(newQty);
+                    recalculate = true;
+                    minConditionCheck = false;
+                }
+            }
+//                formulateForTwoFeed();
+            formulateProtein(Crude_proteintarget, birdSelected);
+
+        }
+
+
+    }
+
+    private void formulateTwoFeed() {
+        formulateProtein(Crude_proteintarget, birdSelected);
+
+        restOthers();
+
+    }
+
+    public boolean storeFeedToDb(){
+        //add quantity to mix into the database
+        dbHelper.addQuantityToMix(noOfFomulation, qtyToMix);
+
+
+        if(scaledownB <= qtyAvailableGrpB){
+            commentArr.add("Appropriate");
+        }else{
+            commentArr.add("Get " +  decimalFormat.format(scaledownB - qtyAvailableGrpB) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+        }
+
+        if(scaledownA <= qtyAvailableGrpA){
+            commentArr.add("Appropriate");
+        }else{
+            commentArr.add("Get " + decimalFormat.format(scaledownA - qtyAvailableGrpA) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() +" more");
+        }
+
+        addResultToDb();
+        storecalculatedAnalysis(newCrude,noOfFomulation,newCal,newPhos,newEnergy);
+        return true;
+    }
+
+    private void restOthers(){
+        //Check the quantity available is enough to mix feed
+        if(((qtyToAddGrpA > 0) || (qtyToAddGrpB > 0)) && !recalculate){
+
+            if((qtyToAddGrpA <= 0) & qtyToAddGrpB > 0) {
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+//            alertBuilder.setMessage("OBSERVATION!!!");
+
+                alertBuilder.setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                scaledownToForm = true;
+                                answerDialog = true;
+                                conditionForTwoFeed();
+                                if (formulate){
+                                boolean stored =  storeFeedToDb();
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+//                                    getBaseContext().startActivity(intent);
+                                }
+                            }
+
+                        });
+
+                alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recalculate = false;
+                        maxConditionCheck = true;
+                        scaledownToForm = false;
+                        answerDialog = true;
+                        dialog.cancel();
+//                    formulateForTwoFeed();
+
+                    if (formulate){
+                        boolean stored =  storeFeedToDb();
+                        Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                        intent.putExtra("formuNo", noOfFomulation);
+                        startActivity(intent);
+//                        getBaseContext().startActivity(intent);
+                    }
+
+                    }
+                });
+
+                AlertDialog alertDialog = alertBuilder.create();
+                alertDialog.setTitle("OBSERVATION!!");
+                alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                        "Get " + decimalFormat.format(scaledownB - qtyAvailableGrpB) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                        " Do you want to scale down to the next mixable quantity?", ingredientB));
+                alertDialog.show();
+            } else if((qtyToAddGrpA > 0) & (qtyToAddGrpB <= 0)){
+
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                alertBuilder.setMessage("OBSERVATION!!!");
+
+                alertBuilder.setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                recalculate = true;
+                                minConditionCheck = false;
+                                scaledownToForm = true;
+                                recalculate = true;
+                                answerDialog = true;
+                                conditionForTwoFeed();
+//                                Double newQty = 0.00;
+//                                newQty = (qtyAvailableGrpA * qtyToMix)/scaledownA;
+//                                qtyToMix = Math.floor(newQty);
+//                                formulateForTwoFeed();
+//
+                                if (formulate){
+                                boolean stored =  storeFeedToDb();
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+//                                    getBaseContext().startActivity(intent);
+                                }
+
+                            }
+                        });
+
+                alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recalculate = false;
+                        minConditionCheck = true;
+                        scaledownToForm = false;
+                        answerDialog = true;
+                        dialog.cancel();
+
+//
+//                        formulateForTwoFeed();
+//
+//
+                        if (formulate){
+                        boolean stored =  storeFeedToDb();
+                            Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                            intent.putExtra("formuNo", noOfFomulation);
+                            startActivity(intent);
+//                            getBaseContext().startActivity(intent);
+                        }
+
+                    }
+                });
+                AlertDialog alertDialog = alertBuilder.create();
+                alertDialog.setTitle("OBSERVATION!!!");
+                alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
+                        "Get " +  decimalFormat.format(scaledownA - qtyAvailableGrpA) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
+                        " Do you want to scale down to the next mixable quantity?", ingredientA));
+                alertDialog.show();
+
+            }else if((qtyToAddGrpA > 0) || (qtyToAddGrpB > 0)){
+
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                alertBuilder.setMessage("OBSERVATION!!!");
+
+                alertBuilder.setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                scaledownToForm = true;
+                                conditionForTwoFeed();
+                                boolean stored =  storeFeedToDb();
+
+                                if (formulate){
+                                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                                    intent.putExtra("formuNo", noOfFomulation);
+                                    startActivity(intent);
+                                }
+
+                            }
+                        });
+
+                alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recalculate = false;
+                        minConditionCheck = true;
+                        scaledownToForm = false;
+                        dialog.cancel();
+//                        answerDialog = true;
+
+                        if (formulate){
+                            storeFeedToDb();
+                            Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                            intent.putExtra("formuNo", noOfFomulation);
+                            startActivity(intent);
+                        }
+
+                    }
+                });
+                AlertDialog alertDialog = alertBuilder.create();
+                alertDialog.setTitle("OBSERVATION!!!");
+                alertDialog.setMessage("The target quantity can not be reached. You will need the following quantity to achieve it: \n " +
+                        (decimalFormat.format(scaledownA - qtyAvailableGrpA) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of " + ingredientA ) + "\n " + (decimalFormat.format(scaledownB - qtyAvailableGrpB) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of " + ingredientB) +
+                        "\nDo you want to scale down to the next mixable quantity?");
+                alertDialog.show();
+
+            }
+        } else {
+            if(qtyToAddGrpA <= 0 && qtyToAddGrpB <=  0){
+                formulate = true;
+
+                if (formulate){
+                    storeFeedToDb();
+                    Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+                    intent.putExtra("formuNo", noOfFomulation);
+                    startActivity(intent);
+
+                }
+            }
+            recalculate = recalculate || false;
+            maxConditionCheck = true;
+            answerDialog = true;
+        }
+
+
+
+    }
+
     public void addFormulatedIngredientToDb(String birdCat){
 
         for(int i=0; i<ingredientSelected.size(); i++){
@@ -3136,7 +3939,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
     }
 
-    public void formulateProtein(Double targetProtein, String birdCat){
+    public boolean formulateProtein(Double targetProtein, String birdCat){
         //Declare initiate variable
         commentArr = new ArrayList <>();
         qtySpecified = new ArrayList <>();
@@ -3208,11 +4011,14 @@ public class CreateDietActivity extends AppCompatActivity {
         qtySpecified.add(QtySelectedForMinCP);
 
 
-        Double ingredientWithMaxCPValue = 0.0;
-        Double ingredientWithMinCPValue = 0.0;
+        double ingredientWithMaxCPValue = 0.0;
+        double ingredientWithMinCPValue = 0.0;
 
         ingredientWithMaxCP = ingredientSelected.get(crudeProteinNutrient.indexOf(Collections.max(crudeProteinNutrient)));
         ingredientWithMinCP = ingredientSelected.get(crudeProteinNutrient.indexOf(Collections.min(crudeProteinNutrient)));
+
+        ingredientA = ingredientWithMinCP;
+        ingredientB = ingredientWithMaxCP;
 
         // store the ingredient selected
         newIngredient.add(ingredientWithMaxCP);
@@ -3227,17 +4033,17 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
         // Step 1 of the calculation
-        Double newIngredientWithMaxCPValue = Math.abs(targetProtein - ingredientWithMinCPValue);
-        Double newIngredientWithMinCPValue = Math.abs(targetProtein - ingredientWithMaxCPValue);
+        double newIngredientWithMaxCPValue = Math.abs(targetProtein - ingredientWithMinCPValue);
+        double newIngredientWithMinCPValue = Math.abs(targetProtein - ingredientWithMaxCPValue);
 
-        Double TotalValue = newIngredientWithMaxCPValue + newIngredientWithMinCPValue;
+        double TotalValue = newIngredientWithMaxCPValue + newIngredientWithMinCPValue;
 
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
 
         // Step 2 of the calculation
-        Double getPercentForIngreWithMaxValue = Math.round(((newIngredientWithMaxCPValue/TotalValue) * 100) * 100.0) /100.0;
-        Double getPercentForIngreWithMinValue = Math.round(((newIngredientWithMinCPValue/TotalValue) * 100) * 100.0) /100.0;
+        double getPercentForIngreWithMaxValue = Math.round(((newIngredientWithMaxCPValue/TotalValue) * 100) * 100.0) /100.0;
+        double getPercentForIngreWithMinValue = Math.round(((newIngredientWithMinCPValue/TotalValue) * 100) * 100.0) /100.0;
 
 
         // store proportion percent
@@ -3245,8 +4051,8 @@ public class CreateDietActivity extends AppCompatActivity {
         newProportion.add(getPercentForIngreWithMinValue);
 
         // Step 3 of the calculation
-        Double NewCPForIngreWithMinValue = getPercentForIngreWithMinValue * (ingredientWithMinCPValue/100);
-        Double NewCPForIngreWithMaxValue = getPercentForIngreWithMaxValue * (ingredientWithMaxCPValue/100);
+        double NewCPForIngreWithMinValue = getPercentForIngreWithMinValue * (ingredientWithMinCPValue/100);
+        double NewCPForIngreWithMaxValue = getPercentForIngreWithMaxValue * (ingredientWithMaxCPValue/100);
 
         //get the quantity to mix
         if(!recalculate){
@@ -3256,217 +4062,37 @@ public class CreateDietActivity extends AppCompatActivity {
         }
 
         // Step 4 of of the calculation
-        Double qtyOfMixMinValueCP = (qtyToMix/100) * getPercentForIngreWithMinValue;
-        Double qtyOfMixMaxValueCP = (qtyToMix/100) * getPercentForIngreWithMaxValue;
+        double qtyOfMixMinValueCP = (qtyToMix/100) * getPercentForIngreWithMinValue;
+        double qtyOfMixMaxValueCP = (qtyToMix/100) * getPercentForIngreWithMaxValue;
 
         getNewProportionUnit.add(qtyOfMixMaxValueCP);
         getNewProportionUnit.add(qtyOfMixMinValueCP);
 
-                //calculating calcium leveo
-        Double newCalciumLevel = ((getPercentForIngreWithMaxValue * maxCal) + (getPercentForIngreWithMinValue * minCal)) * 0.01;
-        Double newPhosphprusLevel = ((getPercentForIngreWithMaxValue * maxPhos) + (getPercentForIngreWithMinValue* minPhos)) * 0.01;
-        Double newEnergyLevel = ((getPercentForIngreWithMaxValue * maxEnergy) + (getPercentForIngreWithMinValue* minEnergy)) * 0.01;
-        Double newCrudeProteinLevel = NewCPForIngreWithMinValue + NewCPForIngreWithMaxValue;
+                //calculating calcium level
+        double newCalciumLevel = ((getPercentForIngreWithMaxValue * maxCal) + (getPercentForIngreWithMinValue * minCal)) * 0.01;
+        double newPhosphprusLevel = ((getPercentForIngreWithMaxValue * maxPhos) + (getPercentForIngreWithMinValue* minPhos)) * 0.01;
+        double newEnergyLevel = ((getPercentForIngreWithMaxValue * maxEnergy) + (getPercentForIngreWithMinValue* minEnergy)) * 0.01;
+        double newCrudeProteinLevel = NewCPForIngreWithMinValue + NewCPForIngreWithMaxValue;
+
+        newCal = newCalciumLevel;
+        newPhos = newPhosphprusLevel;
+        newCrude = newCrudeProteinLevel;
+        newEnergy = newEnergyLevel;
 
 
         //find the kg to add
         Double ExtraMin = qtyOfMixMinValueCP - QtySelectedForMinCP;
         Double ExtraMax = qtyOfMixMaxValueCP - QtySelectedForMaxCP;
 
+        qtyToAddGrpA = ExtraMin;
+        qtyToAddGrpB = ExtraMax;
+        scaledownA = qtyOfMixMinValueCP;
+        scaledownB = qtyOfMixMaxValueCP;
+        qtyAvailableGrpA = QtySelectedForMinCP;
+        qtyAvailableGrpB = QtySelectedForMaxCP;
 
-        //Check the quantity available is enough to mix feed
-        if((qtyOfMixMaxValueCP > QtySelectedForMaxCP)  && !recalculate){
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-//            alertBuilder.setMessage("OBSERVATION!!!");
+        return true;
 
-            alertBuilder.setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Double newQty = 0.00;
-                            newQty = (QtySelectedForMaxCP * qtyToMix)/qtyOfMixMaxValueCP;
-                            qtyToMix = Math.floor(newQty);
-                            recalculate = true;
-                            maxConditionCheck = false;
-//                            mix();1
-                            formulateForTwoFeed();
-
-                            if (formulate){
-                            Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
-                            intent.putExtra("formuNo", noOfFomulation);
-                            getBaseContext().startActivity(intent);
-
-                        }
-                        }
-
-                    });
-
-
-            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    recalculate = false;
-                    maxConditionCheck = true;
-                    dialog.cancel();
-                    formulateForTwoFeed();
-
-                    if (formulate){
-                        Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
-                        intent.putExtra("formuNo", noOfFomulation);
-                        getBaseContext().startActivity(intent);
-                    }
-
-                }
-            });
-
-            AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.setTitle("OBSERVATION!!");
-            alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
-                    "Get " +  decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
-                    " Do you want to scale down to the next mixable quantity?", ingredientWithMaxCP));
-            alertDialog.show();
-        } else {
-            recalculate = recalculate || false;
-            maxConditionCheck = true;
-        }
-
-        //Check the quantity available is enough to mix feed
-        if((qtyOfMixMinValueCP > QtySelectedForMinCP) && !recalculate){
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-            alertBuilder.setMessage("OBSERVATION!!!");
-
-            alertBuilder.setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Double newQty = 0.00;
-                            newQty = (QtySelectedForMinCP * qtyToMix)/qtyOfMixMinValueCP;
-                            qtyToMix = Math.floor(newQty);
-                            recalculate = true;
-                            minConditionCheck = false;
-                            formulateForTwoFeed();
-
-                            if (formulate){
-                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
-                                intent.putExtra("formuNo", noOfFomulation);
-                                getBaseContext().startActivity(intent);
-                            }
-
-                        }
-                    });
-
-            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    recalculate = false;
-                    minConditionCheck = true;
-                    dialog.cancel();
-
-                    formulateForTwoFeed();
-
-
-                    if (formulate){
-                        Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
-                        intent.putExtra("formuNo", noOfFomulation);
-                        getBaseContext().startActivity(intent);
-                    }
-
-                }
-            });
-            AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.setTitle("OBSERVATION!!!");
-            alertDialog.setMessage(String.format("The target quantity can not be reached. You will need the following quantity to achieve it: \n" +
-                    "Get " +  decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of %s. \n" +
-                    " Do you want to scale down to the next mixable quantity?", ingredientWithMinCP));
-            alertDialog.show();
-        }else{
-            recalculate = recalculate || false;
-            minConditionCheck = true;
-        }
-
-        if ((qtyOfMixMaxValueCP > QtySelectedForMaxCP) && (qtyOfMixMinValueCP > QtySelectedForMinCP)  && !recalculate){
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-            alertBuilder.setMessage("OBSERVATION!!!");
-
-            alertBuilder.setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (ExtraMin > ExtraMax){
-                            Double newQty = 0.00;
-                            newQty = (QtySelectedForMinCP * qtyToMix)/qtyOfMixMinValueCP;
-                            qtyToMix = Math.floor(newQty);
-                            recalculate = true;
-                            minConditionCheck = false;
-
-                            } else if (ExtraMax > ExtraMin){
-                                Double newQty = 0.00;
-                                newQty = (QtySelectedForMaxCP * qtyToMix)/qtyOfMixMaxValueCP;
-                                qtyToMix = Math.floor(newQty);
-                                recalculate = true;
-                                minConditionCheck = false;
-                            }
-
-                            formulateForTwoFeed();
-
-                            if (formulate){
-                                Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
-                                intent.putExtra("formuNo", noOfFomulation);
-                                getBaseContext().startActivity(intent);
-                            }
-
-                        }
-                    });
-
-            alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    recalculate = false;
-                    minConditionCheck = true;
-                    dialog.cancel();
-
-                    if (formulate){
-                        Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
-                        intent.putExtra("formuNo", noOfFomulation);
-                        getBaseContext().startActivity(intent);
-                    }
-
-                }
-            });
-            AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.setTitle("OBSERVATION!!!");
-            alertDialog.setMessage("The target quantity can not be reached. You will need the following quantity to achieve it: \n " +
-                    (decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of " + ingredientWithMinCP ) + "\n " + (decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more of " + ingredientWithMaxCP) +
-                    "\nDo you want to scale down to the next mixable quantity?");
-            alertDialog.show();
-        }else{
-            recalculate = recalculate || false;
-            minConditionCheck = true;
-
-
-        }
-
-
-//        while(! (minConditionCheck || maxConditionCheck));
-
-        //add quantity to mix into the database
-        dbHelper.addQuantityToMix(noOfFomulation, qtyToMix);
-
-
-        if(qtyOfMixMaxValueCP <= QtySelectedForMaxCP){
-            commentArr.add("Appropriate");
-        }else{
-            commentArr.add("Get " +  decimalFormat.format(qtyOfMixMaxValueCP - QtySelectedForMaxCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-        }
-
-        if(qtyOfMixMinValueCP <= QtySelectedForMinCP){
-            commentArr.add("Appropriate");
-        }else{
-            commentArr.add("Get " + decimalFormat.format(qtyOfMixMinValueCP - QtySelectedForMinCP) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() +" more");
-        }
-
-        addResultToDb();
-        storecalculatedAnalysis(newCrudeProteinLevel,noOfFomulation,newCalciumLevel,newPhosphprusLevel,newEnergyLevel);
 
 
     }
