@@ -1963,7 +1963,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 formulateFeed(groupA, groupB);
                 checkQtyScaledDown();
 
-            }else{
+            }else if(groupB.size() > 1){
 
                 formulateFeed2(groupB, groupA);
                 checkQtyScaledDown();
@@ -2231,35 +2231,54 @@ public class CreateDietActivity extends AppCompatActivity {
 
         //add quantity to mix into the database
         dbHelper.addQuantityToMix(noOfFomulation, qtyTMix);
+if(ordqtyAvailableA.size() > 1) {
 
+    if (scaleprop_groupBFeed <= ordqtyAvailableB.get(0)) {
+        commentArr.add("Appropriate");
+    } else {
+        commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+    }
 
-        if (scaleprop_groupBFeed <= ordqtyAvailableB.get(0)) {
-            commentArr.add("Appropriate");
-        } else {
-            commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-        }
+    if (scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) {
+        commentArr.add("Appropriate");
+    } else {
+        commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+    }
 
-        if (scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) {
-            commentArr.add("Appropriate");
-        } else {
-            commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-        }
+    if (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1)) {
+        commentArr.add("Appropriate");
+    } else {
+        commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+    }
+}else{
+    if (scaleprop_groupBFeed <= ordqtyAvailableA.get(0)) {
+        commentArr.add("Appropriate");
+    } else {
+        commentArr.add("Get " + decimalFormat.format(scaleprop_groupBFeed - ordqtyAvailableA.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+    }
 
-        if (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1)) {
-            commentArr.add("Appropriate");
-        } else {
-            commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableA.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
-        }
+    if (scaleprop_first_groupAFeed <= ordqtyAvailableB.get(0)) {
+        commentArr.add("Appropriate");
+    } else {
+        commentArr.add("Get " + decimalFormat.format(scaleprop_first_groupAFeed - ordqtyAvailableB.get(0)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+    }
+
+    if (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1)) {
+        commentArr.add("Appropriate");
+    } else {
+        commentArr.add("Get " + decimalFormat.format(scaleprop_second_groupAFeed - ordqtyAvailableB.get(1)) + quantityTypeSpinner.getSelectedItem().toString().toLowerCase() + " more");
+    }
+}
 
     }
 
     private void checkQtyScaledDown() {
 
-        double ExtraGrpA = scaleprop_first_groupAFeed - ordqtyAvailableA.get(0);
-        double ExtraGrpB = scaleprop_second_groupAFeed - ordqtyAvailableA.get(1);
 
 
         if(ordqtyAvailableA.size()>1) {
+        double ExtraGrpA = scaleprop_first_groupAFeed - ordqtyAvailableA.get(0);
+        double ExtraGrpB = scaleprop_second_groupAFeed - ordqtyAvailableA.get(1);
 
             if ((scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableA.get(1))) {
 
@@ -2626,7 +2645,7 @@ public class CreateDietActivity extends AppCompatActivity {
                 }
 
                 // 2nd ingridient not appropriate
-                if (assProp2first == 96) {
+                if (assProp2secon >= 96) {
                     iter1++;
                     nextpropTwoFeed = true;
                     if (iterRest) {
@@ -2640,8 +2659,8 @@ public class CreateDietActivity extends AppCompatActivity {
                     }
                 }
 
-                    assProp2first++;
-                    assProp2secon--;
+                    assProp2first--;
+                    assProp2secon++;
                     if (iterRest) {
 
                         finishformu = false;
@@ -2739,37 +2758,38 @@ public class CreateDietActivity extends AppCompatActivity {
                 }
 
                 // 2nd ingridient not appropriate
-                if (assProp2first == 96) {
+//                if (assProp2first == 96) {
+//                    iter1++;
+//                    nextpropTwoFeed = true;
+//                    if (iterRest) {
+//
+//                        finishformu = false;
+//                    }
+//
+//                    if (iterProtein) {
+//
+//                        finishProteinformu = false;
+//                    }
+//                }
+
+//                assProp2first++;
+//                assProp2secon--;
+                if (iterRest) {
                     iter1++;
                     nextpropTwoFeed = true;
-                    if (iterRest) {
-
-                        finishformu = false;
-                    }
-
-                    if (iterProtein) {
-
-                        finishProteinformu = false;
-                    }
-                }
-
-                assProp2first++;
-                assProp2secon--;
-                if (iterRest) {
-
                     finishformu = false;
                 }
 
                 if (iterProtein) {
+                    iter1++;
+                    nextpropTwoFeed = true;
 
                     finishProteinformu = false;
                 }
 
 
 
-            }
-
-            if((scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) || (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1))) {
+            }else if((scaleprop_first_groupAFeed <= ordqtyAvailableA.get(0)) && (scaleprop_second_groupAFeed <= ordqtyAvailableA.get(1))) {
 
                 if (scaleprop_groupBFeed > ordqtyAvailableA.get(0)) {
                     if (iter1 == (formulationiter1.length - 1) && !alreadyDisplay) {
@@ -2779,22 +2799,22 @@ public class CreateDietActivity extends AppCompatActivity {
                     reform = true;
 
                     // 2nd ingridient not appropriate
-                    if (assProp2secon == 96) {
-                        iter1++;
-                        nextpropTwoFeed = true;
+//                    if (assProp2secon == 96) {
+//                        iter1++;
+//                        nextpropTwoFeed = true;
+//
+//                        if (iterRest) {
+//                            finishformu = false;
+//                        }
+//
+//                        if (iterProtein) {
+//                            finishProteinformu = false;
+//                        }
+//                    }
 
-                        if (iterRest) {
-                            finishformu = false;
-                        }
 
-                        if (iterProtein) {
-                            finishProteinformu = false;
-                        }
-                    }
-
-
-                    assProp2first++;
-                    assProp2secon--;
+//                    assProp2first++;
+//                    assProp2secon--;
 
                     if (iterRest) {
                         finishformu = false;
@@ -2806,12 +2826,18 @@ public class CreateDietActivity extends AppCompatActivity {
 
                     saveAlready = true;
 
+                }else{
+                    finishformu = true;
+                    finishProteinformu = true;
                 }
             }
 
 
 
             }else{
+            double ExtraGrpA = scaleprop_first_groupAFeed - ordqtyAvailableB.get(0);
+            double ExtraGrpB = scaleprop_second_groupAFeed - ordqtyAvailableB.get(1);
+
             if ((scaleprop_first_groupAFeed > ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1))) {
 
                 if (iter1 == (formulationiter1.length - 1)) {
@@ -2927,7 +2953,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 // 2nd ingridient not appropriate
 
-                if (assProp2secon == 96) {
+                if (assProp2first == 96) {
                     iter1++;
                     nextpropTwoFeed = true;
 
@@ -2940,8 +2966,8 @@ public class CreateDietActivity extends AppCompatActivity {
                     }
                 }
 
-                    assProp2first--;
-                    assProp2secon++;
+                    assProp2first++;
+                    assProp2secon--;
                     if (iterRest) {
                         finishformu = false;
                     }
@@ -2952,10 +2978,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
 
 
-            }
-
-
-            if ((scaleprop_first_groupAFeed > ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableB.get(1))) {
+            }else if ((scaleprop_first_groupAFeed > ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed > ordqtyAvailableB.get(1))) {
 
                 if(iter1 == (formulationiter1.length -1) && !alreadyDisplay) {
                     // popUpDialogTwofeed(double scalepropfirst,int qtyavailaA, String ingredienA, double scalepropsecond,int qtyavailaB, String ingredienB)
@@ -3039,37 +3062,35 @@ public class CreateDietActivity extends AppCompatActivity {
                 }
 
                 // 2nd ingridient not appropriate
-                if (assProp2first == 96) {
+//                if (assProp2first == 96) {
+//                    iter1++;
+//                    nextpropTwoFeed = true;
+//                    if (iterRest) {
+//
+//                        finishformu = false;
+//                    }
+//
+//                    if (iterProtein) {
+//
+//                        finishProteinformu = false;
+//                    }
+//                }
+
+//                assProp2first++;
+//                assProp2secon--;
+                if (iterRest) {
                     iter1++;
                     nextpropTwoFeed = true;
-                    if (iterRest) {
-
-                        finishformu = false;
-                    }
-
-                    if (iterProtein) {
-
-                        finishProteinformu = false;
-                    }
-                }
-
-                assProp2first++;
-                assProp2secon--;
-                if (iterRest) {
-
                     finishformu = false;
                 }
 
                 if (iterProtein) {
-
+                    iter1++;
+                    nextpropTwoFeed = true;
                     finishProteinformu = false;
                 }
 
-            }
-
-        }
-
-        if((scaleprop_first_groupAFeed <= ordqtyAvailableB.get(0)) || (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1))){
+            }else if((scaleprop_first_groupAFeed <= ordqtyAvailableB.get(0)) && (scaleprop_second_groupAFeed <= ordqtyAvailableB.get(1))){
 
             if(scaleprop_groupBFeed > ordqtyAvailableB.get(0)){
                 if (iter1 == (formulationiter1.length - 1) && !alreadyDisplay) {
@@ -3078,36 +3099,45 @@ public class CreateDietActivity extends AppCompatActivity {
 
                 reform = true;
 
-                // 2nd ingridient not appropriate
-                if (assProp2secon == 96) {
-                    iter1++;
-                    nextpropTwoFeed = true;
-
-                    if (iterRest) {
-                        finishformu = false;
-                    }
-
-                    if (iterProtein) {
-                        finishProteinformu = false;
-                    }
-                }
+//                // 2nd ingridient not appropriate
+//                if (assProp2secon == 96) {
+//                    iter1++;
+//                    nextpropTwoFeed = true;
+//
+//                    if (iterRest) {
+//                        finishformu = false;
+//                    }
+//
+//                    if (iterProtein) {
+//                        finishProteinformu = false;
+//                    }
+//                }
 
 
                 assProp2first++;
                 assProp2secon--;
 
                 if (iterRest) {
+                    iter1++;
+                    nextpropTwoFeed = true;
                     finishformu = false;
                 }
 
                 if (iterProtein) {
+                    iter1++;
+                    nextpropTwoFeed = true;
                     finishProteinformu = false;
                 }
 
                 saveAlready = true;
 
+            }else{
+                finishformu = true;
+                finishProteinformu = true;
             }
         }
+        }
+
 
 
     }
@@ -3131,6 +3161,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
                         if (iterRest) {
                             iter1 = 0;
+                            reform = true;
                             qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
 
                             while(!finishformu){
@@ -3161,6 +3192,8 @@ public class CreateDietActivity extends AppCompatActivity {
                         }
 
                         if (iterProtein) {
+                            iter1 = 0;
+                            reform = true;
                             qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
                             while(!finishProteinformu && !breakoff ){
                                 formulateProteinFeed(groupA, groupB);
@@ -3230,7 +3263,7 @@ public class CreateDietActivity extends AppCompatActivity {
                             qtyscaled = scalepropsecond;
 
                         }else{
-                            qtyavailableGrp = ordqtyAvailableA.get(1);
+                            qtyavailableGrp = qtyavailaA;
                             qtyscaled = scalepropfirst;
 
                         }
@@ -3240,6 +3273,7 @@ public class CreateDietActivity extends AppCompatActivity {
 
                         if (iterRest) {
                             iter1 = 0;
+                            reform = true;
                             qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
 
                             while(!finishformu){
@@ -3270,8 +3304,11 @@ public class CreateDietActivity extends AppCompatActivity {
                         }
 
                         if (iterProtein) {
+                            iter1 = 0;
+                            reform = true;
                             qtyTMix = Math.floor(qtyTMix * qtyavailableGrp / qtyscaled);
-                            while(!finishProteinformu && !breakoff ){
+
+                            while(!finishProteinformu){
                                 formulateProteinFeed(groupA, groupB);
                                 checkQtyScaledDown();
                             }
